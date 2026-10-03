@@ -315,13 +315,22 @@ export const AppProvider = ({ children }) => {
     });
   };
 
+  // Check if running in standalone PWA mode
+  const isStandalone = typeof window !== 'undefined' && (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true
+  );
+
   // Install PWA App
   const installApp = async () => {
-    if (!installPrompt) return;
-    installPrompt.prompt();
-    const { outcome } = await installPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setInstallPrompt(null);
+    if (installPrompt) {
+      installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setInstallPrompt(null);
+      }
+    } else {
+      setActiveModal('pwa_install_guide');
     }
   };
 
@@ -1242,7 +1251,9 @@ export const AppProvider = ({ children }) => {
         currentPage,
         setCurrentPage,
         installApp,
-        canInstall: !!installPrompt
+        installPrompt,
+        isStandalone,
+        canInstall: !isStandalone
       }}
     >
       {children}

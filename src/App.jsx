@@ -1,17 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/Navbar';
-import { DuolingoPath } from './components/DuolingoPath';
 import { LeaderboardPodium } from './components/LeaderboardPodium';
-import { MicroLessonModal } from './components/MicroLessonModal';
-import { AITutorModal } from './components/AITutorModal';
-import QuizEngine from './components/QuizEngine';
-import TeacherDashboard from './components/TeacherDashboard';
-import AuthModal from './components/AuthModal';
 import { Footer } from './components/Footer';
-import TeacherLoginModal from './components/TeacherLoginModal';
-import PrivacyPolicyModal from './components/PrivacyPolicyModal';
-import TermsOfUseModal from './components/TermsOfUseModal';
 import { 
   ShieldCheck, 
   Clock, 
@@ -28,7 +19,18 @@ import {
 } from 'lucide-react';
 import { playSound } from './utils/audioEngine';
 
-import ApprovalNoticeModal from './components/ApprovalNoticeModal';
+// التحميل الكسول الموجه للأداء العالي (Lazy loading for high performance)
+const DuolingoPath = lazy(() => import('./components/DuolingoPath').then(m => ({ default: m.DuolingoPath })));
+const TeacherDashboard = lazy(() => import('./components/TeacherDashboard'));
+const QuizEngine = lazy(() => import('./components/QuizEngine'));
+const AuthModal = lazy(() => import('./components/AuthModal'));
+const MicroLessonModal = lazy(() => import('./components/MicroLessonModal').then(m => ({ default: m.MicroLessonModal })));
+const AITutorModal = lazy(() => import('./components/AITutorModal').then(m => ({ default: m.AITutorModal })));
+const ApprovalNoticeModal = lazy(() => import('./components/ApprovalNoticeModal'));
+const TeacherLoginModal = lazy(() => import('./components/TeacherLoginModal'));
+const PrivacyPolicyModal = lazy(() => import('./components/PrivacyPolicyModal'));
+const TermsOfUseModal = lazy(() => import('./components/TermsOfUseModal'));
+const InstallGuideModal = lazy(() => import('./components/InstallGuideModal'));
 
 function MainAppContent() {
   const { 
@@ -43,8 +45,13 @@ function MainAppContent() {
     currentPage,
     setCurrentPage,
     lang,
-    t
+    t,
+    canInstall,
+    isStandalone,
+    installApp
   } = useApp();
+
+  const [dismissPwaBanner, setDismissPwaBanner] = React.useState(false);
 
   // حساب المتصدر الحالي لعرض شريط تحفيزي
   const topChampion = students.filter(s => s.status === 'approved').sort((a, b) => (b.xp || 0) - (a.xp || 0))[0];
@@ -62,8 +69,13 @@ function MainAppContent() {
       {/* بصمة اللوجو المائية الكبيرة الثابتة خلف المحتوى */}
       <div className="platform-watermark-bg" aria-hidden="true">
         <img 
-          src={`${import.meta.env.BASE_URL}app-logo.jpg`} 
+          src={`${import.meta.env.BASE_URL}icon-512.png`} 
           alt="" 
+          width="512"
+          height="512"
+          loading="lazy"
+          decoding="async"
+          fetchPriority="low"
           className="platform-watermark-img" 
         />
       </div>
@@ -73,7 +85,14 @@ function MainAppContent() {
 
       {/* إذا كان في وضع لوحة تحكم الأستاذ */}
       {isTeacherMode ? (
-        <TeacherDashboard />
+        <Suspense fallback={
+          <div className="lazy-suspense-container">
+            <div className="lazy-suspense-spinner" />
+            <span className="lazy-suspense-text">جاري تحميل لوحة المعلم...</span>
+          </div>
+        }>
+          <TeacherDashboard />
+        </Suspense>
       ) : currentPage === 'home' ? (
         /* =========================================================
            الصفحة الرئيسية المستقلة (Standalone Home Page)
@@ -234,7 +253,14 @@ function MainAppContent() {
 
           {/* مسار المنهج الملتوي (Duolingo Learning Path) */}
           <section className="duolingo-path-container">
-            <DuolingoPath />
+            <Suspense fallback={
+              <div className="lazy-suspense-container">
+                <div className="lazy-suspense-spinner" />
+                <span className="lazy-suspense-text">جاري تحميل مسار المنهج...</span>
+              </div>
+            }>
+              <DuolingoPath />
+            </Suspense>
           </section>
 
           {/* تذييل الصفحة التفاعلي للأستاذ محمد راشد */}
@@ -243,16 +269,55 @@ function MainAppContent() {
       )}
 
       {/* النوافذ المنبثقة التفاعلية */}
-      {activeModal === 'lesson' && <MicroLessonModal />}
-      {activeModal === 'ai_tutor' && <AITutorModal />}
-      {activeModal === 'quiz' && <QuizEngine />}
-      {(activeModal === 'auth' || activeModal === 'profile') && (
-        <AuthModal initialMode={activeModal === 'profile' ? 'profile' : 'login'} />
+      <Suspense fallback={
+        <div className="modal-suspense-fallback">
+          <div className="lazy-suspense-spinner" />
+        </div>
+      }>
+        {activeModal === 'lesson' && <MicroLessonModal />}
+        {activeModal === 'ai_tutor' && <AITutorModal />}
+        {activeModal === 'quiz' && <QuizEngine />}
+        {(activeModal === 'auth' || activeModal === 'profile') && (
+          <AuthModal initialMode={activeModal === 'profile' ? 'profile' : 'login'} />
+        )}
+        {activeModal === 'approval_notice' && <ApprovalNoticeModal />}
+        {activeModal === 'teacher_login' && <TeacherLoginModal />}
+        {activeModal === 'privacy_policy' && <PrivacyPolicyModal />}
+        {activeModal === 'terms_of_use' && <TermsOfUseModal />}
+        {activeModal === 'pwa_install_guide' && <InstallGuideModal />}
+      </Suspense>
+
+      {/* شريط دعوة تثبيت المنصة كتطبيق على الموبايل */}
+      {canInstall && !isStandalone && !dismissPwaBanner && (
+        <aside className="mobile-pwa-bottom-bar" aria-label="تثبيت التطبيق">
+          <div className="mobile-pwa-content">
+            <div className="mobile-pwa-badge">
+              <img src={`${import.meta.env.BASE_URL}icon-192.png`} alt="App Icon" className="mobile-pwa-img" />
+            </div>
+            <div className="mobile-pwa-text">
+              <strong className="mobile-pwa-title">تطبيق كودلينجو الرسمي 📲</strong>
+              <span className="mobile-pwa-sub">ثبّته لشاشتك الرئيسية لوصول أسرع</span>
+            </div>
+          </div>
+          <div className="mobile-pwa-actions">
+            <button 
+              type="button" 
+              className="duo-btn duo-btn-success mobile-pwa-btn"
+              onClick={installApp}
+            >
+              تثبيت
+            </button>
+            <button 
+              type="button" 
+              className="mobile-pwa-close-btn"
+              onClick={() => setDismissPwaBanner(true)}
+              title="إغلاق"
+            >
+              ✕
+            </button>
+          </div>
+        </aside>
       )}
-      {activeModal === 'approval_notice' && <ApprovalNoticeModal />}
-      {activeModal === 'teacher_login' && <TeacherLoginModal />}
-      {activeModal === 'privacy_policy' && <PrivacyPolicyModal />}
-      {activeModal === 'terms_of_use' && <TermsOfUseModal />}
     </div>
   );
 }

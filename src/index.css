@@ -40,8 +40,18 @@
   --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.3);
 }
 
-* {
+html {
   box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  -webkit-text-size-adjust: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
   margin: 0;
   padding: 0;
 }
@@ -59,7 +69,59 @@ body {
   direction: rtl;
   text-align: right;
   overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
   line-height: 1.6;
+  position: relative;
+}
+
+#root {
+  overflow-x: hidden;
+  max-width: 100%;
+  width: 100%;
+  position: relative;
+}
+
+/* Suspense Lazy Fallback Spinners */
+.lazy-suspense-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 60px 20px;
+  width: 100%;
+  min-height: 280px;
+}
+
+.lazy-suspense-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3.5px solid rgba(99, 102, 241, 0.2);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spinLoader 0.75s linear infinite;
+}
+
+.lazy-suspense-text {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.modal-suspense-fallback {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+@keyframes spinLoader {
+  to { transform: rotate(360deg); }
 }
 
 /* Scrollbar */
@@ -83,6 +145,9 @@ body {
 .app-layout {
   position: relative;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -3318,7 +3383,9 @@ input:checked + .slider-purple {
   border-radius: 16px;
   padding: 8px 16px 10px 16px;
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.22);
-  min-width: 320px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   transition: all 0.25s ease;
 }
 
@@ -7433,28 +7500,35 @@ body.theme-light .trophy-banner-text p {
 /* ط§ط³طھط¬ط§ط¨ط© ط§ظ„ط´ط§ط´ط§طھ ط§ظ„طµط؛ظٹط±ط© ظ„ظ„ظ…ط±ط´ط¯ ط§ظ„ط¢ظ„ظٹ */
 @media (max-width: 680px) {
   .active-station-robot-anchor {
-    left: auto;
-    right: auto;
-    top: -85px;
-    transform: none;
+    position: absolute;
+    left: 50% !important;
+    right: auto !important;
+    top: -95px !important;
+    transform: translateX(-50%) !important;
+    width: max-content;
+    max-width: 90vw;
+    z-index: 30;
   }
 
   html[dir='ltr'] .active-station-robot-anchor {
-    left: auto;
-    right: auto;
-    top: -85px;
-    transform: none;
+    left: 50% !important;
+    right: auto !important;
+    top: -95px !important;
+    transform: translateX(-50%) !important;
   }
 
   .robot-mascot-guide {
     flex-direction: row;
     align-items: center;
+    max-width: 90vw;
+    gap: 8px;
   }
 
   .robot-speech-bubble {
-    min-width: 140px;
-    max-width: 170px;
+    min-width: 120px;
+    max-width: 160px;
     padding: 6px 10px;
+    font-size: 0.74rem;
   }
 
   .speech-bubble-tail {
@@ -8504,28 +8578,81 @@ body.theme-light .student-station-tracker-banner {
 
   /* الشريط العلوي على الموبايل */
   .app-navbar {
-    padding: 10px 12px;
+    padding: 8px 10px;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     justify-content: space-between;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .brand-section {
-    gap: 8px;
+    gap: 6px;
+    min-width: 0;
+    max-width: 55%;
   }
 
   .brand-logo-badge {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .brand-title-wrap {
+    min-width: 0;
+    overflow: hidden;
   }
 
   .brand-title-wrap h1 {
-    font-size: 0.90rem;
+    font-size: 0.82rem;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .brand-subtitle {
+    display: none;
+  }
+
+  .navbar-controls-group {
+    gap: 4px;
+    flex-shrink: 0;
+    max-width: 45%;
+    justify-content: flex-end;
+  }
+
+  .nav-utilities-capsule {
+    padding: 2px 4px;
+    gap: 2px;
+  }
+
+  .nav-capsule-btn {
+    padding: 4px 6px;
+    font-size: 0.70rem;
+  }
+
+  .capsule-label {
+    display: none;
+  }
+
+  .btn-nav-auth {
+    padding: 5px 8px;
+    font-size: 0.72rem;
+    gap: 3px;
+  }
+
+  .btn-nav-auth-text {
+    font-size: 0.72rem;
+  }
+
+  .user-profile-trigger {
+    padding: 1px;
+  }
+
+  .user-profile-info {
     display: none;
   }
 
@@ -8536,52 +8663,36 @@ body.theme-light .student-station-tracker-banner {
     margin: 2px 0 0;
     padding: 3px;
     background: rgba(15, 23, 42, 0.75);
+    box-sizing: border-box;
   }
 
   .nav-page-tab-btn {
     flex: 1;
     justify-content: center;
     padding: 6px 8px;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
   }
 
   .hud-stats-group {
     order: 3;
     width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 2px 2px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 6px 0 2px;
     border-top: 1px solid var(--border-glass);
     gap: 4px;
+    box-sizing: border-box;
   }
 
   .hud-stat-chip {
-    padding: 4px 6px;
-    font-size: 0.70rem;
-    gap: 3px;
-    flex: 1;
+    padding: 3px 4px;
+    font-size: 0.68rem;
+    gap: 2px;
+    min-width: 0;
     justify-content: center;
-  }
-
-  .navbar-controls-group {
-    gap: 6px;
-  }
-
-  .nav-capsule-btn {
-    padding: 5px 8px;
-  }
-
-  .capsule-label {
-    display: none;
-  }
-
-  .btn-nav-auth {
-    padding: 6px 10px;
-    font-size: 0.78rem;
-  }
-
-  .user-profile-info {
-    display: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* الصفحة الرئيسية على الموبايل */
@@ -8700,65 +8811,81 @@ body.theme-light .student-station-tracker-banner {
   }
 
   .podium-stage-container {
-    gap: 6px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    gap: 4px;
     padding-top: 24px;
+    justify-content: space-evenly;
+  }
+
+  .podium-slot {
+    flex: 1;
+    min-width: 0;
+    max-width: 32%;
   }
 
   .podium-avatar {
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
   }
 
   .champion-avatar {
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
   }
 
   .podium-crown-aura {
-    top: -26px;
+    top: -24px;
   }
 
   .pillar-gold {
-    height: 120px;
+    height: 110px;
   }
 
   .pillar-silver {
-    height: 90px;
+    height: 85px;
   }
 
   .pillar-bronze {
-    height: 70px;
+    height: 65px;
   }
 
   .pillar-rank-num {
-    font-size: 1.55rem;
+    font-size: 1.45rem;
   }
 
   .pillar-label {
-    font-size: 0.70rem;
+    font-size: 0.68rem;
   }
 
   .podium-student-name {
-    font-size: 0.75rem;
-    max-width: 88px;
+    font-size: 0.72rem;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .champion-name {
-    font-size: 0.82rem;
-    max-width: 100px;
+    font-size: 0.78rem;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .podium-group-tag {
-    font-size: 0.65rem;
-    max-width: 88px;
+    font-size: 0.62rem;
+    max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .podium-score-pill {
-    font-size: 0.68rem;
-    padding: 2px 5px;
+    font-size: 0.66rem;
+    padding: 2px 4px;
   }
 
   /* جدول المتفوقين في الترتيب (المركز الرابع فما بعد) */
@@ -8847,6 +8974,48 @@ body.theme-light .student-station-tracker-banner {
   /* صفحة مسار المنهج على الموبايل */
   .content-standalone-page {
     padding: 12px 10px 40px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .chapter-section-wrapper,
+  .duolingo-path-container,
+  .chapter-lessons-container,
+  .lesson-unit-block,
+  .lesson-nodes-flow {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .node-row-left { transform: translateX(14px); }
+  .node-row-right { transform: translateX(-14px); }
+
+  .lesson-ribbon-bar {
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .lesson-ribbon-info {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .lesson-ribbon-title {
+    font-size: 0.84rem;
+    word-break: break-word;
+    line-height: 1.35;
+  }
+
+  .lesson-ribbon-badge {
+    flex-shrink: 0;
+    font-size: 0.70rem;
   }
 
   .content-page-topbar {
@@ -8858,11 +9027,14 @@ body.theme-light .student-station-tracker-banner {
   .back-to-home-btn, .content-page-title-badge {
     justify-content: center;
     width: 100%;
+    box-sizing: border-box;
   }
 
   .chapter-path-header {
     padding: 14px 12px;
     border-radius: 18px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .chapter-header-text h2 {
@@ -8901,5 +9073,225 @@ body.theme-light .student-station-tracker-banner {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================================
+   FLOATING MOBILE PWA INSTALL BANNER
+   ========================================================= */
+.mobile-pwa-bottom-bar {
+  position: fixed;
+  bottom: 16px;
+  left: 14px;
+  right: 14px;
+  margin: 0 auto;
+  max-width: 480px;
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1.5px solid rgba(99, 102, 241, 0.45);
+  border-radius: 18px;
+  padding: 10px 14px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55), 0 0 20px rgba(99, 102, 241, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 999;
+  animation: slideUpPwa 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUpPwa {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.mobile-pwa-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-pwa-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1.5px solid #818cf8;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+}
+
+.mobile-pwa-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mobile-pwa-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mobile-pwa-title {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-pwa-sub {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mobile-pwa-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.mobile-pwa-btn {
+  padding: 8px 14px !important;
+  font-size: 0.8rem !important;
+  white-space: nowrap;
+}
+
+.mobile-pwa-close-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #94a3b8;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.mobile-pwa-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+body.theme-light .mobile-pwa-bottom-bar,
+html[data-theme='light'] .mobile-pwa-bottom-bar {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(99, 102, 241, 0.35);
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.15), 0 0 20px rgba(99, 102, 241, 0.1);
+}
+
+body.theme-light .mobile-pwa-title,
+html[data-theme='light'] .mobile-pwa-title {
+  color: #0f172a;
+}
+
+body.theme-light .mobile-pwa-sub,
+html[data-theme='light'] .mobile-pwa-sub {
+  color: #475569;
+}
+
+body.theme-light .mobile-pwa-close-btn,
+html[data-theme='light'] .mobile-pwa-close-btn {
+  background: rgba(0, 0, 0, 0.06);
+  color: #64748b;
+}
+
+/* =========================================================
+   ULTRA-MOBILE FINE-TUNING (شاشات الهواتف الصغيرة حتى 320px)
+   ========================================================= */
+@media (max-width: 480px) {
+  .home-standalone-page {
+    padding: 10px 8px 24px;
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .home-hero-presentation {
+    padding: 16px 10px;
+    border-radius: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .home-hero-main-title {
+    font-size: 1.25rem;
+    line-height: 1.35;
+  }
+
+  .home-hero-subtitle {
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .home-features-pills-row {
+    gap: 6px !important;
+  }
+
+  .home-feature-pill {
+    padding: 6px 4px;
+    font-size: 0.70rem;
+    gap: 4px;
+  }
+
+  .leaderboard-podium-wrapper {
+    padding: 14px 8px;
+    border-radius: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .podium-stage-container {
+    gap: 3px;
+    padding-top: 18px;
+  }
+
+  .pillar-gold {
+    height: 95px;
+  }
+
+  .pillar-silver {
+    height: 75px;
+  }
+
+  .pillar-bronze {
+    height: 58px;
+  }
+
+  .pillar-rank-num {
+    font-size: 1.25rem;
+  }
+
+  .node-row-left { transform: translateX(10px); }
+  .node-row-right { transform: translateX(-10px); }
+
+  .mobile-pwa-bottom-bar {
+    left: 8px;
+    right: 8px;
+    bottom: 10px;
+    padding: 8px 10px;
+  }
+}
+
+
 
 
