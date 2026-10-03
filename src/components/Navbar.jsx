@@ -47,7 +47,7 @@ export const Navbar = () => {
         title="الانتقال للصفحة الرئيسية ومدرج الأوائل"
       >
         <div className="brand-logo-badge">
-          <img src="/app-logo.jpg" alt="Platform Logo" className="brand-logo-img" />
+          <img src={`${import.meta.env.BASE_URL}app-logo.jpg`} alt="Platform Logo" className="brand-logo-img" />
         </div>
         <div className="brand-title-wrap">
           <h1>{t('appTitle')}</h1>

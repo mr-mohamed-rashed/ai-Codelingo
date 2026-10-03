@@ -46,7 +46,7 @@ export const Footer = () => {
           <div className="footer-brand-title-wrap">
             <div className="footer-avatar-badge" title="منصة البرمجة والذكاء الاصطناعي">
               <img 
-                src="/app-logo.jpg" 
+                src={`${import.meta.env.BASE_URL}app-logo.jpg`} 
                 alt="Logo" 
                 className="footer-avatar-logo-img" 
               />
@@ -89,7 +89,7 @@ export const Footer = () => {
             >
               <div className="whatsapp-qr-image-frame">
                 <img 
-                  src="/whatsapp-qr.svg" 
+                  src={`${import.meta.env.BASE_URL}whatsapp-qr.svg`} 
                   alt="WhatsApp QR Code" 
                   className="whatsapp-qr-code-img" 
                 />

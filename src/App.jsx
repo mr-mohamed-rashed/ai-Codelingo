@@ -62,7 +62,7 @@ function MainAppContent() {
       {/* بصمة اللوجو المائية الكبيرة الثابتة خلف المحتوى */}
       <div className="platform-watermark-bg" aria-hidden="true">
         <img 
-          src="/app-logo.jpg" 
+          src={`${import.meta.env.BASE_URL}app-logo.jpg`} 
           alt="" 
           className="platform-watermark-img" 
         />
