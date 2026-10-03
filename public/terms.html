@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>شروط وضوابط الاستخدام | منصة كودلينجو - أ. محمد راشد</title>
+  <link rel="icon" type="image/jpeg" href="./app-logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card-bg: rgba(15, 23, 42, 0.85);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --accent: #38bdf8;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Alexandria', sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      padding: 30px 16px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 860px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px 32px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    @media (max-width: 640px) {
+      .container {
+        padding: 24px 18px;
+        border-radius: 18px;
+      }
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-badge {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      margin: 0 auto 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35);
+      border: 2px solid var(--primary-light);
+    }
+    .logo-badge img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .badge-tag {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 1.85rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+    .author-info {
+      font-size: 0.92rem;
+      color: var(--primary-light);
+      font-weight: 700;
+    }
+    .update-date {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+    .section {
+      margin-bottom: 28px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 22px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 12px;
+    }
+    .section-title span.num {
+      width: 28px;
+      height: 28px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 900;
+    }
+    p {
+      color: #cbd5e1;
+      font-size: 0.92rem;
+      margin-bottom: 10px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      position: relative;
+      padding-right: 22px;
+      margin-bottom: 8px;
+      font-size: 0.90rem;
+      color: #cbd5e1;
+    }
+    li::before {
+      content: "⚖";
+      position: absolute;
+      right: 0;
+      color: var(--accent);
+      font-size: 0.95rem;
+    }
+    .btn-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 12px 24px;
+      border-radius: 14px;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+      margin-top: 14px;
+      transition: transform 0.2s ease;
+    }
+    .btn-home:hover {
+      transform: translateY(-2px);
+    }
+    .footer-note {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-badge">
+        <img src="./app-logo.jpg" alt="Platform Logo">
+      </div>
+      <span class="badge-tag">وثيقة الشروط الأكاديمية الرسمية 2026</span>
+      <h1>شروط وضوابط استخدام المنصة التعليمية</h1>
+      <p class="author-info">منصة كودلينجو للبرمجة والذكاء الاصطناعي • إعداد وتأليف: الأستاذ محمد راشد</p>
+      <p class="update-date">سارية للعام الدراسي 2026</p>
+    </div>
+
+    <!-- 1. الموافقة والالتزام -->
+    <div class="section">
+      <h2 class="section-title">
+        <span class="num">1</span>
+        <span>الموافقة على الشروط والأحكام</span>
+      </h2>
+      <p>يعد استخدام المنصة أو إنشاء حساب فيها بمثابة موافقة كاملة وصريحة من الطالب وولي أمره على جميع الشروط واللوائح التنظيمية المنصوص عليها هنا، والتي تهدف لضمان أفضل تجربة تعليمية منضبطة وتفاعلية.</p>
+    </div>
+
+    <!-- 2. حقوق الملكية الفكرية -->
+    <div class="section">
+      <h2 class="section-title">
+        <span class="num">2</span>
+        <span>حقوق الملكية الفكرية للمحتوى التعليمي</span>
+      </h2>
+      <ul>
+        <li>جميع المذكرات، التمارين، الأسئلة التفاعلية، شروحات الذكاء الاصطناعي، ومحتوى الدروس هي ملكية فكرية حصرية ومسجلة باسم <strong>الأستاذ محمد راشد</strong>.</li>
+        <li>يُمنع منعاً باتاً تصوير أو نسخ أو إعادة توزيع أي جزء من المحتوى لأغراض تجارية أو نشرها على منصات أخرى دون إذن كتابي مسبق.</li>
+      </ul>
+    </div>
+
+    <!-- 3. حساب الطالب وقواعد الاستخدام -->
+    <div class="section">
+      <h2 class="section-title">
+        <span class="num">3</span>
+        <span>مسؤولية الحساب والنزاهة الأكاديمية</span>
+      </h2>
+      <ul>
+        <li>كل حساب مخصص لطالب واحد فقط، ويُحظر مشاركة بيانات الدخول مع أي شخص آخر لضمان دقة قياس مستوى الطالب.</li>
+        <li>الالتزام بحل الاختبارات بنفسه دون استخدام وسائل غير مشروعة لضمان تحقيق معيار الإتقان المطلوب (90%) والاستفادة الفعلية.</li>
+        <li>يحق لإدارة المنصة تعليق أي حساب يخالف قواعد النزاهة أو يحاول التلاعب بنظام النقاط ومدرج الأوائل.</li>
+      </ul>
+    </div>
+
+    <!-- 4. الدعم الفني والمتابعة -->
+    <div class="section">
+      <h2 class="section-title">
+        <span class="num">4</span>
+        <span>المتابعة والتواصل الأكاديمي</span>
+      </h2>
+      <p>تلتزم المنصة بتقديم الدعم الفني والأكاديمي المستمر للطلاب، مع تزويد ولي الأمر بتقرير دوري عن درجات الطالب ومدى التزامه بمسار المنهج المعتمد.</p>
+    </div>
+
+    <div style="text-align: center;">
+      <a href="./" class="btn-home">⬅ العودة إلى المنصة الرئيسية</a>
+    </div>
+
+    <div class="footer-note">
+      جميع الحقوق محفوظة © 2026 • إعداد وتدريس: أ. محمد راشد • منصة كودلينجو
+    </div>
+  </div>
+</body>
+</html>
