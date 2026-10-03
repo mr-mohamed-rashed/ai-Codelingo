@@ -5110,6 +5110,11 @@ body.theme-light .footer-nav-btn:hover {
   border-color: #94a3b8;
 }
 
+body.theme-light .footer-bottom-bar,
+html[data-theme='light'] .footer-bottom-bar {
+  border-top: 1.5px solid rgba(0, 0, 0, 0.12) !important;
+}
+
 body.theme-light .footer-bottom-admin-zone {
   background: #ffffff;
   border-color: #cbd5e1;
@@ -8479,33 +8484,412 @@ body.theme-light .student-station-tracker-banner {
   border-color: #c7d2fe;
 }
 
-@media (max-width: 640px) {
-  .podium-stage-container {
+/* =========================================================
+   COMPREHENSIVE MOBILE RESPONSIVE DESIGN (موبايل متجاوب 100%)
+   ========================================================= */
+@media (max-width: 768px) {
+  /* خلفية اللوجو المائية على الهواتف */
+  .platform-watermark-bg {
+    width: min(340px, 85vw);
+    height: min(340px, 85vw);
+    opacity: 0.08;
+  }
+
+  /* الشريط العلوي على الموبايل */
+  .app-navbar {
+    padding: 10px 12px;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+  }
+
+  .brand-section {
     gap: 8px;
   }
+
+  .brand-logo-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+
+  .brand-title-wrap h1 {
+    font-size: 0.90rem;
+    white-space: nowrap;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .nav-main-pages-links {
+    order: 2;
+    width: 100%;
+    justify-content: center;
+    margin: 2px 0 0;
+    padding: 3px;
+    background: rgba(15, 23, 42, 0.75);
+  }
+
+  .nav-page-tab-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+
+  .hud-stats-group {
+    order: 3;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 2px 2px;
+    border-top: 1px solid var(--border-glass);
+    gap: 4px;
+  }
+
+  .hud-stat-chip {
+    padding: 4px 6px;
+    font-size: 0.70rem;
+    gap: 3px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .navbar-controls-group {
+    gap: 6px;
+  }
+
+  .nav-capsule-btn {
+    padding: 5px 8px;
+  }
+
+  .capsule-label {
+    display: none;
+  }
+
+  .btn-nav-auth {
+    padding: 6px 10px;
+    font-size: 0.78rem;
+  }
+
+  .user-profile-info {
+    display: none;
+  }
+
+  /* الصفحة الرئيسية على الموبايل */
+  .home-standalone-page {
+    padding: 12px 10px 30px;
+    gap: 20px;
+  }
+
+  .home-hero-presentation {
+    padding: 20px 14px;
+    border-radius: 20px;
+  }
+
+  .home-hero-pill-tag {
+    font-size: 0.74rem;
+    padding: 5px 10px;
+    text-align: center;
+  }
+
+  .home-hero-main-title {
+    font-size: 1.38rem;
+    line-height: 1.35;
+  }
+
+  .home-hero-subtitle {
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  .home-student-portal-row {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .home-cta-primary-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 0.92rem;
+  }
+
+  .home-student-card {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .student-card-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  /* بطاقات المزايا الأربعة 2x2 متناسقة */
+  .home-features-pills-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    width: 100% !important;
+    margin-top: 14px;
+  }
+
+  .home-feature-pill {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 6px;
+    font-size: 0.74rem;
+    white-space: normal;
+    text-align: center;
+    gap: 6px;
+  }
+
+  /* مدرج الأوائل على الموبايل */
+  .home-podium-section {
+    padding: 0;
+    margin-bottom: 20px;
+  }
+
+  .leaderboard-podium-wrapper {
+    padding: 18px 10px;
+    border-radius: 20px;
+  }
+
+  .leaderboard-header-section {
+    margin-bottom: 24px;
+    gap: 12px;
+  }
+
+  .podium-main-heading {
+    font-size: 1.22rem;
+  }
+
+  .podium-subheading {
+    font-size: 0.76rem;
+    line-height: 1.45;
+  }
+
+  .podium-group-filters {
+    display: flex;
+    overflow-x: auto;
+    width: 100%;
+    justify-content: flex-start;
+    padding-bottom: 6px;
+    gap: 6px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .podium-group-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .podium-filter-chip {
+    flex-shrink: 0;
+    padding: 5px 10px;
+    font-size: 0.72rem;
+  }
+
+  .podium-stage-container {
+    gap: 6px;
+    padding-top: 24px;
+  }
+
   .podium-avatar {
-    width: 56px;
-    height: 56px;
+    width: 46px;
+    height: 46px;
   }
+
   .champion-avatar {
-    width: 68px;
-    height: 68px;
+    width: 60px;
+    height: 60px;
   }
+
+  .podium-crown-aura {
+    top: -26px;
+  }
+
   .pillar-gold {
-    height: 140px;
+    height: 120px;
   }
+
   .pillar-silver {
-    height: 105px;
+    height: 90px;
   }
+
   .pillar-bronze {
-    height: 80px;
+    height: 70px;
   }
+
   .pillar-rank-num {
-    font-size: 2rem;
+    font-size: 1.55rem;
   }
+
+  .pillar-label {
+    font-size: 0.70rem;
+  }
+
+  .podium-student-name {
+    font-size: 0.75rem;
+    max-width: 88px;
+  }
+
+  .champion-name {
+    font-size: 0.82rem;
+    max-width: 100px;
+  }
+
+  .podium-group-tag {
+    font-size: 0.65rem;
+    max-width: 88px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .podium-score-pill {
+    font-size: 0.68rem;
+    padding: 2px 5px;
+  }
+
+  /* جدول المتفوقين في الترتيب (المركز الرابع فما بعد) */
+  .runners-table-header {
+    display: none;
+  }
+
+  .runner-row-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .runner-profile-cell {
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .runner-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .runner-name {
+    font-size: 0.82rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+  }
+
+  .runner-group-badge {
+    display: none;
+  }
+
+  .runner-score-cell {
+    flex-shrink: 0;
+    font-size: 0.76rem;
+  }
+
+  /* الفوتر الأكاديمي على الموبايل */
+  .student-footer.modern-academic-footer {
+    margin-top: 36px;
+    padding: 28px 14px 16px;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .footer-top-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .footer-col-contact.footer-col-qr {
+    text-align: center;
+  }
+
+  .whatsapp-qr-card-link {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    justify-content: center;
+    padding: 14px;
+  }
+
+  .footer-bottom-bar {
+    margin-top: 22px;
+    padding-top: 16px;
+  }
+
+  .footer-bottom-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .footer-copyright-wrap {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* صفحة مسار المنهج على الموبايل */
+  .content-standalone-page {
+    padding: 12px 10px 40px;
+  }
+
+  .content-page-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .back-to-home-btn, .content-page-title-badge {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .chapter-path-header {
+    padding: 14px 12px;
+    border-radius: 18px;
+  }
+
+  .chapter-header-text h2 {
+    font-size: 1.05rem;
+  }
+
+  .node-title-label {
+    max-width: 140px;
+    font-size: 0.72rem;
+    padding: 4px 8px;
+  }
+
+  /* النوافذ المنبثقة على الموبايل */
+  .modal-overlay {
+    padding: 8px;
+  }
+
+  .modal-content-card,
+  .modal-card {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 18px;
+    padding: 18px 12px;
+    max-height: 92vh;
+  }
+
+  .auth-methods-nav {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .group-student-review-card {
     grid-template-columns: 1fr;
   }
+
   .answers-comparison-grid {
     grid-template-columns: 1fr;
   }
