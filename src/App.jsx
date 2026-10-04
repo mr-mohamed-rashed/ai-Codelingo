@@ -15,7 +15,8 @@ import {
   Phone,
   BookOpen,
   LogIn,
-  Settings
+  Settings,
+  ShieldAlert
 } from 'lucide-react';
 import { playSound } from './utils/audioEngine';
 
@@ -31,6 +32,53 @@ const TeacherLoginModal = lazy(() => import('./components/TeacherLoginModal'));
 const PrivacyPolicyModal = lazy(() => import('./components/PrivacyPolicyModal'));
 const TermsOfUseModal = lazy(() => import('./components/TermsOfUseModal'));
 const InstallGuideModal = lazy(() => import('./components/InstallGuideModal'));
+
+class DashboardErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error("Dashboard error caught by boundary:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="teacher-dashboard-overlay flex items-center justify-center p-6 text-center" style={{ minHeight: '80vh' }}>
+          <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-2xl max-w-lg border border-red-200 dark:border-red-900/50">
+            <div className="w-16 h-16 bg-red-100 dark:bg-red-950/60 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600 dark:text-red-400">
+              <ShieldAlert size={36} />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
+              تنبيه في لوحة التحكم
+            </h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+              حدث خطأ غير متوقع أثناء تحميل لوحة التحكم. يمكنك العودة للمنصة أو إعادة المحاولة بأمان.
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                className="duo-btn duo-btn-primary py-2 px-5"
+                onClick={() => {
+                  this.setState({ hasError: false, error: null });
+                  if (this.props.onReset) this.props.onReset();
+                }}
+              >
+                العودة للرئيسية 🏠
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function MainAppContent() {
   const { 
@@ -85,14 +133,16 @@ function MainAppContent() {
 
       {/* إذا كان في وضع لوحة تحكم الأستاذ */}
       {isTeacherMode ? (
-        <Suspense fallback={
-          <div className="lazy-suspense-container">
-            <div className="lazy-suspense-spinner" />
-            <span className="lazy-suspense-text">جاري تحميل لوحة المعلم...</span>
-          </div>
-        }>
-          <TeacherDashboard />
-        </Suspense>
+        <DashboardErrorBoundary onReset={() => setIsTeacherMode(false)}>
+          <Suspense fallback={
+            <div className="lazy-suspense-container">
+              <div className="lazy-suspense-spinner" />
+              <span className="lazy-suspense-text">جاري تحميل لوحة المعلم...</span>
+            </div>
+          }>
+            <TeacherDashboard />
+          </Suspense>
+        </DashboardErrorBoundary>
       ) : currentPage === 'home' ? (
         /* =========================================================
            الصفحة الرئيسية المستقلة (Standalone Home Page)

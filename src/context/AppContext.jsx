@@ -3,6 +3,7 @@ import { CURRICULUM_DATA, CHAPTERS_METADATA } from '../data/curriculumData';
 import { TRANSLATIONS } from '../data/translations';
 import { CURRICULUM_ENGLISH, getLocalizedChunk } from '../data/curriculumEnglish';
 import { playSound } from '../utils/audioEngine';
+import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
 
 const AppContext = createContext();
 // البريد الإلكتروني للماستر / السوبر أدمن الأساسي
@@ -575,6 +576,49 @@ export const AppProvider = ({ children }) => {
     return newStudent;
   };
 
+  // المزامنة التلقائية مع جلسة تسجيل الدخول السحابي (Google / Facebook / Phone عبر Supabase)
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    const handleOAuthUser = (user) => {
+      if (!user || !user.email) return;
+      const userEmail = user.email.toLowerCase();
+      const existing = students.find(s => s.email && s.email.toLowerCase() === userEmail);
+      if (existing) {
+        if (currentStudentId !== existing.id) {
+          setCurrentStudentId(existing.id);
+        }
+      } else {
+        const userName = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+        const userAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+        const provider = user.app_metadata?.provider || 'google';
+        registerNewStudent({
+          name: userName,
+          email: user.email,
+          avatar: userAvatar,
+          provider
+        });
+      }
+    };
+
+    // فحص الجلسة عند تحميل الصفحة (إذا عاد الطالب من صفحة Google / Facebook)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        handleOAuthUser(session.user);
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
+        handleOAuthUser(session.user);
+      }
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [isSupabaseConfigured, students, currentStudentId]);
+
   /**
    * تحديث وتعديل الملف الشخصي للطالب (الاسم، الصورة، رقم الهاتف، ورقم ولي الأمر)
    */
@@ -1017,12 +1061,6 @@ export const AppProvider = ({ children }) => {
         unlockEntireChapterForGroup,
         updateGroupHomeworkNote,
         isChunkHomework,
-        students,
-        currentStudent,
-        currentStudentId,
-        setCurrentStudentId,
-        isTeacherMode,
-        setIsTeacherMode,
         currentTermTooltip,
         setCurrentTermTooltip,
         pendingStudentsCount,

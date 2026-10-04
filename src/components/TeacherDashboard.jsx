@@ -44,7 +44,8 @@ import {
   MessageSquare,
   HelpCircle,
   FileQuestion,
-  Award
+  Award,
+  Zap
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { CHAPTERS_METADATA, CURRICULUM_DATA } from '../data/curriculumData';
@@ -273,23 +274,26 @@ export default function TeacherDashboard() {
     }
   };
 
-  // إحصائيات عامة وفلاتر لوحة التحكم
-  const totalGroups = groups.length;
-  const totalStudents = students.length;
-  const pendingStudents = students.filter(s => s.status === 'pending');
-  const approvedStudents = students.filter(s => s.status === 'approved');
-  const totalUnlockedAcrossGroups = Array.from(new Set(groups.flatMap(g => g.unlockedChunks || []))).length;
+  // إحصائيات عامة وفلاتر لوحة التحكم مع حماية قصوى ضد القيم الفارغة
+  const safeGroups = Array.isArray(groups) ? groups.filter(Boolean) : [];
+  const safeStudents = Array.isArray(students) ? students.filter(Boolean) : [];
+  const totalGroups = safeGroups.length;
+  const totalStudents = safeStudents.length;
+  const pendingStudents = safeStudents.filter(s => s?.status === 'pending');
+  const approvedStudents = safeStudents.filter(s => s?.status === 'approved');
+  const totalUnlockedAcrossGroups = Array.from(new Set(safeGroups.flatMap(g => (g?.unlockedChunks && Array.isArray(g.unlockedChunks)) ? g.unlockedChunks : []))).length;
 
-  const filteredGroups = groups.filter(g => 
-    g.name?.toLowerCase().includes(groupSearchQuery.toLowerCase()) || 
-    g.location?.toLowerCase().includes(groupSearchQuery.toLowerCase())
+  const filteredGroups = safeGroups.filter(g => 
+    (g.name || '').toLowerCase().includes(groupSearchQuery.toLowerCase()) || 
+    (g.location || '').toLowerCase().includes(groupSearchQuery.toLowerCase())
   );
 
-  const filteredStudents = students.filter(student => {
+  const filteredStudents = safeStudents.filter(student => {
+    if (!student) return false;
     const matchesSearch = 
-      student.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.phone?.includes(searchQuery) ||
-      student.email?.toLowerCase().includes(searchQuery.toLowerCase());
+      (student.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (student.phone || '').includes(searchQuery) ||
+      (student.email || '').toLowerCase().includes(searchQuery.toLowerCase());
     
     if (filterStatus === 'all') return matchesSearch;
     return matchesSearch && student.status === filterStatus;

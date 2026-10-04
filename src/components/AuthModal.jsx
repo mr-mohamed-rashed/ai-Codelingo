@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { playSound } from '../utils/audioEngine';
+import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
 
 export default function AuthModal({ initialMode = 'login' }) {
   const { 
@@ -129,10 +130,29 @@ export default function AuthModal({ initialMode = 'login' }) {
   };
 
   // تسجيل الدخول بحساب Google (جيميل)
-  const handleGoogleAuth = () => {
+  const handleGoogleAuth = async () => {
     playSound.click();
+    setErrorMessage('');
 
-    // فحص إذا كان Google Client ID مفعلاً في السيرفر أو البيئة
+    // 1. استخدام مزود Supabase السحابي المباشر (وهو الخيار الأساسي والأنظف)
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin + window.location.pathname
+          }
+        });
+        if (error) throw error;
+        return;
+      } catch (err) {
+        console.error('Supabase Google OAuth error:', err);
+        setErrorMessage(err.message || 'تعذر الاتصال بخدمة جوجل عبر Supabase');
+        return;
+      }
+    }
+
+    // 2. فحص إذا كان Google Client ID مفعلاً مباشرة في البيئة
     const googleClientId = import.meta.env?.VITE_GOOGLE_CLIENT_ID;
     if (googleClientId && window.google?.accounts?.oauth2) {
       try {
@@ -162,7 +182,7 @@ export default function AuthModal({ initialMode = 'login' }) {
       }
     }
 
-    // في بيئة التطوير المحلية قبل إدخال المفاتيح
+    // 3. في بيئة التطوير المحلية قبل إدخال المفاتيح
     const mockEmail = formData.email && formData.email.includes('@') 
       ? formData.email 
       : `student.${Math.floor(1000 + Math.random() * 9000)}@gmail.com`;
@@ -176,10 +196,29 @@ export default function AuthModal({ initialMode = 'login' }) {
   };
 
   // تسجيل الدخول عبر Facebook
-  const handleFacebookAuth = () => {
+  const handleFacebookAuth = async () => {
     playSound.click();
+    setErrorMessage('');
 
-    // فحص إذا كان Facebook App ID مفعلاً
+    // 1. استخدام مزود Supabase السحابي المباشر
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'facebook',
+          options: {
+            redirectTo: window.location.origin + window.location.pathname
+          }
+        });
+        if (error) throw error;
+        return;
+      } catch (err) {
+        console.error('Supabase Facebook OAuth error:', err);
+        setErrorMessage(err.message || 'تعذر الاتصال بخدمة فيسبوك عبر Supabase');
+        return;
+      }
+    }
+
+    // 2. فحص إذا كان Facebook App ID مفعلاً مباشرة
     const fbAppId = import.meta.env?.VITE_FACEBOOK_APP_ID;
     if (fbAppId && window.FB) {
       try {
@@ -202,7 +241,7 @@ export default function AuthModal({ initialMode = 'login' }) {
       }
     }
 
-    // في بيئة التطوير المحلية قبل إدخال المفاتيح
+    // 3. في بيئة التطوير المحلية قبل إدخال المفاتيح
     const fbEmail = `fb.user.${Math.floor(1000 + Math.random() * 9000)}@facebook.com`;
     handleOAuthProfileSuccess({
       name: '',
