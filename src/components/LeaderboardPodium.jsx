@@ -140,8 +140,18 @@ export const LeaderboardPodium = () => {
             </div>
           </div>
         ) : (
-          <div className="podium-slot empty-slot">
-            <div className="empty-pillar pillar-silver">2</div>
+          <div className="podium-slot rank-silver is-empty-placeholder">
+            <div className="podium-student-card">
+              <div className="podium-avatar-wrap silver-glow">
+                <div className="podium-avatar empty-avatar-box">🥈</div>
+              </div>
+              <h4 className="podium-student-name empty-name">{lang === 'en' ? 'Available' : 'متاح للتنافس'}</h4>
+              <span className="podium-group-tag empty-tag">{lang === 'en' ? 'Rank 2' : 'المركز الثاني'}</span>
+            </div>
+            <div className="podium-pillar pillar-silver">
+              <span className="pillar-rank-num">2</span>
+              <span className="pillar-rank-label">{lang === 'en' ? 'Silver' : 'فضي'}</span>
+            </div>
           </div>
         )}
 
@@ -180,8 +190,21 @@ export const LeaderboardPodium = () => {
             </div>
           </div>
         ) : (
-          <div className="podium-slot empty-slot">
-            <div className="empty-pillar pillar-gold">1</div>
+          <div className="podium-slot rank-gold is-champion is-empty-placeholder">
+            <div className="podium-crown-aura">
+              <Crown size={30} className="podium-crown-icon" />
+            </div>
+            <div className="podium-student-card champion-card">
+              <div className="podium-avatar-wrap gold-glow">
+                <div className="podium-avatar champion-avatar empty-avatar-box">🥇</div>
+              </div>
+              <h4 className="podium-student-name champion-name empty-name">{lang === 'en' ? 'Top Spot' : 'قمة المدرج'}</h4>
+              <span className="podium-group-tag empty-tag">{lang === 'en' ? 'Rank 1' : 'المركز الأول'}</span>
+            </div>
+            <div className="podium-pillar pillar-gold">
+              <span className="pillar-rank-num">1</span>
+              <span className="pillar-rank-label">{lang === 'en' ? 'Gold Champion' : 'المركز الذهبي'}</span>
+            </div>
           </div>
         )}
 
@@ -214,11 +237,32 @@ export const LeaderboardPodium = () => {
             </div>
           </div>
         ) : (
-          <div className="podium-slot empty-slot">
-            <div className="empty-pillar pillar-bronze">3</div>
+          <div className="podium-slot rank-bronze is-empty-placeholder">
+            <div className="podium-student-card">
+              <div className="podium-avatar-wrap bronze-glow">
+                <div className="podium-avatar empty-avatar-box">🥉</div>
+              </div>
+              <h4 className="podium-student-name empty-name">{lang === 'en' ? 'Available' : 'متاح للتنافس'}</h4>
+              <span className="podium-group-tag empty-tag">{lang === 'en' ? 'Rank 3' : 'المركز الثالث'}</span>
+            </div>
+            <div className="podium-pillar pillar-bronze">
+              <span className="pillar-rank-num">3</span>
+              <span className="pillar-rank-label">{lang === 'en' ? 'Bronze' : 'برونزي'}</span>
+            </div>
           </div>
         )}
       </div>
+
+      {rankedStudents.length === 0 && (
+        <div className="podium-empty-callout">
+          <Sparkles size={20} className="text-amber-400" />
+          <span>
+            {lang === 'en' 
+              ? 'The podium is ready! Be the first hero to start learning and claim the #1 rank!' 
+              : 'المدرج جاهز للأبطال! سجل الآن وابدأ المذاكرة لتكون أول من يعتلي قمة المدرج! 🚀'}
+          </span>
+        </div>
+      )}
 
       {/* قائمة باقي المتفوقين في الترتيب (المركز الرابع فما بعد) */}
       {remainingStudents.length > 0 && (

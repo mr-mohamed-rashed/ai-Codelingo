@@ -20,7 +20,7 @@ export const INITIAL_ADMINS = [
   }
 ];
 
-// بيانات المجموعات الدراسية الافتراضية
+// بيانات المجموعات الدراسية (خالية من أي حسابات وهمية)
 export const INITIAL_GROUPS = [
   {
     id: "grp-1",
@@ -28,7 +28,7 @@ export const INITIAL_GROUPS = [
     schedule: "الأحد والثلاثاء (5:00 - 7:00 م)",
     location: "سنتر الأوائل - الدقي",
     color: "#6366f1",
-    studentIds: ["std-002", "std-004", "std-001"],
+    studentIds: [],
     unlockedChunks: ["ch1-l1-c1", "ch1-l1-c2", "ch1-l1-c3", "ch1-l1-c4", "ch1-l1-exam"],
     homeworkChunks: ["ch1-l1-c2", "ch1-l1-c3"],
     homeworkNote: "واجب الحصة الأولى: مراجعة بطاقات شرح قانون مور وحل بنك الأسئلة بالكامل وتحقيق 90% فما فوق."
@@ -39,229 +39,16 @@ export const INITIAL_GROUPS = [
     schedule: "السبت والأربعاء (7:00 - 9:00 م)",
     location: "سنتر المتفوقين - مدينة نصر",
     color: "#10b981",
-    studentIds: ["std-005", "std-006"],
+    studentIds: [],
     unlockedChunks: ["ch1-l1-c1", "ch1-l1-c2"],
     homeworkChunks: ["ch1-l1-c1"],
     homeworkNote: "واجب تمهيدي: استيعاب المراحل الخمس للحوسبة والتفوق في اختبار الفقرة."
   }
 ];
 
-// بيانات افتراضية أولية للطلاب المسجلين مع تصنيف المراكز والمحطة الحالية وسجل الأخطاء
-export const INITIAL_STUDENTS = [
-  {
-    id: "std-002",
-    name: "سارة محمود إبراهيم",
-    phone: "01198765432",
-    email: "sara.mahmoud@gmail.com",
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Sara",
-    status: "approved",
-    joinDate: "2026-09-29",
-    groupId: "grp-1",
-    xp: 540,
-    stars: 14,
-    streak: 7,
-    completedChunks: ["ch1-l1-c1", "ch1-l1-c2", "ch1-l1-c3", "ch1-l1-c4", "ch1-l1-exam"],
-    chunkRatings: {
-      "ch1-l1-c1": { stars: 3, fullScore: true },
-      "ch1-l1-c2": { stars: 3, fullScore: true },
-      "ch1-l1-c3": { stars: 3, fullScore: true },
-      "ch1-l1-c4": { stars: 3, fullScore: true },
-      "ch1-l1-exam": { stars: 3, fullScore: true }
-    },
-    trophies: ["ch1-l1-exam"],
-    currentStation: "الدرس 1-2: شبكات الجيل الخامس ومستقبل إنترنت الأشياء",
-    wrongAnswers: [], // متفوقة بدون أخطاء
-    allowedCurriculum: {
-      chapters: [1, 2, 3, 4],
-      lessons: ["1-1", "1-2", "1-3", "1-4", "2-1", "2-2", "2-3", "3-1", "3-2", "3-3", "4-1", "4-2", "4-3", "4-4"],
-      chunks: []
-    }
-  },
-  {
-    id: "std-004",
-    name: "أحمد مصطفى كامل",
-    phone: "01099887766",
-    email: "ahmed.mostafa@gmail.com",
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=AhmedM",
-    status: "approved",
-    joinDate: "2026-09-27",
-    groupId: "grp-1",
-    xp: 450,
-    stars: 11,
-    streak: 5,
-    completedChunks: ["ch1-l1-c1", "ch1-l1-c2", "ch1-l1-c3", "ch1-l1-c4"],
-    chunkRatings: {
-      "ch1-l1-c1": { stars: 3, fullScore: true },
-      "ch1-l1-c2": { stars: 3, fullScore: true },
-      "ch1-l1-c3": { stars: 2, fullScore: false },
-      "ch1-l1-c4": { stars: 3, fullScore: true }
-    },
-    trophies: [],
-    currentStation: "الدرس 1-1: الاختبار الختامي الشامل للدرس",
-    wrongAnswers: [
-      {
-        id: "err-101",
-        questionId: "q1",
-        questionText: "ما هو النص العلمي الدقيق لقانون مور (Moore's Law) فيما يتعلق بمعدل مضاعفة الترانزستورات؟",
-        selectedAnswerText: "يتضاعف عدد الترانزستورات على شريحة السيليكون كل 6 أشهر وتتضاعف التكلفة.",
-        correctAnswerText: "يتضاعف عدد الترانزستورات على شريحة المعالج كل سنتين تقريباً مع انخفاض التكلفة.",
-        explanation: "قانون مور ينص على مضاعفة كثافة الترانزستورات كل عامين تقريباً (أو 18-24 شهراً) بالتوازي مع انخفاض التكلفة وزيادة كفاءة المعالجة.",
-        chunkId: "ch1-l1-c2",
-        chunkTitle: "قانون مور والدوائر المتكاملة",
-        lessonTitle: "تطور تكنولوجيا المعلومات والتقنيات الناشئة",
-        timestamp: "2026-10-02 18:30",
-        attemptsCount: 2
-      }
-    ],
-    allowedCurriculum: {
-      chapters: [1, 2, 3, 4],
-      lessons: ["1-1", "1-2", "1-3", "1-4"],
-      chunks: []
-    }
-  },
-  {
-    id: "std-001",
-    name: "عمر أحمد عبد الرحمن",
-    phone: "01012345678",
-    email: "omar.ahmed@gmail.com",
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Omar",
-    status: "approved",
-    joinDate: "2026-09-28",
-    groupId: "grp-1",
-    xp: 380,
-    stars: 9,
-    streak: 4,
-    completedChunks: ["ch1-l1-c1", "ch1-l1-c2", "ch1-l1-c3"],
-    chunkRatings: {
-      "ch1-l1-c1": { stars: 3, fullScore: true },
-      "ch1-l1-c2": { stars: 3, fullScore: true },
-      "ch1-l1-c3": { stars: 3, fullScore: true }
-    },
-    trophies: [],
-    currentStation: "الدرس 1-1: الحوسبة الكمية والتشفير الكمي",
-    wrongAnswers: [
-      {
-        id: "err-201",
-        questionId: "q1",
-        questionText: "ما هو الترتيب الزمني الصحيح لمراحل تطور تكنولوجيا المعلومات في كتاب الوزارة ص 9؟",
-        selectedAnswerText: "ظهور الحاسب ← الهواتف الذكية ← تسويق الإنترنت ← الحوسبة السحابية",
-        correctAnswerText: "ظهور الحاسب ← تسويق الإنترنت تجارياً ← الهواتف الذكية ← انتشار الحوسبة السحابية",
-        explanation: "الترتيب المعتمد: الحواسيب في الأربعينيات، ثم الإنترنت في التسعينيات، ثم الهواتف في الألفية، ثم الحوسبة السحابية.",
-        chunkId: "ch1-l1-c1",
-        chunkTitle: "المراحل الخمس التاريخية لتطور الحوسبة",
-        lessonTitle: "تطور تكنولوجيا المعلومات والتقنيات الناشئة",
-        timestamp: "2026-10-01 16:45",
-        attemptsCount: 1
-      },
-      {
-        id: "err-202",
-        questionId: "q3",
-        questionText: "ما الميزة الثورية التي تجعل البت الكمي (Qubit) يتفوق على البت التقليدي (Bit)؟",
-        selectedAnswerText: "البت الكمي يخزن فقط القيمة صفر أو واحد ولكن بسرعة كهربائية مضاعفة.",
-        correctAnswerText: "خاصية التراكب الكمي (Superposition) التي تمكنه من تمثيل الحالتين 0 و 1 معاً في نفس اللحظة.",
-        explanation: "البت الكمي يستغل ظاهرة التراكب الكمي، مما يسمح للحاسوب بمعالجة كم هائل من الاحتمالات والعمليات المعقدة بالتوازي.",
-        chunkId: "ch1-l1-c3",
-        chunkTitle: "الحوسبة الكمية والتشفير الكمي",
-        lessonTitle: "تطور تكنولوجيا المعلومات والتقنيات الناشئة",
-        timestamp: "2026-10-02 20:10",
-        attemptsCount: 2
-      }
-    ],
-    allowedCurriculum: {
-      chapters: [1, 2, 3, 4],
-      lessons: ["1-1", "1-2", "1-3", "1-4", "2-1", "2-2", "2-3", "3-1", "3-2", "3-3", "4-1", "4-2", "4-3", "4-4"],
-      chunks: []
-    }
-  },
-  {
-    id: "std-005",
-    name: "مريم حسام الدين",
-    phone: "01551234567",
-    email: "mariam.hossam@gmail.com",
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Mariam",
-    status: "approved",
-    joinDate: "2026-09-30",
-    groupId: "grp-2",
-    xp: 310,
-    stars: 7,
-    streak: 3,
-    completedChunks: ["ch1-l1-c1", "ch1-l1-c2"],
-    chunkRatings: {
-      "ch1-l1-c1": { stars: 3, fullScore: true },
-      "ch1-l1-c2": { stars: 2, fullScore: false }
-    },
-    trophies: [],
-    currentStation: "الدرس 1-1: الحوسبة الكمية والتشفير الكمي",
-    wrongAnswers: [
-      {
-        id: "err-301",
-        questionId: "q2_alt",
-        questionText: "في أي عقد زمني بدأت الحوسبة السحابية وثورة البيانات الضخمة (المحطة الخامسة)؟",
-        selectedAnswerText: "في تسعينيات القرن العشرين مع انتشار شبكة الويب العالمية.",
-        correctAnswerText: "من العقد الثاني من الألفية (بعد 2010) فصاعداً كخدمات سحابية مدارة.",
-        explanation: "المحطة الخامسة انطلقت بقوة في العقد الثاني من الألفية (بعد 2010)، بينما التسعينيات كانت للمحطة الثالثة (الإنترنت التجاري).",
-        chunkId: "ch1-l1-c1",
-        chunkTitle: "المراحل الخمس التاريخية لتطور الحوسبة",
-        lessonTitle: "تطور تكنولوجيا المعلومات والتقنيات الناشئة",
-        timestamp: "2026-10-02 14:15",
-        attemptsCount: 1
-      }
-    ],
-    allowedCurriculum: {
-      chapters: [1],
-      lessons: ["1-1"],
-      chunks: ["ch1-l1-c1", "ch1-l1-c2", "ch1-l1-c3"]
-    }
-  },
-  {
-    id: "std-006",
-    name: "يوسف خالد نور",
-    phone: "01122334455",
-    email: "youssef.khaled@gmail.com",
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Youssef",
-    status: "approved",
-    joinDate: "2026-10-01",
-    groupId: "grp-2",
-    xp: 220,
-    stars: 5,
-    streak: 2,
-    completedChunks: ["ch1-l1-c1"],
-    chunkRatings: {
-      "ch1-l1-c1": { stars: 3, fullScore: true }
-    },
-    trophies: [],
-    currentStation: "الدرس 1-1: قانون مور ومعدل مضاعفة الترانزستورات",
-    wrongAnswers: [],
-    allowedCurriculum: {
-      chapters: [1],
-      lessons: ["1-1"],
-      chunks: ["ch1-l1-c1", "ch1-l1-c2"]
-    }
-  },
-  {
-    id: "std-003",
-    name: "كريم طارق الشناوي",
-    phone: "01234567890",
-    email: "kareem.tarek@gmail.com",
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Kareem",
-    status: "pending",
-    joinDate: "2026-10-02",
-    groupId: null, // في انتظار تصريح الأستاذ وتحديد المجموعة
-    xp: 0,
-    stars: 0,
-    streak: 1,
-    completedChunks: [],
-    chunkRatings: {},
-    trophies: [],
-    currentStation: "في انتظار تصريح المعلم وتحديد المجموعة",
-    wrongAnswers: [],
-    allowedCurriculum: {
-      chapters: [],
-      lessons: [],
-      chunks: []
-    }
-  }
-];
+// قائمة الطلاب المعتمدة - تبدأ فارغة تماماً دون أي حسابات افتراضية
+export const INITIAL_STUDENTS = [];
+
 
 export const AppProvider = ({ children }) => {
   // Theme state: 'light' | 'dark' (المود الأساسي هو اللايت Light)
@@ -360,13 +147,20 @@ export const AppProvider = ({ children }) => {
   }, [lang]);
 
   // حفظ واسترجاع بيانات الطلاب من التخزين المحلي (نسخة v3 المحدثة مع سجل الأخطاء والمراكز)
+  // حفظ واسترجاع بيانات الطلاب من التخزين المحلي (نسخة نظيفة خالية من الحسابات الوهمية)
   const [students, setStudents] = useState(() => {
     try {
-      const saved = localStorage.getItem('agy_students_list_v3');
+      // إزالة ومسح أي نسخ قديمة من التخزين كانت تحتوي على حسابات افتراضية
+      localStorage.removeItem('agy_students_list_v3');
+      localStorage.removeItem('agy_students_list_v2');
+      localStorage.removeItem('agy_students_list');
+
+      const saved = localStorage.getItem('agy_students_clean_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= 3 && parsed[0]?.wrongAnswers !== undefined) {
-          return parsed;
+        if (Array.isArray(parsed)) {
+          // استبعاد أي حسابات تجريبية قديمة تبدأ بـ std-00
+          return parsed.filter(s => s && !String(s.id).startsWith('std-00'));
         }
       }
     } catch (e) {
@@ -378,7 +172,8 @@ export const AppProvider = ({ children }) => {
   // حفظ واسترجاع بيانات المجموعات الدراسية
   const [groups, setGroups] = useState(() => {
     try {
-      const saved = localStorage.getItem('agy_groups_list_v3');
+      localStorage.removeItem('agy_groups_list_v3');
+      const saved = localStorage.getItem('agy_groups_clean_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -388,17 +183,22 @@ export const AppProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem('agy_groups_list_v3', JSON.stringify(groups));
+    localStorage.setItem('agy_groups_clean_v1', JSON.stringify(groups));
   }, [groups]);
 
   // تحديث التخزين المحلي عند تغيير بيانات الطلاب
   useEffect(() => {
-    localStorage.setItem('agy_students_list_v3', JSON.stringify(students));
+    localStorage.setItem('agy_students_clean_v1', JSON.stringify(students));
   }, [students]);
 
-  // الطالب الحالي المسجل دخوله (افتراضياً null لطلب تسجيل الدخول)
+  // الطالب الحالي المسجل دخوله (إذا كان حساباً وهمياً يتم مسحه فوراً لطلب الدخول الفعلي)
   const [currentStudentId, setCurrentStudentId] = useState(() => {
-    return localStorage.getItem('agy_current_student_id') || null;
+    const savedId = localStorage.getItem('agy_current_student_id');
+    if (savedId && String(savedId).startsWith('std-00')) {
+      localStorage.removeItem('agy_current_student_id');
+      return null;
+    }
+    return savedId || null;
   });
 
   // الصفحة المعروضة الحالية: 'home' (الرئيسية ومدرج الأوائل) أو 'content' (صفحة المحتوى ومسار التعلم)
