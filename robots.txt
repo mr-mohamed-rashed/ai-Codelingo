@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://mr-mohamed-rashed.github.io/ai-Codelingo/sitemap.xml
+Sitemap: https://ai-codelingo.pages.dev/sitemap.xml

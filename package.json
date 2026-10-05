@@ -1,0 +1,9 @@
+{
+  "name": "ai-codelingo-static",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pre-built production assets for CodeLingo",
+  "scripts": {
+    "build": "echo 'Static production assets ready'"
+  }
+}
