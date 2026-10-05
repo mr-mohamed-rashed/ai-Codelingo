@@ -138,7 +138,12 @@ export default function TeacherDashboard() {
 
   // الطالب النشط المحدد للتخصيص الفردي - متصل مباشرة بالحالة العامة لضمان عدم حدوث أي تجمد في الواجهة
   const activeCurriculumStudent = selectedStudentIdForCurriculum 
-    ? (students.find(s => s.id === selectedStudentIdForCurriculum) || null) 
+    ? (safeStudents.find(s => s?.id === selectedStudentIdForCurriculum) || null) 
+    : null;
+
+  // المجموعة النشطة المحددة لتخصيص المنهج والواجب للمجموعة
+  const activeSelectedGroup = selectedGroupForCurriculum 
+    ? (safeGroups.find(g => g?.id === selectedGroupForCurriculum.id) || selectedGroupForCurriculum) 
     : null;
 
   const toggleChapterExpand = (chapterId) => {
@@ -488,8 +493,8 @@ export default function TeacherDashboard() {
             ) : (
               <div className="groups-cards-grid">
                 {filteredGroups.map((group) => {
-                  const groupStudents = students.filter(s => 
-                    s.groupId === group.id || (group.studentIds && group.studentIds.includes(s.id))
+                  const groupStudents = safeStudents.filter(s => 
+                    s && (s.groupId === group.id || (Array.isArray(group.studentIds) && group.studentIds.includes(s.id)))
                   );
                   const unlockedCount = group.unlockedChunks?.length || 0;
                   const homeworkCount = group.homeworkChunks?.length || 0;

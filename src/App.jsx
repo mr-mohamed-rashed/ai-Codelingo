@@ -58,9 +58,14 @@ class DashboardErrorBoundary extends React.Component {
             <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
               تنبيه في لوحة التحكم
             </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mb-6 leading-relaxed">
+            <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">
               حدث خطأ غير متوقع أثناء تحميل لوحة التحكم. يمكنك العودة للمنصة أو إعادة المحاولة بأمان.
             </p>
+            {this.state.error?.message && (
+              <div className="bg-red-50 dark:bg-red-950/40 p-2.5 rounded-lg mb-4 text-xs font-mono text-red-600 dark:text-red-300 overflow-x-auto text-left" dir="ltr">
+                {this.state.error.message}
+              </div>
+            )}
             <div className="flex gap-3 justify-center">
               <button
                 className="duo-btn duo-btn-primary py-2 px-5"
