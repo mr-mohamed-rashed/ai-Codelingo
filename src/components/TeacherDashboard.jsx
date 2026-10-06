@@ -132,6 +132,26 @@ export default function TeacherDashboard() {
     setTimeout(() => setOauthSaveSuccess(false), 3000);
   };
 
+  // حالة إظهار/قفل تفاصيل بطاقات المشرفين بـ "العين" (الأساسي مقفول افتراضياً)
+  const [revealedAdminCards, setRevealedAdminCards] = useState({});
+  const [revealedPasswords, setRevealedPasswords] = useState({});
+
+  const toggleAdminCardDetails = (adminId) => {
+    setRevealedAdminCards(prev => ({
+      ...prev,
+      [adminId]: !prev[adminId]
+    }));
+    playSound.click();
+  };
+
+  const toggleAdminPassword = (adminId) => {
+    setRevealedPasswords(prev => ({
+      ...prev,
+      [adminId]: !prev[adminId]
+    }));
+    playSound.click();
+  };
+
   // فلاتر وبحث
   const [searchQuery, setSearchQuery] = useState('');
   const [groupSearchQuery, setGroupSearchQuery] = useState('');
@@ -624,9 +644,9 @@ export default function TeacherDashboard() {
                       </div>
 
                       {/* أزرار العمليات للمجموعة */}
-                      <div className="group-actions-row flex gap-2">
+                      <div className="group-actions-row">
                         <button 
-                          className="duo-btn duo-btn-success flex-1 py-2.5 px-2 flex items-center justify-center gap-1.5 text-sm"
+                          className="duo-btn duo-btn-success"
                           onClick={() => {
                             setSelectedGroupForReview(group);
                             playSound.click();
@@ -638,7 +658,7 @@ export default function TeacherDashboard() {
                         </button>
 
                         <button 
-                          className="duo-btn duo-btn-primary flex-1 py-2.5 px-2 flex items-center justify-center gap-1.5 text-sm"
+                          className="duo-btn duo-btn-primary"
                           onClick={() => handleOpenGroupCurriculum(group)}
                         >
                           <Sliders size={16} />
@@ -991,38 +1011,91 @@ export default function TeacherDashboard() {
                       className={`admin-card-item ${isThisMaster ? 'is-master-card' : ''}`}
                     >
                       <div className="admin-card-header">
-                        <div className="admin-avatar-box">
-                          {isThisMaster ? '👑' : '🛡️'}
+                        <div className="admin-header-main-info flex items-center gap-3">
+                          <div className="admin-avatar-box">
+                            {isThisMaster ? '👑' : '🛡️'}
+                          </div>
+                          <div className="admin-header-titles">
+                            <h4 className="admin-name">{admin.name}</h4>
+                            <span className={`admin-role-badge ${isThisMaster ? 'badge-super' : 'badge-staff'}`}>
+                              {isThisMaster 
+                                ? (lang === 'en' ? 'Super Admin (Master)' : 'سوبر أدمن • الماستر') 
+                                : (lang === 'en' ? 'Assistant Admin' : 'مشرف معتمد')
+                              }
+                            </span>
+                          </div>
                         </div>
-                        <div className="admin-header-titles">
-                          <h4 className="admin-name">{admin.name}</h4>
-                          <span className={`admin-role-badge ${isThisMaster ? 'badge-super' : 'badge-staff'}`}>
-                            {isThisMaster 
-                              ? (lang === 'en' ? 'Super Admin (Master)' : 'سوبر أدمن • الماستر') 
-                              : (lang === 'en' ? 'Assistant Admin' : 'مشرف معتمد')
-                            }
-                          </span>
-                        </div>
+                        {/* زر العين لقفل وفتح تفاصيل البطاقة وكلمة المرور */}
+                        <button
+                          type="button"
+                          className={`btn-card-eye-toggle ${revealedAdminCards[admin.id] ? 'is-active' : ''}`}
+                          onClick={() => toggleAdminCardDetails(admin.id)}
+                          title={revealedAdminCards[admin.id] ? (lang === 'en' ? 'Lock & hide credentials' : 'قفل المكان وإخفاء البيانات') : (lang === 'en' ? 'Unlock & show credentials' : 'فتح المكان وإظهار البيانات')}
+                        >
+                          {revealedAdminCards[admin.id] ? <EyeOff size={18} /> : <Eye size={18} />}
+                        </button>
                       </div>
 
-                      <div className="admin-card-details">
-                        <div className="admin-detail-line">
-                          <Mail size={14} className="text-indigo-400" />
-                          <span className="font-mono text-xs">{admin.email}</span>
+                      {/* المكان ده: مغلق افتراضياً بالعين، ويفتح عند النقر */}
+                      {revealedAdminCards[admin.id] ? (
+                        <div className="admin-card-details animate-fade-in">
+                          <div className="admin-detail-line">
+                            <Mail size={14} className="text-indigo-400" />
+                            <span className="font-mono text-xs">{admin.email}</span>
+                          </div>
+                          <div className="admin-detail-line password-detail-line flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                              <KeyRound size={14} className="text-emerald-400" />
+                              <span className="text-xs text-slate-300">
+                                {lang === 'en' ? 'Password:' : 'كلمة المرور:'}{' '}
+                                <span className="font-mono text-emerald-400 font-bold tracking-wider">
+                                  {revealedPasswords[admin.id] ? admin.password : '••••••••••••'}
+                                </span>
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              className="btn-inner-eye-pw"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleAdminPassword(admin.id);
+                              }}
+                              title={revealedPasswords[admin.id] ? (lang === 'en' ? 'Hide password' : 'إخفاء كلمة المرور') : (lang === 'en' ? 'Show password' : 'إظهار كلمة المرور')}
+                            >
+                              {revealedPasswords[admin.id] ? <EyeOff size={13} /> : <Eye size={13} />}
+                              <span>{revealedPasswords[admin.id] ? (lang === 'en' ? 'Hide' : 'إخفاء') : (lang === 'en' ? 'Show' : 'إظهار')}</span>
+                            </button>
+                          </div>
+                          <div className="admin-detail-line">
+                            <Clock size={14} className="text-slate-400" />
+                            <span className="text-xs text-slate-400">
+                              {lang === 'en' ? 'Created:' : 'تاريخ الإنشاء:'} {admin.createdAt || '2026-09-01'}
+                            </span>
+                          </div>
                         </div>
-                        <div className="admin-detail-line">
-                          <KeyRound size={14} className="text-emerald-400" />
-                          <span className="text-xs text-slate-300">
-                            {lang === 'en' ? 'Password:' : 'كلمة المرور:'} <span className="font-mono text-emerald-400 font-bold">{admin.password}</span>
+                      ) : (
+                        <div 
+                          className="admin-card-details-closed"
+                          onClick={() => toggleAdminCardDetails(admin.id)}
+                          title={lang === 'en' ? 'Click to show account details and password' : 'اضغط لإظهار بيانات الحساب وكلمة المرور'}
+                        >
+                          <div className="closed-icon-badge">
+                            <EyeOff size={16} />
+                          </div>
+                          <div className="closed-text-col">
+                            <span className="closed-title">
+                              {lang === 'en' ? 'Account Details & Password Protected' : 'بيانات الحساب وكلمة المرور مقفولة'}
+                            </span>
+                            <span className="closed-subtitle">
+                              {lang === 'en' ? 'Click eye icon or card to view' : 'اضغط على العين بالأعلى أو هنا لفتح العرض 👁️'}
+                            </span>
+                          </div>
+                          <span className="btn-open-eye-pill">
+                            <Eye size={13} />
+                            <span>{lang === 'en' ? 'View' : 'فتح'}</span>
                           </span>
                         </div>
-                        <div className="admin-detail-line">
-                          <Clock size={14} className="text-slate-400" />
-                          <span className="text-xs text-slate-400">
-                            {lang === 'en' ? 'Created:' : 'تاريخ الإنشاء:'} {admin.createdAt || '2026-09-01'}
-                          </span>
-                        </div>
-                      </div>
+                      )}
 
                       <div className="admin-card-footer">
                         {isThisMaster ? (

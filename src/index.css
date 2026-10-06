@@ -2177,6 +2177,41 @@ input:checked + .slider:before {
   margin: 0;
 }
 
+/* Group Actions Row (أزرار عمليات المجموعة بدون تلاصق) */
+.group-actions-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.group-actions-row .duo-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  white-space: nowrap;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 580px) {
+  .group-actions-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .group-actions-row .duo-btn {
+    width: 100%;
+  }
+}
+
 /* Group Homework Editor inside Modal */
 .group-hw-note-editor {
   background: rgba(15, 23, 42, 0.6);
@@ -4682,6 +4717,73 @@ html[dir='ltr'] .teacher-remember-checkbox-label {
 }
 
 /* =========================================================
+   TEACHER DASHBOARD HEADER & ACTIONS SPACING (منع تلاصق أزرار الهيدر)
+   ========================================================= */
+.teacher-header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-xl);
+  padding: 22px 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.teacher-header-title-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.teacher-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.teacher-header-actions .admin-user-hud-badge {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.teacher-header-actions .duo-btn {
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .teacher-header-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px 20px;
+    gap: 16px;
+  }
+  .teacher-header-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+  }
+  .teacher-header-actions .admin-user-hud-badge {
+    width: 100%;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+  .teacher-header-actions .duo-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* =========================================================
    ADMIN USER HUD BADGE IN TEACHER DASHBOARD
    ========================================================= */
 .admin-user-hud-badge {
@@ -4832,7 +4934,43 @@ html[dir='ltr'] .admin-hud-info {
 .admin-card-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
+}
+
+.admin-header-main-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.btn-card-eye-toggle {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94a3b8;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-card-eye-toggle:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.4);
+  color: #818cf8;
+  transform: scale(1.05);
+}
+
+.btn-card-eye-toggle.is-active {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #34d399;
 }
 
 .admin-avatar-box {
@@ -4891,6 +5029,105 @@ html[dir='ltr'] .admin-hud-info {
   padding: 12px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* الحالة المقفولة الافتراضية (الأساسي مقفول بالعين) */
+.admin-card-details-closed {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1.5px dashed rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.admin-card-details-closed:hover {
+  background: rgba(30, 41, 59, 0.75);
+  border-color: rgba(99, 102, 241, 0.5);
+  transform: translateY(-1px);
+}
+
+.closed-icon-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.closed-text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  text-align: right;
+}
+
+html[dir="ltr"] .closed-text-col {
+  text-align: left;
+}
+
+.closed-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.closed-subtitle {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.btn-open-eye-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: 999px;
+  color: #a5b4fc;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* زر إظهار/إخفاء كلمة المرور الداخلي */
+.btn-inner-eye-pw {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94a3b8;
+  border-radius: 6px;
+  padding: 3px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.btn-inner-eye-pw:hover {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.password-detail-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .admin-detail-line {
