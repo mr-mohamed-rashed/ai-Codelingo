@@ -1,7 +1,9 @@
 {
-  "name": "ai-codelingo-pages",
+  "name": "ai-codelingo-static",
   "version": "1.0.0",
+  "private": true,
+  "description": "Pre-built production assets for CodeLingo",
   "scripts": {
-    "build": "echo Pre-built static site ready"
+    "build": "node -e \"const fs=require('fs'); if(!fs.existsSync('dist')) fs.mkdirSync('dist'); fs.readdirSync('.').forEach(f=>{ if(f!=='dist'&&f!=='node_modules'&&f!=='.git') try { fs.cpSync(f,'dist/'+f,{recursive:true}); } catch(e){} }); console.log('dist output directory generated successfully');\""
   }
 }
