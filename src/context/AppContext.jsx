@@ -525,6 +525,60 @@ export const AppProvider = ({ children }) => {
   };
 
   /**
+   * قفل جميع فقرات فصل كامل لمجموعة دفعة واحدة
+   */
+  const lockEntireChapterForGroup = (groupId, chapterId) => {
+    const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapterId);
+    const chunkIds = new Set(chapterChunks.map(c => c.id));
+
+    setGroups(prev => prev.map(g => {
+      if (g.id !== groupId) return g;
+      return {
+        ...g,
+        unlockedChunks: (g.unlockedChunks || []).filter(id => !chunkIds.has(id)),
+        homeworkChunks: (g.homeworkChunks || []).filter(id => !chunkIds.has(id))
+      };
+    }));
+    playSound.click();
+  };
+
+  /**
+   * فتح جميع فقرات درس معين لمجموعة دفعة واحدة
+   */
+  const unlockEntireLessonForGroup = (groupId, lessonId) => {
+    const lessonChunks = CURRICULUM_DATA.filter(c => c.lessonId === lessonId);
+    const chunkIds = lessonChunks.map(c => c.id);
+
+    setGroups(prev => prev.map(g => {
+      if (g.id !== groupId) return g;
+      const updatedUnlocked = Array.from(new Set([...(g.unlockedChunks || []), ...chunkIds]));
+      return {
+        ...g,
+        unlockedChunks: updatedUnlocked
+      };
+    }));
+    playSound.levelUp();
+  };
+
+  /**
+   * قفل جميع فقرات درس معين لمجموعة دفعة واحدة
+   */
+  const lockEntireLessonForGroup = (groupId, lessonId) => {
+    const lessonChunks = CURRICULUM_DATA.filter(c => c.lessonId === lessonId);
+    const chunkIds = new Set(lessonChunks.map(c => c.id));
+
+    setGroups(prev => prev.map(g => {
+      if (g.id !== groupId) return g;
+      return {
+        ...g,
+        unlockedChunks: (g.unlockedChunks || []).filter(id => !chunkIds.has(id)),
+        homeworkChunks: (g.homeworkChunks || []).filter(id => !chunkIds.has(id))
+      };
+    }));
+    playSound.click();
+  };
+
+  /**
    * تحديث ملاحظات وتوجيهات الواجب المنزلي للمجموعة
    */
   const updateGroupHomeworkNote = (groupId, note) => {
@@ -1080,6 +1134,9 @@ export const AppProvider = ({ children }) => {
         assignStudentToGroup,
         toggleGroupChunk,
         unlockEntireChapterForGroup,
+        lockEntireChapterForGroup,
+        unlockEntireLessonForGroup,
+        lockEntireLessonForGroup,
         updateGroupHomeworkNote,
         isChunkHomework,
         currentTermTooltip,
