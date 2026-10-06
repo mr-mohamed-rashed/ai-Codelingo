@@ -1750,7 +1750,7 @@ export default function TeacherDashboard() {
       {/* ========================================================= */}
       {activeCurriculumStudent && (
         <div className="modal-backdrop">
-          <div className="modal-card teacher-curriculum-modal" style={{ maxWidth: '900px', width: '95%', maxHeight: '90vh' }}>
+          <div className="modal-card teacher-curriculum-modal group-curriculum-modal">
             <div className="modal-header-row">
               <div className="flex items-center gap-3">
                 <img 
