@@ -65,6 +65,7 @@ export default function TeacherDashboard() {
     updateGroupHomeworkNote,
     updateStudentStatus,
     approveStudentWithGroup,
+    deleteStudent,
     logStudentWrongAnswer,
     resetStudentQuizChunk,
     getStudentCurrentStation,
@@ -85,6 +86,10 @@ export default function TeacherDashboard() {
     lang,
     t
   } = useApp();
+
+  // مصفوفات آمنة مع حماية قصوى ضد القيم الفارغة والـ TDZ
+  const safeGroups = Array.isArray(groups) ? groups.filter(Boolean) : [];
+  const safeStudents = Array.isArray(students) ? students.filter(Boolean) : [];
 
   // التبويب النشط: المجموعات والواجبات | الطلاب والاشتراكات | إدارة المشرفين
   const [activeTab, setActiveTab] = useState('groups'); // 'groups' | 'students' | 'admins'
@@ -279,9 +284,7 @@ export default function TeacherDashboard() {
     }
   };
 
-  // إحصائيات عامة وفلاتر لوحة التحكم مع حماية قصوى ضد القيم الفارغة
-  const safeGroups = Array.isArray(groups) ? groups.filter(Boolean) : [];
-  const safeStudents = Array.isArray(students) ? students.filter(Boolean) : [];
+  // إحصائيات عامة وفلاتر لوحة التحكم
   const totalGroups = safeGroups.length;
   const totalStudents = safeStudents.length;
   const pendingStudents = safeStudents.filter(s => s?.status === 'pending');
@@ -846,6 +849,23 @@ export default function TeacherDashboard() {
                           >
                             <Sliders size={16} />
                             <span>{lang === 'en' ? 'Permissions' : 'صلاحيات المنهج'}</span>
+                          </button>
+
+                          {/* زر حذف حساب الطالب نهائياً */}
+                          <button
+                            className="duo-btn duo-btn-danger text-sm py-2 px-3 flex items-center gap-1.5"
+                            onClick={() => {
+                              const confirmMsg = lang === 'en'
+                                ? `Are you sure you want to permanently delete student "${student.name}"? This action cannot be undone.`
+                                : `هل أنت متأكد من مسح حساب الطالب "${student.name}" نهائياً من المنصة؟ سيتم حذف جميع بياناته وتقدمه.`;
+                              if (window.confirm(confirmMsg)) {
+                                deleteStudent(student.id);
+                              }
+                            }}
+                            title={lang === 'en' ? 'Permanently delete student account' : 'مسح حساب الطالب نهائياً من المنصة'}
+                          >
+                            <Trash2 size={15} />
+                            <span>{lang === 'en' ? 'Delete' : 'مسح الطالب 🗑️'}</span>
                           </button>
 
                           {/* معاينة الحساب كطالب */}
@@ -1929,8 +1949,8 @@ export default function TeacherDashboard() {
                           )}
                         </div>
 
-                        {/* زر تشخيص الأخطاء ونقاط الضعف */}
-                        <div className="student-actions-cell">
+                        {/* أزرار الإجراءات للطلاب في المجموعة */}
+                        <div className="student-actions-cell flex items-center gap-2">
                           <button
                             className="duo-btn text-xs py-2 px-3 flex items-center gap-1.5"
                             style={{ 
@@ -1949,6 +1969,21 @@ export default function TeacherDashboard() {
                                 ? (lang === 'en' ? `Weaknesses (${errorsCount})` : `نقاط الضعف (${errorsCount}) 🎯`) 
                                 : (lang === 'en' ? '100% Mastery' : 'إتقان 100% 🌟')}
                             </span>
+                          </button>
+
+                          <button
+                            className="duo-btn duo-btn-danger text-xs py-2 px-2.5 flex items-center gap-1"
+                            onClick={() => {
+                              const confirmMsg = lang === 'en'
+                                ? `Are you sure you want to delete student "${student.name}"?`
+                                : `هل تريد مسح حساب الطالب "${student.name}" نهائياً من المنصة؟`;
+                              if (window.confirm(confirmMsg)) {
+                                deleteStudent(student.id);
+                              }
+                            }}
+                            title={lang === 'en' ? 'Delete student' : 'مسح حساب الطالب'}
+                          >
+                            <Trash2 size={13} />
                           </button>
                         </div>
                       </div>

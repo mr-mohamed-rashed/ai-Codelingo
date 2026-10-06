@@ -683,6 +683,27 @@ export const AppProvider = ({ children }) => {
   };
 
   /**
+   * حذف حساب الطالب نهائياً من المنصة وإزالته من المجموعات والتخزين
+   */
+  const deleteStudent = (studentId) => {
+    if (!studentId) return;
+
+    setStudents(prev => prev.filter(s => s.id !== studentId));
+
+    setGroups(prev => prev.map(g => ({
+      ...g,
+      studentIds: (g.studentIds || []).filter(id => id !== studentId)
+    })));
+
+    if (currentStudentId === studentId) {
+      setCurrentStudentId(null);
+      localStorage.removeItem('agy_current_student_id');
+    }
+
+    playSound.wrong();
+  };
+
+  /**
    * تسجيل وتوثيق السؤال الذي أخطأ فيه الطالب فورياً للتشخيص وإعادة الشرح
    */
   const logStudentWrongAnswer = ({
@@ -1068,6 +1089,7 @@ export const AppProvider = ({ children }) => {
         updateStudentProfile,
         updateStudentStatus,
         approveStudentWithGroup,
+        deleteStudent,
         logStudentWrongAnswer,
         resetStudentQuizChunk,
         getStudentCurrentStation,
