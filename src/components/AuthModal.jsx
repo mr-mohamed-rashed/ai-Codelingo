@@ -152,8 +152,8 @@ export default function AuthModal({ initialMode = 'login' }) {
       }
     }
 
-    // 2. فحص إذا كان Google Client ID مفعلاً مباشرة في البيئة
-    const googleClientId = import.meta.env?.VITE_GOOGLE_CLIENT_ID;
+    // 2. استخدام Google Client ID (سواء من .env أو المحفوظ في لوحة المشرف)
+    const googleClientId = import.meta.env?.VITE_GOOGLE_CLIENT_ID || localStorage.getItem('agy_google_client_id');
     if (googleClientId && window.google?.accounts?.oauth2) {
       try {
         const tokenClient = window.google.accounts.oauth2.initTokenClient({
@@ -161,38 +161,38 @@ export default function AuthModal({ initialMode = 'login' }) {
           scope: 'email profile openid',
           callback: async (tokenResponse) => {
             if (tokenResponse && tokenResponse.access_token) {
-              const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
-              });
-              const profile = await res.json();
-              handleOAuthProfileSuccess({
-                name: profile.name || '',
-                email: profile.email || '',
-                avatar: profile.picture || '',
-                provider: 'google'
-              });
-              return;
+              try {
+                const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                });
+                const profile = await res.json();
+                handleOAuthProfileSuccess({
+                  name: profile.name || '',
+                  email: profile.email || '',
+                  avatar: profile.picture || '',
+                  provider: 'google'
+                });
+                return;
+              } catch (fetchErr) {
+                console.error('Error fetching Google profile:', fetchErr);
+                setErrorMessage('تم الاتصال بحساب جوجل ولكن تعذر جلب بيانات البروفايل');
+              }
+            } else if (tokenResponse?.error) {
+              setErrorMessage('تعذر إتمام الدخول بحساب جوجل: ' + tokenResponse.error);
             }
           }
         });
-        tokenClient.requestAccessToken();
+        tokenClient.requestAccessToken({ prompt: 'select_account' });
         return;
       } catch (err) {
-        console.warn('Google direct OAuth error, falling back:', err);
+        console.warn('Google direct OAuth error:', err);
+        setErrorMessage('تعذر فتح نافذة حسابات جوجل: ' + (err.message || ''));
+        return;
       }
     }
 
-    // 3. في بيئة التطوير المحلية قبل إدخال المفاتيح
-    const mockEmail = formData.email && formData.email.includes('@') 
-      ? formData.email 
-      : `student.${Math.floor(1000 + Math.random() * 9000)}@gmail.com`;
-
-    handleOAuthProfileSuccess({
-      name: '',
-      email: mockEmail,
-      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(mockEmail)}`,
-      provider: 'google'
-    });
+    // 3. إذا لم يكن المفتاح مدخلاً بعد: تنبيه واضح للأستاذ
+    setErrorMessage('⚠️ لم يتم ربط معرّف Google Client ID بعد في المنصة. يرجى إدخاله في لوحة تحكم الأستاذ (تبويب المشرفين) أو تزويدنا به لتفعيل اختيار الحساب وسحب الاسم والصورة الحقيقية تلقائياً.');
   };
 
   // تسجيل الدخول عبر Facebook
@@ -218,10 +218,19 @@ export default function AuthModal({ initialMode = 'login' }) {
       }
     }
 
-    // 2. فحص إذا كان Facebook App ID مفعلاً مباشرة
-    const fbAppId = import.meta.env?.VITE_FACEBOOK_APP_ID;
+    // 2. فحص Facebook App ID (من .env أو لوحة المشرف)
+    const fbAppId = import.meta.env?.VITE_FACEBOOK_APP_ID || localStorage.getItem('agy_fb_app_id');
     if (fbAppId && window.FB) {
       try {
+        try {
+          window.FB.init({
+            appId: fbAppId,
+            cookie: true,
+            xfbml: true,
+            version: 'v19.0'
+          });
+        } catch (initErr) {}
+
         window.FB.login((response) => {
           if (response.authResponse) {
             window.FB.api('/me', { fields: 'name,email,picture.width(400).height(400)' }, (profile) => {
@@ -232,23 +241,20 @@ export default function AuthModal({ initialMode = 'login' }) {
                 provider: 'facebook'
               });
             });
-            return;
+          } else {
+            setErrorMessage('تم إلغاء تسجيل الدخول بفيسبوك أو لم يتم منح الصلاحية');
           }
         }, { scope: 'public_profile,email' });
         return;
       } catch (err) {
         console.warn('Facebook direct OAuth error, falling back:', err);
+        setErrorMessage('تعذر فتح نافذة فيسبوك: ' + (err.message || ''));
+        return;
       }
     }
 
-    // 3. في بيئة التطوير المحلية قبل إدخال المفاتيح
-    const fbEmail = `fb.user.${Math.floor(1000 + Math.random() * 9000)}@facebook.com`;
-    handleOAuthProfileSuccess({
-      name: '',
-      email: fbEmail,
-      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=FB${Date.now()}`,
-      provider: 'facebook'
-    });
+    // 3. إذا لم يكن المفتاح مدخلاً بعد
+    setErrorMessage('⚠️ لم يتم ربط معرّف Facebook App ID بعد في المنصة. يرجى إدخاله في لوحة تحكم الأستاذ (تبويب المشرفين) أو تزويدنا به لتفعيل اختيار الحساب وسحب الصورة والاسم تلقائياً.');
   };
 
   // تسجيل الدخول بالبريد الإلكتروني

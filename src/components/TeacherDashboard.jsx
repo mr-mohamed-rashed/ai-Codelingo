@@ -104,8 +104,33 @@ export default function TeacherDashboard() {
   const [newAdminPassword, setNewAdminPassword] = useState('');
   const [showNewAdminPassword, setShowNewAdminPassword] = useState(false);
   const [adminFormError, setAdminFormError] = useState('');
-  const [adminFormSuccess, setAdminFormSuccess] = useState('');
   const [adminSearchQuery, setAdminSearchQuery] = useState('');
+
+  // إعدادات وتصريح مفاتيح Google Cloud و Meta (Facebook) OAuth
+  const [googleClientIdInput, setGoogleClientIdInput] = useState(() => {
+    return localStorage.getItem('agy_google_client_id') || import.meta.env?.VITE_GOOGLE_CLIENT_ID || '';
+  });
+  const [fbAppIdInput, setFbAppIdInput] = useState(() => {
+    return localStorage.getItem('agy_fb_app_id') || import.meta.env?.VITE_FACEBOOK_APP_ID || '';
+  });
+  const [oauthSaveSuccess, setOauthSaveSuccess] = useState(false);
+
+  const handleSaveOAuthKeys = (e) => {
+    e.preventDefault();
+    if (googleClientIdInput.trim()) {
+      localStorage.setItem('agy_google_client_id', googleClientIdInput.trim());
+    } else {
+      localStorage.removeItem('agy_google_client_id');
+    }
+    if (fbAppIdInput.trim()) {
+      localStorage.setItem('agy_fb_app_id', fbAppIdInput.trim());
+    } else {
+      localStorage.removeItem('agy_fb_app_id');
+    }
+    setOauthSaveSuccess(true);
+    playSound.correct();
+    setTimeout(() => setOauthSaveSuccess(false), 3000);
+  };
 
   // فلاتر وبحث
   const [searchQuery, setSearchQuery] = useState('');
@@ -1024,6 +1049,103 @@ export default function TeacherDashboard() {
                     </div>
                   );
                 })}
+            </div>
+
+            {/* قسم ربط تسجيل الدخول السحابي التلقائي (Google & Facebook) */}
+            <div className="oauth-settings-card mt-8 p-6 rounded-2xl border border-indigo-500/30 bg-slate-900/60 shadow-xl">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
+                  <KeyRound size={22} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <span>{lang === 'en' ? 'Google Cloud & Facebook Sign-In Setup' : '🔑 ربط تصريح تسجيل الدخول التلقائي (Google & Facebook)'}</span>
+                    <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2.5 py-0.5 rounded-full border border-indigo-500/30">
+                      خاص بالماستر فقط
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    {lang === 'en' 
+                      ? 'Enter your Google Client ID and Facebook App ID to automatically fetch student real names and profile pictures.'
+                      : 'أدخل معرّف Google Client ID و Facebook App ID لسحب اسم الطالب وصورته الحقيقية تلقائياً عند ضغطه على تسجيل الدخول.'
+                    }
+                  </p>
+                </div>
+              </div>
+
+              {oauthSaveSuccess && (
+                <div className="teacher-login-alert alert-success my-3 p-3 rounded-lg flex items-center gap-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  <CheckCircle size={18} />
+                  <span>تم حفظ وتفعيل مفاتيح الربط السحابي بنجاح! جاهز للاستخدام الفوري.</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSaveOAuthKeys} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: googleClientIdInput ? '#10b981' : '#f59e0b' }}></span>
+                    <span>معرّف عميل جوجل (Google OAuth Client ID)</span>
+                    {googleClientIdInput ? (
+                      <span className="text-emerald-400 text-xs font-semibold">(مفعل ومربوط ✓)</span>
+                    ) : (
+                      <span className="text-amber-400 text-xs font-semibold">(غير مدخل بعد ⚠️)</span>
+                    )}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="مثال: xxxxxxxxxxxx-xxxxxxxxxxxx.apps.googleusercontent.com"
+                    value={googleClientIdInput}
+                    onChange={(e) => setGoogleClientIdInput(e.target.value)}
+                    className="form-input text-xs font-mono"
+                    dir="ltr"
+                  />
+                  <span className="text-[11px] text-slate-400 block mt-1">
+                    يتم نسخه من Google Cloud Console (APIs & Services &gt; Credentials &gt; OAuth 2.0 Client IDs).
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: fbAppIdInput ? '#10b981' : '#f59e0b' }}></span>
+                    <span>معرّف تطبيق فيسبوك (Facebook App ID)</span>
+                    {fbAppIdInput ? (
+                      <span className="text-emerald-400 text-xs font-semibold">(مفعل ومربوط ✓)</span>
+                    ) : (
+                      <span className="text-amber-400 text-xs font-semibold">(غير مدخل بعد ⚠️)</span>
+                    )}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="مثال: 123456789012345"
+                    value={fbAppIdInput}
+                    onChange={(e) => setFbAppIdInput(e.target.value)}
+                    className="form-input text-xs font-mono"
+                    dir="ltr"
+                  />
+                  <span className="text-[11px] text-slate-400 block mt-1">
+                    يتم نسخه من Meta for Developers (developers.facebook.com &gt; My Apps).
+                  </span>
+                </div>
+
+                <div className="p-3 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-300 space-y-1.5">
+                  <div className="font-bold text-indigo-400 flex items-center gap-1.5">
+                    <ExternalLink size={14} />
+                    <span>الروابط المعتمدة التي يجب أن تضعها في Google Cloud Console (Authorized JavaScript origins):</span>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-1 font-mono text-[11px]">
+                    <span className="bg-slate-900 px-2 py-1 rounded border border-slate-700 text-emerald-400">https://ai-codelingo.pages.dev</span>
+                    <span className="bg-slate-900 px-2 py-1 rounded border border-slate-700 text-blue-400">http://localhost:5173</span>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="duo-btn duo-btn-success py-2.5 px-6 flex items-center gap-2 text-sm font-bold"
+                >
+                  <Save size={16} />
+                  <span>حفظ وتفعيل مفاتيح الدخول التلقائي 💾</span>
+                </button>
+              </form>
             </div>
           </div>
         )}
