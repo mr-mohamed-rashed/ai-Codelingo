@@ -18,7 +18,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import { useApp } from '../context/AppContext';
+import { useApp, isMasterTeacherEmail } from '../context/AppContext';
 import { playSound } from '../utils/audioEngine';
 import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
 
@@ -319,6 +319,9 @@ export default function AuthModal({ initialMode = 'register' }) {
       return;
     }
 
+    // فحص حساب الأستاذ الماستر للاختبار والمعاينة
+    const isMaster = isMasterTeacherEmail(formData.email);
+
     // تسجيل الطالب الجديد
     registerNewStudent({
       name: formData.name,
@@ -329,6 +332,13 @@ export default function AuthModal({ initialMode = 'register' }) {
       avatar: formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(formData.name)}`,
       provider: loginMethod
     });
+
+    if (isMaster) {
+      playSound.levelUp();
+      setActiveModal(null);
+      setCurrentPage('content');
+      return;
+    }
 
     playSound.correct();
     setAuthStep('pending_notice');
@@ -348,6 +358,26 @@ export default function AuthModal({ initialMode = 'register' }) {
 
     if (!formData.password) {
       setErrorMessage('يرجى إدخال كلمة المرور');
+      return;
+    }
+
+    // فحص حساب الأستاذ الماستر للاختبار والمعاينة: فتح المنهج فوراً والانتقال لصفحة المحتوى
+    if (isMasterTeacherEmail(identifier)) {
+      let masterStudent = students.find(s => isMasterTeacherEmail(s.email));
+      if (!masterStudent) {
+        masterStudent = registerNewStudent({
+          name: 'الأستاذ / محمد راشد (حساب المعاينة والاختبار)',
+          email: identifier,
+          phone: '01000000777',
+          guardianPhone: '01000000778',
+          password: formData.password.trim() || 'risho123man',
+          provider: loginMethod
+        });
+      }
+      setCurrentStudentId(masterStudent.id);
+      playSound.levelUp();
+      setActiveModal(null);
+      setCurrentPage('content');
       return;
     }
 

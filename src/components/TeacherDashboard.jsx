@@ -16,6 +16,7 @@ import {
   Unlock, 
   Lock, 
   ArrowRight,
+  ArrowLeft,
   ExternalLink,
   Plus,
   Edit2,
@@ -189,6 +190,20 @@ export default function TeacherDashboard() {
   const [expandedChapters, setExpandedChapters] = useState([1]); // Chapters open in drawer
   const [expandedLessons, setExpandedLessons] = useState(['1-1']); // Lessons open in drawer
 
+  // نظام التنقل الهرمي للدروس والفقرات مع زر الرجوع (Back Button) للمجموعة
+  const [groupCurriculumNav, setGroupCurriculumNav] = useState({
+    level: 'chapters', // 'chapters' | 'lessons' | 'topics'
+    chapterId: 1,
+    lessonId: '1-1'
+  });
+
+  // نظام التنقل الهرمي للدروس والفقرات مع زر الرجوع (Back Button) للطالب الفردي
+  const [studentCurriculumNav, setStudentCurriculumNav] = useState({
+    level: 'chapters', // 'chapters' | 'lessons' | 'topics'
+    chapterId: 1,
+    lessonId: '1-1'
+  });
+
   // الطالب النشط المحدد للتخصيص الفردي - متصل مباشرة بالحالة العامة لضمان عدم حدوث أي تجمد في الواجهة
   const activeCurriculumStudent = selectedStudentIdForCurriculum 
     ? (safeStudents.find(s => s?.id === selectedStudentIdForCurriculum) || null) 
@@ -235,15 +250,11 @@ export default function TeacherDashboard() {
       latestChunk = CURRICULUM_DATA[0];
     }
 
-    setExpandedChapters([latestChunk.chapterId]);
-    setExpandedLessons([latestChunk.lessonId]);
-
-    setTimeout(() => {
-      const el = document.getElementById(`perm-chunk-${latestChunk.id}`);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }, 220);
+    setStudentCurriculumNav({
+      level: 'chapters',
+      chapterId: latestChunk.chapterId,
+      lessonId: latestChunk.lessonId
+    });
 
     playSound.click();
   };
@@ -321,8 +332,11 @@ export default function TeacherDashboard() {
   const handleOpenGroupCurriculum = (group) => {
     setSelectedGroupForCurriculum(group);
     setTempHomeworkNote(group.homeworkNote || '');
-    setExpandedChapters(prev => prev.length > 0 ? prev : [1]);
-    setExpandedLessons(prev => prev.length > 0 ? prev : ['1-1']);
+    setGroupCurriculumNav({
+      level: 'chapters',
+      chapterId: 1,
+      lessonId: '1-1'
+    });
     playSound.click();
   };
 
@@ -1420,182 +1434,375 @@ export default function TeacherDashboard() {
               </button>
             </div>
 
-            {/* شريط الإحصائيات السريعة للمجموعة */}
-            <div className="group-perm-quick-stats">
+            {/* شريط الإحصائيات السريعة للمجموعة ومسار التنقل */}
+            <div className="group-perm-quick-stats flex items-center justify-between gap-3 flex-wrap">
               <span className="quick-stat-badge bg-emerald-50 text-emerald-700 border border-emerald-200">
-                ✅ {lang === 'en' ? 'Explained Topics Count:' : 'عدد الفقرات المشروحة للمجموعة:'} {activeSelectedGroup.unlockedChunks?.length || 0} فقرة
+                ✅ {lang === 'en' ? 'Explained Topics Count:' : 'عدد الفقرات المشروحة للمجموعة:'} {activeSelectedGroup.unlockedChunks?.length || 0} من {CURRICULUM_DATA.length} فقرة
               </span>
+
+              <div className="flex items-center gap-2">
+                <button
+                  className="duo-btn duo-btn-success text-xs py-1.5 px-3 flex items-center gap-1 font-bold"
+                  onClick={() => {
+                    CHAPTERS_METADATA.forEach(ch => unlockEntireChapterForGroup(activeSelectedGroup.id, ch.id, false));
+                    playSound.levelUp();
+                  }}
+                  title="فتح المنهج كاملاً لجميع طلاب المجموعة"
+                >
+                  <Unlock size={13} />
+                  <span>فتح المنهج كاملاً للمجموعة 🔓</span>
+                </button>
+              </div>
             </div>
 
-            {/* قائمة الفصول والدروس والفقرات للاختيار */}
-            <div className="curriculum-assignment-body">
-              {CHAPTERS_METADATA.map((chapter) => {
-                const isChapterOpen = expandedChapters.includes(chapter.id);
-                const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapter.id);
-                const lessonIds = [...new Set(chapterChunks.map(c => c.lessonId))];
-                const unlockedList = activeSelectedGroup.unlockedChunks || [];
-                const chapterUnlockedCount = chapterChunks.filter(c => unlockedList.includes(c.id)).length;
-                const allUnlocked = chapterUnlockedCount === chapterChunks.length && chapterChunks.length > 0;
+            {/* ========================================================
+                المستوى 1: شاشة الفصول الأربعة (level === 'chapters')
+                ======================================================== */}
+            {groupCurriculumNav.level === 'chapters' && (
+              <div className="curriculum-assignment-body">
+                <div className="curriculum-step-header mb-3">
+                  <h4 className="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <span>📚 فصول المنهج الدراسي (4 فصول)</span>
+                  </h4>
+                  <span className="text-xs text-slate-500">
+                    اضغط على أي فصل لفتح دروسه الأربعة واستعراض محتوياتها:
+                  </span>
+                </div>
 
-                return (
-                  <div key={chapter.id} className="chapter-permission-card">
-                    {/* المستوى 1: شريط عنوان الفصل */}
-                    <div className="chapter-perm-header">
+                <div className="grid grid-cols-1 gap-3">
+                  {CHAPTERS_METADATA.map((chapter) => {
+                    const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapter.id);
+                    const lessonIds = [...new Set(chapterChunks.map(c => c.lessonId))];
+                    const unlockedList = activeSelectedGroup.unlockedChunks || [];
+                    const chapterUnlockedCount = chapterChunks.filter(c => unlockedList.includes(c.id)).length;
+                    const allUnlocked = chapterUnlockedCount === chapterChunks.length && chapterChunks.length > 0;
+
+                    return (
                       <div 
-                        className="chapter-perm-title-group"
-                        onClick={() => toggleChapterExpand(chapter.id)}
+                        key={chapter.id} 
+                        className="chapter-drilldown-card p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer"
+                        onClick={() => {
+                          setGroupCurriculumNav({ level: 'lessons', chapterId: chapter.id, lessonId: null });
+                          playSound.click();
+                        }}
                       >
-                        <span className="chapter-perm-toggle-icon">
-                          {isChapterOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                        </span>
-                        <div>
-                          <h4 className="font-bold text-slate-800 flex items-center gap-2 flex-wrap">
-                            <span>{lang === 'en' ? `Chapter ${chapter.id}: ${chapter.title}` : `الفصل ${chapter.id}: ${chapter.title}`}</span>
-                            <span className="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-0.5 rounded-full font-bold">
-                              {lessonIds.length} دروس • {chapterChunks.length} فقرة
-                            </span>
-                            {chapterUnlockedCount > 0 ? (
-                              <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
-                                {chapterUnlockedCount} / {chapterChunks.length} مشروح ✓
-                              </span>
-                            ) : (
-                              <span className="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full font-semibold">
-                                مغلق بالكامل 🔒
-                              </span>
-                            )}
-                          </h4>
-                          <span className="text-xs text-slate-500">
-                            {chapter.description}
-                          </span>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <div className="chapter-drilldown-badge-icon w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0" style={{ background: chapter.gradient || 'linear-gradient(135deg, #4f46e5, #06b6d4)' }}>
+                              {chapter.id === 1 ? '💻' : chapter.id === 2 ? '🛡️' : chapter.id === 3 ? '🌐' : '🎨'}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-bold text-slate-800 text-base flex items-center gap-2 flex-wrap">
+                                <span>الفصل {chapter.id}: {chapter.title}</span>
+                                <span className="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-full font-bold border border-indigo-200">
+                                  {lessonIds.length} دروس • {chapterChunks.length} فقرة
+                                </span>
+                                {chapterUnlockedCount > 0 ? (
+                                  <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
+                                    {chapterUnlockedCount} / {chapterChunks.length} مشروح ✓
+                                  </span>
+                                ) : (
+                                  <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-semibold">
+                                    مغلق بالكامل 🔒
+                                  </span>
+                                )}
+                              </h4>
+                              <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                                {chapter.description}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                            <button
+                              className={`duo-btn ${allUnlocked ? 'duo-btn-secondary' : 'duo-btn-success'} text-xs py-1.5 px-3 flex items-center gap-1 font-bold`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (allUnlocked) {
+                                  lockEntireChapterForGroup(activeSelectedGroup.id, chapter.id);
+                                } else {
+                                  unlockEntireChapterForGroup(activeSelectedGroup.id, chapter.id, false);
+                                }
+                              }}
+                              title={allUnlocked ? 'قفل الفصل بالكامل' : 'فتح الفصل كاملاً'}
+                            >
+                              {allUnlocked ? <Lock size={13} /> : <Unlock size={13} />}
+                              <span>{allUnlocked ? 'قفل الفصل 🔒' : 'فتح الفصل 🔓'}</span>
+                            </button>
+
+                            <button
+                              className="duo-btn duo-btn-primary text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold"
+                              onClick={() => {
+                                setGroupCurriculumNav({ level: 'lessons', chapterId: chapter.id, lessonId: null });
+                                playSound.click();
+                              }}
+                            >
+                              <span>استعراض الدروس ({lessonIds.length})</span>
+                              <ArrowLeft size={14} />
+                            </button>
+                          </div>
                         </div>
                       </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
-                      {/* أزرار سريعة للفصل بالكامل */}
-                      <div className="flex items-center gap-2">
-                        <button
-                          className={`duo-btn ${allUnlocked ? 'duo-btn-secondary' : 'duo-btn-success'} text-xs py-1.5 px-3 flex items-center gap-1`}
-                          onClick={() => {
-                            if (allUnlocked) {
-                              lockEntireChapterForGroup(activeSelectedGroup.id, chapter.id);
-                            } else {
-                              unlockEntireChapterForGroup(activeSelectedGroup.id, chapter.id, false);
-                            }
-                          }}
-                          title={allUnlocked ? 'قفل الفصل بالكامل' : 'فتح الفصل كاملاً للمجموعة'}
-                        >
-                          {allUnlocked ? <Lock size={13} /> : <Unlock size={13} />}
-                          <span>{allUnlocked ? (lang === 'en' ? 'Lock Chapter 🔒' : 'قفل الفصل 🔒') : (lang === 'en' ? 'Unlock Chapter 🔓' : 'فتح الفصل كاملاً 🔓')}</span>
-                        </button>
+            {/* ========================================================
+                المستوى 2: شاشة دروس الفصل المختار (level === 'lessons')
+                ======================================================== */}
+            {groupCurriculumNav.level === 'lessons' && (() => {
+              const chapter = CHAPTERS_METADATA.find(c => c.id === groupCurriculumNav.chapterId) || CHAPTERS_METADATA[0];
+              const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapter.id);
+              const lessonIds = [...new Set(chapterChunks.map(c => c.lessonId))];
+              const unlockedList = activeSelectedGroup.unlockedChunks || [];
+              const chapterUnlockedCount = chapterChunks.filter(c => unlockedList.includes(c.id)).length;
+              const allUnlocked = chapterUnlockedCount === chapterChunks.length && chapterChunks.length > 0;
+
+              return (
+                <div className="curriculum-assignment-body">
+                  {/* شريط التنقل وزرار الباك (Back to Chapters) */}
+                  <div className="curriculum-nav-breadcrumb-bar p-3 bg-slate-100 rounded-xl mb-3 flex items-center justify-between gap-3 flex-wrap border border-slate-200">
+                    <div className="flex items-center gap-2">
+                      <button
+                        className="duo-btn duo-btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold"
+                        onClick={() => {
+                          setGroupCurriculumNav({ level: 'chapters', chapterId: null, lessonId: null });
+                          playSound.click();
+                        }}
+                        id="btn-back-to-chapters"
+                      >
+                        <ArrowRight size={15} />
+                        <span>⬅️ رجوع لقائمة الفصول</span>
+                      </button>
+                      <div className="text-xs font-bold text-slate-700">
+                        <span>الفصل {chapter.id}: {chapter.title}</span>
                       </div>
                     </div>
 
-                    {/* المستوى 2: قائمة الدروس داخل الفصل مع إمكانية فتح/غلق كل درس */}
-                    {isChapterOpen && (
-                      <div className="chapter-lessons-list">
-                        {lessonIds.map((lessonId) => {
-                          const lessonChunks = chapterChunks.filter(c => c.lessonId === lessonId);
-                          const isLessonOpen = expandedLessons.includes(lessonId);
-                          const lessonUnlockedCount = lessonChunks.filter(c => unlockedList.includes(c.id)).length;
-                          const isLessonFullyUnlocked = lessonUnlockedCount === lessonChunks.length && lessonChunks.length > 0;
-                          const lessonTitle = lessonChunks[0]?.lessonTitle || `درس ${lessonId}`;
-
-                          return (
-                            <div key={lessonId} className="lesson-permission-block">
-                              {/* شريط عنوان الدرس - عند الضغط عليه يفتح/يغلق الفقرات المتقسمة جواه */}
-                              <div className="lesson-perm-header">
-                                <div 
-                                  className="lesson-perm-title-group"
-                                  onClick={() => toggleLessonExpand(lessonId)}
-                                >
-                                  <span className="text-slate-400">
-                                    {isLessonOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                                  </span>
-                                  <span className="lesson-perm-badge">درس {lessonId}</span>
-                                  <span className="font-bold text-slate-800 text-sm">{lessonTitle}</span>
-                                  <span className="text-xs font-semibold" style={{ color: lessonUnlockedCount > 0 ? '#059669' : '#64748b' }}>
-                                    ({lessonUnlockedCount} من {lessonChunks.length} مشروحة)
-                                  </span>
-                                </div>
-
-                                <div className="lesson-perm-actions">
-                                  <button
-                                    className={`duo-btn ${isLessonFullyUnlocked ? 'duo-btn-secondary' : 'duo-btn-success'} text-xs py-1 px-2.5 flex items-center gap-1`}
-                                    onClick={() => {
-                                      if (isLessonFullyUnlocked) {
-                                        lockEntireLessonForGroup(activeSelectedGroup.id, lessonId);
-                                      } else {
-                                        unlockEntireLessonForGroup(activeSelectedGroup.id, lessonId);
-                                      }
-                                    }}
-                                    title={isLessonFullyUnlocked ? 'قفل جميع فقرات هذا الدرس' : 'فتح جميع فقرات هذا الدرس دفعة واحدة'}
-                                  >
-                                    {isLessonFullyUnlocked ? <Lock size={13} /> : <Unlock size={13} />}
-                                    <span>{isLessonFullyUnlocked ? (lang === 'en' ? 'Lock Lesson 🔒' : 'قفل الدرس 🔒') : (lang === 'en' ? 'Unlock Lesson 🔓' : 'فتح الدرس كاملاً 🔓')}</span>
-                                  </button>
-                                </div>
-                              </div>
-
-                              {/* المستوى 3: قائمة الفقرات الفردية المتقسمة داخل الدرس لفتح المشروح فقط */}
-                              {isLessonOpen && (
-                                <div className="lesson-chunks-tree-list">
-                                  {lessonChunks.map((chunk) => {
-                                    const isUnlocked = unlockedList.includes(chunk.id);
-                                    const engTitle = CURRICULUM_ENGLISH[chunk.id]?.title;
-                                    const displayChunkTitle = (lang === 'en' && engTitle) ? engTitle : chunk.chunkTitle;
-
-                                    return (
-                                      <div key={chunk.id} className="chunk-perm-item group-chunk-perm-item">
-                                        <div className="chunk-perm-info">
-                                          <span className="chunk-perm-lesson-badge">
-                                            {chunk.iconEmoji || '🎯'} {chunk.type === 'lesson_exam' ? (lang === 'en' ? 'Exam' : 'اختبار شامل') : (lang === 'en' ? 'Topic' : 'فقرة شرح')}
-                                          </span>
-                                          <div className="flex-1 min-w-0">
-                                            <div className="font-semibold text-slate-800 text-sm flex items-center gap-2 flex-wrap">
-                                              <span>{displayChunkTitle}</span>
-                                              {isUnlocked ? (
-                                                <span className="badge-tag-explained">✅ {lang === 'en' ? 'Explained & Open' : 'مشروح ومفتوح'}</span>
-                                              ) : (
-                                                <span className="badge-tag-locked text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
-                                                  🔒 {lang === 'en' ? 'Locked' : 'مقفول'}
-                                                </span>
-                                              )}
-                                            </div>
-                                            <div className="text-xs text-slate-500 line-clamp-1 mt-0.5">
-                                              {chunk.summary}
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        {/* مفتاح تم الشرح في الحصة - يتيح فتح فقرة معينة دون باقي فقرات الدرس */}
-                                        <div className="perm-switches-group">
-                                          <label className="perm-control-toggle" title={t('explainedInClass')}>
-                                            <span className="toggle-text-label font-bold">
-                                              {isUnlocked ? (lang === 'en' ? 'Explained ✓' : 'تم الشرح ✓') : (lang === 'en' ? 'Not Explained' : 'لم يشرح بعد')}
-                                            </span>
-                                            <div className="toggle-switch-wrapper">
-                                              <input
-                                                type="checkbox"
-                                                checked={isUnlocked}
-                                                onChange={() => toggleGroupChunk(activeSelectedGroup.id, chunk.id, false)}
-                                              />
-                                              <span className="toggle-switch-slider"></span>
-                                            </div>
-                                          </label>
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
+                        {chapterUnlockedCount} / {chapterChunks.length} مشروح
+                      </span>
+                      <button
+                        className={`duo-btn ${allUnlocked ? 'duo-btn-secondary' : 'duo-btn-success'} text-xs py-1.5 px-3 flex items-center gap-1 font-bold`}
+                        onClick={() => {
+                          if (allUnlocked) {
+                            lockEntireChapterForGroup(activeSelectedGroup.id, chapter.id);
+                          } else {
+                            unlockEntireChapterForGroup(activeSelectedGroup.id, chapter.id, false);
+                          }
+                        }}
+                      >
+                        {allUnlocked ? <Lock size={13} /> : <Unlock size={13} />}
+                        <span>{allUnlocked ? 'قفل الفصل كاملاً 🔒' : 'فتح الفصل كاملاً 🔓'}</span>
+                      </button>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
+
+                  <div className="curriculum-step-header mb-3">
+                    <h4 className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                      <span>📖 دروس الفصل {chapter.id} ({lessonIds.length} دروس):</span>
+                    </h4>
+                    <span className="text-xs text-slate-500">
+                      اضغط على أي درس لعرض كافة فقراته المتقسمة داخله والتحكم بها:
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3">
+                    {lessonIds.map((lessonId) => {
+                      const lessonChunks = chapterChunks.filter(c => c.lessonId === lessonId);
+                      const lessonUnlockedCount = lessonChunks.filter(c => unlockedList.includes(c.id)).length;
+                      const isLessonFullyUnlocked = lessonUnlockedCount === lessonChunks.length && lessonChunks.length > 0;
+                      const lessonTitle = lessonChunks[0]?.lessonTitle || `درس ${lessonId}`;
+
+                      return (
+                        <div
+                          key={lessonId}
+                          className="lesson-drilldown-card p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer"
+                          onClick={() => {
+                            setGroupCurriculumNav({ level: 'topics', chapterId: chapter.id, lessonId });
+                            playSound.click();
+                          }}
+                        >
+                          <div className="flex items-center justify-between gap-3 flex-wrap">
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <span className="lesson-perm-badge bg-indigo-600 text-white font-bold text-xs px-2.5 py-1 rounded-md flex-shrink-0">
+                                درس {lessonId}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <h5 className="font-bold text-slate-800 text-sm">{lessonTitle}</h5>
+                                <span className="text-xs font-semibold mt-0.5 block" style={{ color: lessonUnlockedCount > 0 ? '#059669' : '#64748b' }}>
+                                  ({lessonUnlockedCount} من {lessonChunks.length} مشروحة للمجموعة)
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                              <button
+                                className={`duo-btn ${isLessonFullyUnlocked ? 'duo-btn-secondary' : 'duo-btn-success'} text-xs py-1.5 px-3 flex items-center gap-1 font-bold`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (isLessonFullyUnlocked) {
+                                    lockEntireLessonForGroup(activeSelectedGroup.id, lessonId);
+                                  } else {
+                                    unlockEntireLessonForGroup(activeSelectedGroup.id, lessonId);
+                                  }
+                                }}
+                              >
+                                {isLessonFullyUnlocked ? <Lock size={13} /> : <Unlock size={13} />}
+                                <span>{isLessonFullyUnlocked ? 'قفل الدرس 🔒' : 'فتح الدرس 🔓'}</span>
+                              </button>
+
+                              <button
+                                className="duo-btn duo-btn-primary text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold"
+                                onClick={() => {
+                                  setGroupCurriculumNav({ level: 'topics', chapterId: chapter.id, lessonId });
+                                  playSound.click();
+                                }}
+                              >
+                                <span>عرض فقرات الدرس ({lessonChunks.length})</span>
+                                <ArrowLeft size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* ========================================================
+                المستوى 3: شاشة فقرات الدرس المختار (level === 'topics')
+                ======================================================== */}
+            {groupCurriculumNav.level === 'topics' && (() => {
+              const chapter = CHAPTERS_METADATA.find(c => c.id === groupCurriculumNav.chapterId) || CHAPTERS_METADATA[0];
+              const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapter.id);
+              const lessonChunks = chapterChunks.filter(c => c.lessonId === groupCurriculumNav.lessonId);
+              const unlockedList = activeSelectedGroup.unlockedChunks || [];
+              const lessonUnlockedCount = lessonChunks.filter(c => unlockedList.includes(c.id)).length;
+              const isLessonFullyUnlocked = lessonUnlockedCount === lessonChunks.length && lessonChunks.length > 0;
+              const lessonTitle = lessonChunks[0]?.lessonTitle || `درس ${groupCurriculumNav.lessonId}`;
+
+              return (
+                <div className="curriculum-assignment-body">
+                  {/* شريط التنقل وزرار الباك (Back Buttons) */}
+                  <div className="curriculum-nav-breadcrumb-bar p-3 bg-slate-100 rounded-xl mb-3 flex items-center justify-between gap-3 flex-wrap border border-slate-200">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <button
+                        className="duo-btn duo-btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold"
+                        onClick={() => {
+                          setGroupCurriculumNav({ level: 'lessons', chapterId: chapter.id, lessonId: null });
+                          playSound.click();
+                        }}
+                        id="btn-back-to-lessons"
+                      >
+                        <ArrowRight size={15} />
+                        <span>⬅️ رجوع لدروس الفصل</span>
+                      </button>
+
+                      <button
+                        className="duo-btn duo-btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1"
+                        onClick={() => {
+                          setGroupCurriculumNav({ level: 'chapters', chapterId: null, lessonId: null });
+                          playSound.click();
+                        }}
+                      >
+                        <span>الفصول 📚</span>
+                      </button>
+
+                      <div className="text-xs font-bold text-slate-700">
+                        <span>الفصل {chapter.id} / درس {groupCurriculumNav.lessonId}: {lessonTitle}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                        {lessonUnlockedCount} / {lessonChunks.length} مشروحة
+                      </span>
+                      <button
+                        className={`duo-btn ${isLessonFullyUnlocked ? 'duo-btn-secondary' : 'duo-btn-success'} text-xs py-1.5 px-3 flex items-center gap-1 font-bold`}
+                        onClick={() => {
+                          if (isLessonFullyUnlocked) {
+                            lockEntireLessonForGroup(activeSelectedGroup.id, groupCurriculumNav.lessonId);
+                          } else {
+                            unlockEntireLessonForGroup(activeSelectedGroup.id, groupCurriculumNav.lessonId);
+                          }
+                        }}
+                      >
+                        {isLessonFullyUnlocked ? <Lock size={13} /> : <Unlock size={13} />}
+                        <span>{isLessonFullyUnlocked ? 'قفل كل الفقرات 🔒' : 'فتح كل الفقرات 🔓'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="curriculum-step-header mb-2">
+                    <h4 className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                      <span>🎯 جميع فقرات ومحتويات درس {groupCurriculumNav.lessonId}:</span>
+                    </h4>
+                    <span className="text-xs text-slate-500">
+                      فعل مفتاح «تم الشرح» لأي فقرة تم شرحها في الحصة ليتم فتحها فوراً للمجموعة:
+                    </span>
+                  </div>
+
+                  {/* قائمة الفقرات كاملة مع سكرول فسيح وواضح ومريح جداً */}
+                  <div className="topics-scroll-viewport max-h-[58vh] overflow-y-auto p-2 pb-16 flex flex-col gap-2.5">
+                    {lessonChunks.map((chunk) => {
+                      const isUnlocked = unlockedList.includes(chunk.id);
+                      const engTitle = CURRICULUM_ENGLISH[chunk.id]?.title;
+                      const displayChunkTitle = (lang === 'en' && engTitle) ? engTitle : chunk.chunkTitle;
+
+                      return (
+                        <div key={chunk.id} className="chunk-perm-item group-chunk-perm-item p-3.5 bg-white border border-slate-200 rounded-xl hover:border-indigo-300 transition-all shadow-sm">
+                          <div className="chunk-perm-info flex items-start gap-3 flex-1 min-w-0">
+                            <span className="chunk-perm-lesson-badge text-xs font-bold px-2 py-1 bg-indigo-50 text-indigo-700 rounded-md border border-indigo-200 flex-shrink-0">
+                              {chunk.iconEmoji || '🎯'} {chunk.type === 'lesson_exam' ? 'اختبار شامل' : 'فقرة شرح'}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <div className="font-bold text-slate-800 text-sm flex items-center gap-2 flex-wrap">
+                                <span>{displayChunkTitle}</span>
+                                {isUnlocked ? (
+                                  <span className="badge-tag-explained text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                    ✅ مشروح ومفتوح
+                                  </span>
+                                ) : (
+                                  <span className="badge-tag-locked text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                                    🔒 مقفول
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-slate-600 mt-1 leading-relaxed">
+                                {chunk.summary}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* مفتاح تم الشرح في الحصة */}
+                          <div className="perm-switches-group flex-shrink-0 mr-3">
+                            <label className="perm-control-toggle cursor-pointer flex items-center gap-2" title={t('explainedInClass')}>
+                              <span className="toggle-text-label font-bold text-xs" style={{ color: isUnlocked ? '#059669' : '#64748b' }}>
+                                {isUnlocked ? 'تم الشرح ✓' : 'لم يشرح بعد'}
+                              </span>
+                              <div className="toggle-switch-wrapper">
+                                <input
+                                  type="checkbox"
+                                  checked={isUnlocked}
+                                  onChange={() => toggleGroupChunk(activeSelectedGroup.id, chunk.id, false)}
+                                />
+                                <span className="toggle-switch-slider"></span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
 
             <div className="modal-footer-row">
               <button
@@ -1857,195 +2064,376 @@ export default function TeacherDashboard() {
               );
             })()}
 
-            <div className="curriculum-assignment-body">
-              {CHAPTERS_METADATA.map((chapter) => {
-                const isChapterOpen = expandedChapters.includes(chapter.id);
-                const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapter.id);
-                const lessonIds = [...new Set(chapterChunks.map(c => c.lessonId))];
-                const allowedChunks = activeCurriculumStudent.allowedCurriculum?.chunks || [];
-                const chapterAllowedCount = chapterChunks.filter(c => allowedChunks.includes(c.id)).length;
-                const isChapterFullyUnlocked = chapterAllowedCount === chapterChunks.length && chapterChunks.length > 0;
+            {/* ========================================================
+                المستوى 1: شاشة الفصول الأربعة للطالب (level === 'chapters')
+                ======================================================== */}
+            {studentCurriculumNav.level === 'chapters' && (
+              <div className="curriculum-assignment-body">
+                <div className="curriculum-step-header mb-3">
+                  <h4 className="font-bold text-slate-800 text-base flex items-center gap-2">
+                    <span>📚 فصول المنهج الدراسي للطالب (4 فصول)</span>
+                  </h4>
+                  <span className="text-xs text-slate-500">
+                    اضغط على أي فصل لفتح دروسه الأربعة واستعراض محتوياتها:
+                  </span>
+                </div>
 
-                return (
-                  <div key={chapter.id} className="chapter-permission-card">
-                    {/* المستوى 1: شريط رأس الفصل */}
-                    <div className="chapter-perm-header">
+                <div className="grid grid-cols-1 gap-3">
+                  {CHAPTERS_METADATA.map((chapter) => {
+                    const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapter.id);
+                    const lessonIds = [...new Set(chapterChunks.map(c => c.lessonId))];
+                    const allowedChunks = activeCurriculumStudent.allowedCurriculum?.chunks || [];
+                    const chapterAllowedCount = chapterChunks.filter(c => allowedChunks.includes(c.id)).length;
+                    const isChapterFullyUnlocked = chapterAllowedCount === chapterChunks.length && chapterChunks.length > 0;
+
+                    return (
                       <div 
-                        className="chapter-perm-title-group"
-                        onClick={() => toggleChapterExpand(chapter.id)}
+                        key={chapter.id} 
+                        className="chapter-drilldown-card p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer"
+                        onClick={() => {
+                          setStudentCurriculumNav({ level: 'lessons', chapterId: chapter.id, lessonId: null });
+                          playSound.click();
+                        }}
                       >
-                        <span className="chapter-perm-toggle-icon">
-                          {isChapterOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                        </span>
-                        <div>
-                          <h4 className="font-bold text-slate-800 flex items-center gap-2 flex-wrap">
-                            <span>الفصل {chapter.id}: {chapter.title}</span>
-                            <span className="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-0.5 rounded-full font-bold">
-                              {lessonIds.length} دروس • {chapterChunks.length} فقرة
-                            </span>
-                            {chapterAllowedCount > 0 ? (
-                              <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
-                                {chapterAllowedCount} / {chapterChunks.length} مفتوح ✓
-                              </span>
-                            ) : (
-                              <span className="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full font-semibold">
-                                مغلق بالكامل 🔒
-                              </span>
-                            )}
-                          </h4>
-                          <span className="text-xs text-slate-500">
-                            {chapter.description}
-                          </span>
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <div className="chapter-drilldown-badge-icon w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0" style={{ background: chapter.gradient || 'linear-gradient(135deg, #4f46e5, #06b6d4)' }}>
+                              {chapter.id === 1 ? '💻' : chapter.id === 2 ? '🛡️' : chapter.id === 3 ? '🌐' : '🎨'}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-bold text-slate-800 text-base flex items-center gap-2 flex-wrap">
+                                <span>الفصل {chapter.id}: {chapter.title}</span>
+                                <span className="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-full font-bold border border-indigo-200">
+                                  {lessonIds.length} دروس • {chapterChunks.length} فقرة
+                                </span>
+                                {chapterAllowedCount > 0 ? (
+                                  <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
+                                    {chapterAllowedCount} / {chapterChunks.length} مفتوح ✓
+                                  </span>
+                                ) : (
+                                  <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-semibold">
+                                    مغلق بالكامل 🔒
+                                  </span>
+                                )}
+                              </h4>
+                              <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                                {chapter.description}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                            <button
+                              className={`duo-btn ${isChapterFullyUnlocked ? 'duo-btn-secondary' : 'duo-btn-success'} text-xs py-1.5 px-3 flex items-center gap-1 font-bold`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isChapterFullyUnlocked) {
+                                  chapterChunks.forEach(c => {
+                                    if (allowedChunks.includes(c.id)) {
+                                      toggleStudentCurriculum(activeCurriculumStudent.id, 'chunks', c.id);
+                                    }
+                                  });
+                                } else {
+                                  unlockEntireChapter(activeCurriculumStudent.id, chapter.id);
+                                }
+                              }}
+                              title={isChapterFullyUnlocked ? 'قفل الفصل بالكامل' : 'فتح الفصل كاملاً'}
+                            >
+                              {isChapterFullyUnlocked ? <Lock size={13} /> : <Unlock size={13} />}
+                              <span>{isChapterFullyUnlocked ? 'قفل الفصل 🔒' : 'فتح الفصل 🔓'}</span>
+                            </button>
+
+                            <button
+                              className="duo-btn duo-btn-primary text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold"
+                              onClick={() => {
+                                setStudentCurriculumNav({ level: 'lessons', chapterId: chapter.id, lessonId: null });
+                                playSound.click();
+                              }}
+                            >
+                              <span>استعراض الدروس ({lessonIds.length})</span>
+                              <ArrowLeft size={14} />
+                            </button>
+                          </div>
                         </div>
                       </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
-                      <div className="flex items-center gap-2">
-                        <button
-                          className={`duo-btn ${isChapterFullyUnlocked ? 'duo-btn-secondary' : 'duo-btn-success'} text-xs py-1.5 px-3 flex items-center gap-1`}
-                          onClick={() => {
-                            if (isChapterFullyUnlocked) {
-                              chapterChunks.forEach(c => {
-                                if (allowedChunks.includes(c.id)) {
-                                  toggleStudentCurriculum(activeCurriculumStudent.id, 'chunks', c.id);
-                                }
-                              });
-                            } else {
-                              unlockEntireChapter(activeCurriculumStudent.id, chapter.id);
-                            }
-                          }}
-                        >
-                          {isChapterFullyUnlocked ? <Lock size={14} /> : <Unlock size={14} />}
-                          <span>{isChapterFullyUnlocked ? 'قفل الفصل 🔒' : 'فتح الفصل كاملاً 🔓'}</span>
-                        </button>
+            {/* ========================================================
+                المستوى 2: شاشة دروس الفصل المختار للطالب (level === 'lessons')
+                ======================================================== */}
+            {studentCurriculumNav.level === 'lessons' && (() => {
+              const chapter = CHAPTERS_METADATA.find(c => c.id === studentCurriculumNav.chapterId) || CHAPTERS_METADATA[0];
+              const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapter.id);
+              const lessonIds = [...new Set(chapterChunks.map(c => c.lessonId))];
+              const allowedChunks = activeCurriculumStudent.allowedCurriculum?.chunks || [];
+              const chapterAllowedCount = chapterChunks.filter(c => allowedChunks.includes(c.id)).length;
+              const isChapterFullyUnlocked = chapterAllowedCount === chapterChunks.length && chapterChunks.length > 0;
+
+              return (
+                <div className="curriculum-assignment-body">
+                  {/* شريط التنقل وزرار الباك (Back to Chapters) */}
+                  <div className="curriculum-nav-breadcrumb-bar p-3 bg-slate-100 rounded-xl mb-3 flex items-center justify-between gap-3 flex-wrap border border-slate-200">
+                    <div className="flex items-center gap-2">
+                      <button
+                        className="duo-btn duo-btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold"
+                        onClick={() => {
+                          setStudentCurriculumNav({ level: 'chapters', chapterId: null, lessonId: null });
+                          playSound.click();
+                        }}
+                      >
+                        <ArrowRight size={15} />
+                        <span>⬅️ رجوع لقائمة الفصول</span>
+                      </button>
+                      <div className="text-xs font-bold text-slate-700">
+                        <span>الفصل {chapter.id}: {chapter.title}</span>
                       </div>
                     </div>
 
-                    {/* المستوى 2: قائمة الدروس داخل الفصل */}
-                    {isChapterOpen && (
-                      <div className="chapter-lessons-list">
-                        {lessonIds.map((lessonId) => {
-                          const lessonChunks = chapterChunks.filter(c => c.lessonId === lessonId);
-                          const isLessonOpen = expandedLessons.includes(lessonId);
-                          const lessonAllowedCount = lessonChunks.filter(c => allowedChunks.includes(c.id)).length;
-                          const isLessonFullyUnlocked = lessonAllowedCount === lessonChunks.length && lessonChunks.length > 0;
-                          const lessonTitle = lessonChunks[0]?.lessonTitle || `درس ${lessonId}`;
-
-                          return (
-                            <div key={lessonId} className="lesson-permission-block">
-                              {/* شريط عنوان الدرس */}
-                              <div className="lesson-perm-header">
-                                <div 
-                                  className="lesson-perm-title-group"
-                                  onClick={() => toggleLessonExpand(lessonId)}
-                                >
-                                  <span className="text-slate-400">
-                                    {isLessonOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                                  </span>
-                                  <span className="lesson-perm-badge">درس {lessonId}</span>
-                                  <span className="font-bold text-slate-800 text-sm">{lessonTitle}</span>
-                                  <span className="text-xs font-semibold" style={{ color: lessonAllowedCount > 0 ? '#059669' : '#64748b' }}>
-                                    ({lessonAllowedCount} من {lessonChunks.length} مفتوحة)
-                                  </span>
-                                </div>
-
-                                <div className="lesson-perm-actions">
-                                  <button
-                                    className={`duo-btn ${isLessonFullyUnlocked ? 'duo-btn-secondary' : 'duo-btn-success'} text-xs py-1 px-2.5 flex items-center gap-1`}
-                                    onClick={() => {
-                                      if (isLessonFullyUnlocked) {
-                                        lockEntireLesson(activeCurriculumStudent.id, lessonId);
-                                      } else {
-                                        unlockEntireLesson(activeCurriculumStudent.id, lessonId);
-                                      }
-                                    }}
-                                  >
-                                    {isLessonFullyUnlocked ? <Lock size={13} /> : <Unlock size={13} />}
-                                    <span>{isLessonFullyUnlocked ? 'قفل الدرس 🔒' : 'فتح الدرس كاملاً 🔓'}</span>
-                                  </button>
-                                </div>
-                              </div>
-
-                              {/* المستوى 3: قائمة الفقرات والمحطات داخل الدرس */}
-                              {isLessonOpen && (
-                                <div className="lesson-chunks-tree-list">
-                                  {lessonChunks.map((chunk) => {
-                                    const isAllowed = allowedChunks.includes(chunk.id);
-                                    const engTitle = CURRICULUM_ENGLISH[chunk.id]?.title;
-                                    const displayChunkTitle = (lang === 'en' && engTitle) ? engTitle : chunk.chunkTitle;
-
-                                    // فحص ما إذا كانت هذه هي آخر نقطة وصلها الطالب
-                                    let isLastReached = false;
-                                    let lastIdx = -1;
-                                    CURRICULUM_DATA.forEach((c, i) => {
-                                      if (allowedChunks.includes(c.id)) lastIdx = i;
-                                    });
-                                    if (lastIdx >= 0 && CURRICULUM_DATA[lastIdx].id === chunk.id) {
-                                      isLastReached = true;
-                                    }
-
-                                    return (
-                                      <div 
-                                        key={chunk.id} 
-                                        id={`perm-chunk-${chunk.id}`}
-                                        className={`chunk-perm-item ${isLastReached ? 'is-last-reached-chunk' : ''}`}
-                                      >
-                                        <div className="chunk-perm-info">
-                                          <span className="chunk-perm-lesson-badge">
-                                            {chunk.iconEmoji || '🎯'} {chunk.type === 'lesson_exam' ? 'اختبار شامل' : 'فقرة شرح'}
-                                          </span>
-                                          <div>
-                                            <div className="font-semibold text-slate-800 text-sm flex items-center gap-2 flex-wrap">
-                                              <span>{displayChunkTitle}</span>
-                                              {isLastReached && (
-                                                <span className="last-reached-tag">
-                                                  📍 آخر نقطة وصلها الطالب
-                                                </span>
-                                              )}
-                                            </div>
-                                            <div className="text-xs text-slate-500 line-clamp-1">
-                                              {chunk.summary}
-                                            </div>
-                                          </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-3">
-                                          <span 
-                                            className="text-xs font-bold"
-                                            style={{ color: isAllowed ? '#10b981' : '#94a3b8' }}
-                                          >
-                                            {isAllowed ? 'مفتوح للطالب ✓' : 'مغلق 🔒'}
-                                          </span>
-                                          <label className="toggle-switch-wrapper">
-                                            <input
-                                              type="checkbox"
-                                              checked={isAllowed}
-                                              onChange={() => {
-                                                toggleStudentCurriculum(activeCurriculumStudent.id, 'chunks', chunk.id);
-                                                if (!activeCurriculumStudent.allowedCurriculum?.chapters?.includes(chunk.chapterId)) {
-                                                  toggleStudentCurriculum(activeCurriculumStudent.id, 'chapters', chunk.chapterId);
-                                                }
-                                                if (!activeCurriculumStudent.allowedCurriculum?.lessons?.includes(chunk.lessonId)) {
-                                                  toggleStudentCurriculum(activeCurriculumStudent.id, 'lessons', chunk.lessonId);
-                                                }
-                                              }}
-                                            />
-                                            <span className="toggle-switch-slider"></span>
-                                          </label>
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-600 bg-white px-2.5 py-1 rounded-lg border border-slate-200">
+                        {chapterAllowedCount} / {chapterChunks.length} مفتوح
+                      </span>
+                      <button
+                        className={`duo-btn ${isChapterFullyUnlocked ? 'duo-btn-secondary' : 'duo-btn-success'} text-xs py-1.5 px-3 flex items-center gap-1 font-bold`}
+                        onClick={() => {
+                          if (isChapterFullyUnlocked) {
+                            chapterChunks.forEach(c => {
+                              if (allowedChunks.includes(c.id)) {
+                                toggleStudentCurriculum(activeCurriculumStudent.id, 'chunks', c.id);
+                              }
+                            });
+                          } else {
+                            unlockEntireChapter(activeCurriculumStudent.id, chapter.id);
+                          }
+                        }}
+                      >
+                        {isChapterFullyUnlocked ? <Lock size={13} /> : <Unlock size={13} />}
+                        <span>{isChapterFullyUnlocked ? 'قفل الفصل كاملاً 🔒' : 'فتح الفصل كاملاً 🔓'}</span>
+                      </button>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
+
+                  <div className="curriculum-step-header mb-3">
+                    <h4 className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                      <span>📖 دروس الفصل {chapter.id} ({lessonIds.length} دروس):</span>
+                    </h4>
+                    <span className="text-xs text-slate-500">
+                      اضغط على أي درس لعرض كافة فقراته المتقسمة داخله والتحكم بها:
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3">
+                    {lessonIds.map((lessonId) => {
+                      const lessonChunks = chapterChunks.filter(c => c.lessonId === lessonId);
+                      const lessonAllowedCount = lessonChunks.filter(c => allowedChunks.includes(c.id)).length;
+                      const isLessonFullyUnlocked = lessonAllowedCount === lessonChunks.length && lessonChunks.length > 0;
+                      const lessonTitle = lessonChunks[0]?.lessonTitle || `درس ${lessonId}`;
+
+                      return (
+                        <div
+                          key={lessonId}
+                          className="lesson-drilldown-card p-4 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 hover:shadow-md transition-all cursor-pointer"
+                          onClick={() => {
+                            setStudentCurriculumNav({ level: 'topics', chapterId: chapter.id, lessonId });
+                            playSound.click();
+                          }}
+                        >
+                          <div className="flex items-center justify-between gap-3 flex-wrap">
+                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                              <span className="lesson-perm-badge bg-indigo-600 text-white font-bold text-xs px-2.5 py-1 rounded-md flex-shrink-0">
+                                درس {lessonId}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <h5 className="font-bold text-slate-800 text-sm">{lessonTitle}</h5>
+                                <span className="text-xs font-semibold mt-0.5 block" style={{ color: lessonAllowedCount > 0 ? '#059669' : '#64748b' }}>
+                                  ({lessonAllowedCount} من {lessonChunks.length} مفتوحة للطالب)
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 flex-shrink-0" onClick={e => e.stopPropagation()}>
+                              <button
+                                className={`duo-btn ${isLessonFullyUnlocked ? 'duo-btn-secondary' : 'duo-btn-success'} text-xs py-1.5 px-3 flex items-center gap-1 font-bold`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (isLessonFullyUnlocked) {
+                                    lessonChunks.forEach(c => {
+                                      if (allowedChunks.includes(c.id)) {
+                                        toggleStudentCurriculum(activeCurriculumStudent.id, 'chunks', c.id);
+                                      }
+                                    });
+                                  } else {
+                                    unlockEntireLesson(activeCurriculumStudent.id, lessonId);
+                                  }
+                                }}
+                              >
+                                {isLessonFullyUnlocked ? <Lock size={13} /> : <Unlock size={13} />}
+                                <span>{isLessonFullyUnlocked ? 'قفل الدرس 🔒' : 'فتح الدرس 🔓'}</span>
+                              </button>
+
+                              <button
+                                className="duo-btn duo-btn-primary text-xs py-1.5 px-3.5 flex items-center gap-1.5 font-bold"
+                                onClick={() => {
+                                  setStudentCurriculumNav({ level: 'topics', chapterId: chapter.id, lessonId });
+                                  playSound.click();
+                                }}
+                              >
+                                <span>عرض فقرات الدرس ({lessonChunks.length})</span>
+                                <ArrowLeft size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* ========================================================
+                المستوى 3: شاشة فقرات الدرس المختار للطالب (level === 'topics')
+                ======================================================== */}
+            {studentCurriculumNav.level === 'topics' && (() => {
+              const chapter = CHAPTERS_METADATA.find(c => c.id === studentCurriculumNav.chapterId) || CHAPTERS_METADATA[0];
+              const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapter.id);
+              const lessonChunks = chapterChunks.filter(c => c.lessonId === studentCurriculumNav.lessonId);
+              const allowedChunks = activeCurriculumStudent.allowedCurriculum?.chunks || [];
+              const lessonAllowedCount = lessonChunks.filter(c => allowedChunks.includes(c.id)).length;
+              const isLessonFullyUnlocked = lessonAllowedCount === lessonChunks.length && lessonChunks.length > 0;
+              const lessonTitle = lessonChunks[0]?.lessonTitle || `درس ${studentCurriculumNav.lessonId}`;
+
+              return (
+                <div className="curriculum-assignment-body">
+                  {/* شريط التنقل وزرار الباك (Back Buttons) */}
+                  <div className="curriculum-nav-breadcrumb-bar p-3 bg-slate-100 rounded-xl mb-3 flex items-center justify-between gap-3 flex-wrap border border-slate-200">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <button
+                        className="duo-btn duo-btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 font-bold"
+                        onClick={() => {
+                          setStudentCurriculumNav({ level: 'lessons', chapterId: chapter.id, lessonId: null });
+                          playSound.click();
+                        }}
+                      >
+                        <ArrowRight size={15} />
+                        <span>⬅️ رجوع لدروس الفصل</span>
+                      </button>
+
+                      <button
+                        className="duo-btn duo-btn-secondary text-xs py-1.5 px-2.5 flex items-center gap-1"
+                        onClick={() => {
+                          setStudentCurriculumNav({ level: 'chapters', chapterId: null, lessonId: null });
+                          playSound.click();
+                        }}
+                      >
+                        <span>الفصول 📚</span>
+                      </button>
+
+                      <div className="text-xs font-bold text-slate-700">
+                        <span>الفصل {chapter.id} / درس {studentCurriculumNav.lessonId}: {lessonTitle}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                        {lessonAllowedCount} / {lessonChunks.length} مفتوحة
+                      </span>
+                      <button
+                        className={`duo-btn ${isLessonFullyUnlocked ? 'duo-btn-secondary' : 'duo-btn-success'} text-xs py-1.5 px-3 flex items-center gap-1 font-bold`}
+                        onClick={() => {
+                          if (isLessonFullyUnlocked) {
+                            lessonChunks.forEach(c => {
+                              if (allowedChunks.includes(c.id)) {
+                                toggleStudentCurriculum(activeCurriculumStudent.id, 'chunks', c.id);
+                              }
+                            });
+                          } else {
+                            unlockEntireLesson(activeCurriculumStudent.id, studentCurriculumNav.lessonId);
+                          }
+                        }}
+                      >
+                        {isLessonFullyUnlocked ? <Lock size={13} /> : <Unlock size={13} />}
+                        <span>{isLessonFullyUnlocked ? 'قفل كل الفقرات 🔒' : 'فتح كل الفقرات 🔓'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="curriculum-step-header mb-2">
+                    <h4 className="font-bold text-slate-800 text-sm flex items-center gap-2">
+                      <span>🎯 جميع فقرات ومحتويات درس {studentCurriculumNav.lessonId}:</span>
+                    </h4>
+                    <span className="text-xs text-slate-500">
+                      فعل مفتاح «مفتوح للطالب» لتحديد المحطات المتاحة لهذا الطالب للدراسة والحل:
+                    </span>
+                  </div>
+
+                  {/* قائمة الفقرات كاملة مع سكرول فسيح وواضح ومريح جداً */}
+                  <div className="topics-scroll-viewport max-h-[58vh] overflow-y-auto p-2 pb-16 flex flex-col gap-2.5">
+                    {lessonChunks.map((chunk) => {
+                      const isAllowed = allowedChunks.includes(chunk.id);
+                      const engTitle = CURRICULUM_ENGLISH[chunk.id]?.title;
+                      const displayChunkTitle = (lang === 'en' && engTitle) ? engTitle : chunk.chunkTitle;
+
+                      return (
+                        <div key={chunk.id} className="chunk-perm-item p-3.5 bg-white border border-slate-200 rounded-xl hover:border-indigo-300 transition-all shadow-sm">
+                          <div className="chunk-perm-info flex items-start gap-3 flex-1 min-w-0">
+                            <span className="chunk-perm-lesson-badge text-xs font-bold px-2 py-1 bg-indigo-50 text-indigo-700 rounded-md border border-indigo-200 flex-shrink-0">
+                              {chunk.iconEmoji || '🎯'} {chunk.type === 'lesson_exam' ? 'اختبار شامل' : 'فقرة شرح'}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <div className="font-bold text-slate-800 text-sm flex items-center gap-2 flex-wrap">
+                                <span>{displayChunkTitle}</span>
+                                {isAllowed ? (
+                                  <span className="badge-tag-explained text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                    ✓ مفتوح للطالب
+                                  </span>
+                                ) : (
+                                  <span className="badge-tag-locked text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                                    🔒 مقفول
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-slate-600 mt-1 leading-relaxed">
+                                {chunk.summary}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* مفتاح فتح/قفل الفقرة للطالب */}
+                          <div className="perm-switches-group flex-shrink-0 mr-3">
+                            <label className="perm-control-toggle cursor-pointer flex items-center gap-2">
+                              <span className="toggle-text-label font-bold text-xs" style={{ color: isAllowed ? '#059669' : '#64748b' }}>
+                                {isAllowed ? 'مفتوح ✓' : 'مغلق 🔒'}
+                              </span>
+                              <div className="toggle-switch-wrapper">
+                                <input
+                                  type="checkbox"
+                                  checked={isAllowed}
+                                  onChange={() => {
+                                    toggleStudentCurriculum(activeCurriculumStudent.id, 'chunks', chunk.id);
+                                    if (!activeCurriculumStudent.allowedCurriculum?.chapters?.includes(chunk.chapterId)) {
+                                      toggleStudentCurriculum(activeCurriculumStudent.id, 'chapters', chunk.chapterId);
+                                    }
+                                    if (!activeCurriculumStudent.allowedCurriculum?.lessons?.includes(chunk.lessonId)) {
+                                      toggleStudentCurriculum(activeCurriculumStudent.id, 'lessons', chunk.lessonId);
+                                    }
+                                  }}
+                                />
+                                <span className="toggle-switch-slider"></span>
+                              </div>
+                            </label>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
 
             <div className="modal-footer-row flex gap-2">
               <button

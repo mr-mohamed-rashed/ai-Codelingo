@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ShieldAlert, Clock, Phone, X, BookOpen, CheckCircle } from 'lucide-react';
-import { useApp } from '../context/AppContext';
+import { useApp, isMasterTeacherEmail } from '../context/AppContext';
 import { playSound } from '../utils/audioEngine';
 
 export default function ApprovalNoticeModal() {
   const { currentStudent, setActiveModal, lang } = useApp();
+
+  useEffect(() => {
+    if (currentStudent?.isMasterTeacher || isMasterTeacherEmail(currentStudent?.email)) {
+      setActiveModal(null);
+    }
+  }, [currentStudent, setActiveModal]);
+
+  if (currentStudent?.isMasterTeacher || isMasterTeacherEmail(currentStudent?.email)) {
+    return null;
+  }
 
   return (
     <div className="modal-backdrop">

@@ -47,8 +47,47 @@ export const INITIAL_GROUPS = [
   }
 ];
 
-// قائمة الطلاب المعتمدة - تبدأ فارغة تماماً دون أي حسابات افتراضية
-export const INITIAL_STUDENTS = [];
+// التحقق من حساب الأستاذ الماستر / حساب الاختبار والمعاينة المفتوح بالكامل
+export const isMasterTeacherEmail = (email) => {
+  if (!email) return false;
+  const clean = String(email).trim().toLowerCase();
+  return (
+    clean === 'mrrashed0777@gmailc.om' ||
+    clean === 'mrrashed0777@gmail.com' ||
+    clean.includes('mrrashed0777')
+  );
+};
+
+// قائمة الطلاب المعتمدة - تتضمن حساب الأستاذ الماستر مفتوح الصلاحيات 100% للاختبار والمعاينة
+export const INITIAL_STUDENTS = [
+  {
+    id: "std-master-teacher",
+    name: "الأستاذ / محمد راشد (حساب المعاينة والاختبار)",
+    phone: "01000000777",
+    guardianPhone: "01000000778",
+    email: "mrrashed0777@gmailc.om",
+    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=TeacherRashed",
+    provider: "email",
+    password: "risho123man",
+    status: "approved",
+    isMasterTeacher: true,
+    joinDate: "2026-09-01",
+    groupId: "grp-1",
+    xp: 2500,
+    stars: 120,
+    streak: 15,
+    completedChunks: [],
+    chunkRatings: {},
+    trophies: [],
+    wrongAnswers: [],
+    currentStation: "حساب الأستاذ - المنهج بالكامل متاح للاختبار والمعاينة",
+    allowedCurriculum: {
+      chapters: [1, 2, 3, 4],
+      lessons: ["1-1", "1-2", "1-3", "1-4", "2-1", "2-2", "2-3", "3-1", "3-2", "3-3", "4-1", "4-2", "4-3", "4-4"],
+      chunks: CURRICULUM_DATA.map(c => c.id)
+    }
+  }
+];
 
 
 export const AppProvider = ({ children }) => {
@@ -161,7 +200,26 @@ export const AppProvider = ({ children }) => {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
           // استبعاد أي حسابات تجريبية قديمة تبدأ بـ std-00
-          return parsed.filter(s => s && !String(s.id).startsWith('std-00'));
+          const filtered = parsed.filter(s => s && !String(s.id).startsWith('std-00'));
+          const hasMaster = filtered.some(s => isMasterTeacherEmail(s.email));
+          if (!hasMaster) {
+            return [...INITIAL_STUDENTS, ...filtered];
+          }
+          return filtered.map(s => {
+            if (isMasterTeacherEmail(s.email)) {
+              return {
+                ...s,
+                status: 'approved',
+                isMasterTeacher: true,
+                allowedCurriculum: {
+                  chapters: [1, 2, 3, 4],
+                  lessons: ["1-1", "1-2", "1-3", "1-4", "2-1", "2-2", "2-3", "3-1", "3-2", "3-3", "4-1", "4-2", "4-3", "4-4"],
+                  chunks: CURRICULUM_DATA.map(c => c.id)
+                }
+              };
+            }
+            return s;
+          });
         }
       }
     } catch (e) {
@@ -597,7 +655,9 @@ export const AppProvider = ({ children }) => {
    * تسجيل طالب جديد لأول مرة بجوجل / فيسبوك / الهاتف / الإيميل
    */
   const registerNewStudent = ({ name, phone, guardianPhone, email, avatar, provider = 'google' }) => {
-    const cleanName = (name || '').trim();
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const isMasterTeacher = isMasterTeacherEmail(cleanEmail);
+
     const newStudent = {
       id: `std-${Date.now().toString().slice(-4)}`,
       name: cleanName,
@@ -606,18 +666,23 @@ export const AppProvider = ({ children }) => {
       email: (email || '').trim(),
       avatar: avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanName || 'Student')}`,
       provider,
-      status: "pending", // في انتظار اعتماد الأستاذ وتحديد المجموعة
+      status: isMasterTeacher ? "approved" : "pending",
+      isMasterTeacher,
       joinDate: new Date().toISOString().split('T')[0],
-      groupId: null,
-      xp: 0,
-      stars: 0,
+      groupId: isMasterTeacher ? "grp-1" : null,
+      xp: isMasterTeacher ? 2500 : 0,
+      stars: isMasterTeacher ? 120 : 0,
       streak: 1,
       completedChunks: [],
       chunkRatings: {},
       trophies: [],
       wrongAnswers: [],
-      currentStation: "في انتظار تصريح المعلم وتحديد المجموعة",
-      allowedCurriculum: {
+      currentStation: isMasterTeacher ? "حساب الأستاذ - المنهج بالكامل متاح للاختبار والمعاينة" : "في انتظار تصريح المعلم وتحديد المجموعة",
+      allowedCurriculum: isMasterTeacher ? {
+        chapters: [1, 2, 3, 4],
+        lessons: ["1-1", "1-2", "1-3", "1-4", "2-1", "2-2", "2-3", "3-1", "3-2", "3-3", "4-1", "4-2", "4-3", "4-4"],
+        chunks: CURRICULUM_DATA.map(c => c.id)
+      } : {
         chapters: [1],
         lessons: ["1-1"],
         chunks: []
@@ -996,7 +1061,19 @@ export const AppProvider = ({ children }) => {
    * 4. أي فقرة أتمها الطالب مسبقاً تظل مفتوحة للمراجعة دائماً.
    */
   const isChunkUnlocked = (chunkId) => {
-    if (!currentStudent || currentStudent.status !== 'approved') return false;
+    if (!currentStudent) return false;
+
+    // فحص وضع الأستاذ أو حساب الماستر للاختبار والمعاينة: المنهج بالكامل متاح 100%
+    const studentEmail = (currentStudent.email || '').toLowerCase().trim();
+    if (
+      isTeacherMode || 
+      currentStudent.isMasterTeacher || 
+      isMasterTeacherEmail(studentEmail)
+    ) {
+      return true;
+    }
+
+    if (currentStudent.status !== 'approved') return false;
 
     // 1. أي فقرة مكتملة تظل مفتوحة دائماً للمراجعة
     if (currentStudent.completedChunks?.includes(chunkId)) return true;
