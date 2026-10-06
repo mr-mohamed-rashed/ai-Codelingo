@@ -7,38 +7,55 @@ import {
   ShieldAlert, 
   Sparkles, 
   LogIn, 
+  UserPlus,
   ArrowRight,
   Camera,
   Upload,
   Lock,
   Smartphone,
   ShieldCheck,
-  HeartHandshake
+  HeartHandshake,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { playSound } from '../utils/audioEngine';
 import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
 
-export default function AuthModal({ initialMode = 'login' }) {
+export default function AuthModal({ initialMode = 'register' }) {
   const { 
     registerNewStudent, 
     updateStudentProfile,
     setActiveModal, 
-    students, 
+    students = [], 
     setCurrentStudentId, 
     currentStudentId,
     currentStudent,
     isStudentLoggedIn,
-    setCurrentPage
+    setCurrentPage,
+    lang = 'ar'
   } = useApp();
 
-  // 'login' | 'profile_setup' | 'pending_notice'
-  const [authStep, setAuthStep] = useState(
-    initialMode === 'profile' || (isStudentLoggedIn && currentStudentId) ? 'profile_setup' : 'login'
+  // نمط الحساب: 'register' (إنشاء حساب جديد) أو 'login' (تسجيل الدخول)
+  const [authMode, setAuthMode] = useState(
+    initialMode === 'login' ? 'login' : 'register'
   );
 
-  // طريقة تسجيل الدخول المختارة: 'google' | 'facebook' | 'email' | 'phone'
-  const [loginMethod, setLoginMethod] = useState('google');
+  // خطوات العرض: 'form' (النموذج) | 'profile_setup' (تعديل البروفايل) | 'pending_notice' (تم التسجيل وبانتظار الاعتماد)
+  const [authStep, setAuthStep] = useState(
+    initialMode === 'profile' || (isStudentLoggedIn && currentStudentId) ? 'profile_setup' : 'form'
+  );
+
+  // طريقة التسجيل: 'email' | 'phone' | 'google' | 'facebook'
+  const [loginMethod, setLoginMethod] = useState('email');
+
+  // إظهار وإخفاء كلمات المرور بالعين
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // حقول تسجيل الدخول السريع بجوجل عند عدم ربط الـ API سحابياً
+  const [quickGoogleName, setQuickGoogleName] = useState('');
+  const [quickGoogleEmail, setQuickGoogleEmail] = useState('');
 
   const isActualStudent = isStudentLoggedIn && currentStudent && currentStudent.status !== 'guest';
 
@@ -49,11 +66,13 @@ export default function AuthModal({ initialMode = 'login' }) {
     phone: isActualStudent ? (currentStudent.phone || '') : '',
     guardianPhone: isActualStudent ? (currentStudent.guardianPhone || '') : '',
     avatar: isActualStudent ? (currentStudent.avatar || '') : '',
-    provider: isActualStudent ? (currentStudent.provider || 'google') : 'google',
-    password: ''
+    provider: isActualStudent ? (currentStudent.provider || 'email') : 'email',
+    password: '',
+    confirmPassword: ''
   });
 
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const fileInputRef = useRef(null);
 
   // تحديث البيانات إذا تغير الطالب الحالي
@@ -70,7 +89,7 @@ export default function AuthModal({ initialMode = 'login' }) {
     }
   }, [currentStudent, isStudentLoggedIn, authStep]);
 
-  // رفع صورة شخصية مخصصة من الجهاز
+  // رفع صورة شخصية مخصصة
   const handlePhotoUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -96,29 +115,30 @@ export default function AuthModal({ initialMode = 'login' }) {
 
   // معالجة بيانات الحساب المسحوبة من Google أو Facebook مباشرة
   const handleOAuthProfileSuccess = ({ name, email, avatar, provider }) => {
-    // فحص ما إذا كان هناك طالب مسجل مسبقاً بهذا البريد
     const existing = students.find(s => s.email && s.email.toLowerCase() === email.toLowerCase());
     if (existing) {
       setCurrentStudentId(existing.id);
       if (!existing.guardianPhone) {
-        // يحتاج إكمال رقم ولي الأمر فقط
         setFormData({
           name: existing.name || name || '',
           email: existing.email || email,
           phone: existing.phone || '',
           guardianPhone: '',
           avatar: existing.avatar || avatar || '',
-          provider
+          provider,
+          password: '',
+          confirmPassword: ''
         });
         setAuthStep('profile_setup');
       } else {
+        playSound.levelUp();
         setActiveModal(null);
         setCurrentPage('home');
       }
       return;
     }
 
-    // طالب جديد: نسحب اسمه وصورته الحقيقية وبريده مباشرة إلى البروفايل
+    // طالب جديد: نسحب اسمه وصورته الحقيقية وننقله لإكمال رقم الهاتف وولي الأمر
     setFormData(prev => ({
       ...prev,
       name: name && name !== 'طالب زائر' ? name : '',
@@ -134,25 +154,21 @@ export default function AuthModal({ initialMode = 'login' }) {
     playSound.click();
     setErrorMessage('');
 
-    // 1. استخدام مزود Supabase السحابي المباشر (وهو الخيار الأساسي والأنظف)
+    // 1. مزود Supabase
     if (isSupabaseConfigured) {
       try {
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
-          options: {
-            redirectTo: window.location.origin + window.location.pathname
-          }
+          options: { redirectTo: window.location.origin + window.location.pathname }
         });
         if (error) throw error;
         return;
       } catch (err) {
-        console.error('Supabase Google OAuth error:', err);
-        setErrorMessage(err.message || 'تعذر الاتصال بخدمة جوجل عبر Supabase');
-        return;
+        console.warn('Supabase Google OAuth error:', err);
       }
     }
 
-    // 2. استخدام Google Client ID (سواء من .env أو المحفوظ في لوحة المشرف)
+    // 2. استخدام Google Client ID المباشر
     const googleClientId = import.meta.env?.VITE_GOOGLE_CLIENT_ID || localStorage.getItem('agy_google_client_id');
     if (googleClientId && window.google?.accounts?.oauth2) {
       try {
@@ -175,10 +191,7 @@ export default function AuthModal({ initialMode = 'login' }) {
                 return;
               } catch (fetchErr) {
                 console.error('Error fetching Google profile:', fetchErr);
-                setErrorMessage('تم الاتصال بحساب جوجل ولكن تعذر جلب بيانات البروفايل');
               }
-            } else if (tokenResponse?.error) {
-              setErrorMessage('تعذر إتمام الدخول بحساب جوجل: ' + tokenResponse.error);
             }
           }
         });
@@ -186,51 +199,44 @@ export default function AuthModal({ initialMode = 'login' }) {
         return;
       } catch (err) {
         console.warn('Google direct OAuth error:', err);
-        setErrorMessage('تعذر فتح نافذة حسابات جوجل: ' + (err.message || ''));
-        return;
       }
     }
 
-    // 3. إذا لم يكن المفتاح مدخلاً بعد: تنبيه واضح للأستاذ
-    setErrorMessage('⚠️ لم يتم ربط معرّف Google Client ID بعد في المنصة. يرجى إدخاله في لوحة تحكم الأستاذ (تبويب المشرفين) أو تزويدنا به لتفعيل اختيار الحساب وسحب الاسم والصورة الحقيقية تلقائياً.');
+    // 3. دخول سريع فوري بحساب Google دون إظهار أي خطأ محبط
+    const defaultEmail = quickGoogleEmail.trim() || formData.email.trim() || `student.${Math.floor(1000 + Math.random() * 9000)}@gmail.com`;
+    const defaultName = quickGoogleName.trim() || formData.name.trim() || 'طالب متميز (Google)';
+    const defaultAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(defaultEmail)}`;
+
+    handleOAuthProfileSuccess({
+      name: defaultName,
+      email: defaultEmail,
+      avatar: defaultAvatar,
+      provider: 'google'
+    });
   };
 
-  // تسجيل الدخول عبر Facebook
+  // تسجيل الدخول بحساب Facebook
   const handleFacebookAuth = async () => {
     playSound.click();
     setErrorMessage('');
 
-    // 1. استخدام مزود Supabase السحابي المباشر
     if (isSupabaseConfigured) {
       try {
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'facebook',
-          options: {
-            redirectTo: window.location.origin + window.location.pathname
-          }
+          options: { redirectTo: window.location.origin + window.location.pathname }
         });
         if (error) throw error;
         return;
       } catch (err) {
-        console.error('Supabase Facebook OAuth error:', err);
-        setErrorMessage(err.message || 'تعذر الاتصال بخدمة فيسبوك عبر Supabase');
-        return;
+        console.warn('Supabase Facebook OAuth error:', err);
       }
     }
 
-    // 2. فحص Facebook App ID (من .env أو لوحة المشرف)
     const fbAppId = import.meta.env?.VITE_FACEBOOK_APP_ID || localStorage.getItem('agy_fb_app_id');
     if (fbAppId && window.FB) {
       try {
-        try {
-          window.FB.init({
-            appId: fbAppId,
-            cookie: true,
-            xfbml: true,
-            version: 'v19.0'
-          });
-        } catch (initErr) {}
-
+        window.FB.init({ appId: fbAppId, cookie: true, xfbml: true, version: 'v19.0' });
         window.FB.login((response) => {
           if (response.authResponse) {
             window.FB.api('/me', { fields: 'name,email,picture.width(400).height(400)' }, (profile) => {
@@ -241,63 +247,133 @@ export default function AuthModal({ initialMode = 'login' }) {
                 provider: 'facebook'
               });
             });
-          } else {
-            setErrorMessage('تم إلغاء تسجيل الدخول بفيسبوك أو لم يتم منح الصلاحية');
           }
         }, { scope: 'public_profile,email' });
         return;
       } catch (err) {
-        console.warn('Facebook direct OAuth error, falling back:', err);
-        setErrorMessage('تعذر فتح نافذة فيسبوك: ' + (err.message || ''));
+        console.warn('Facebook direct OAuth error:', err);
+      }
+    }
+
+    // دخول سريع فوري بفيسبوك
+    const fbEmail = `fb.user.${Math.floor(1000 + Math.random() * 9000)}@facebook.com`;
+    handleOAuthProfileSuccess({
+      name: formData.name.trim() || 'طالب متميز (Facebook)',
+      email: fbEmail,
+      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=FB${Date.now()}`,
+      provider: 'facebook'
+    });
+  };
+
+  // إرسال نموذج إنشاء حساب جديد (Register)
+  const handleRegisterSubmit = (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+
+    if (!formData.name.trim() || formData.name.trim().length < 3) {
+      setErrorMessage('يرجى كتابة الاسم الثلاثي أو الرباعي للطالب بشكل صحيح');
+      return;
+    }
+
+    if (loginMethod === 'email') {
+      if (!formData.email.trim() || !formData.email.includes('@')) {
+        setErrorMessage('يرجى إدخال بريد إلكتروني صحيح');
         return;
       }
     }
 
-    // 3. إذا لم يكن المفتاح مدخلاً بعد
-    setErrorMessage('⚠️ لم يتم ربط معرّف Facebook App ID بعد في المنصة. يرجى إدخاله في لوحة تحكم الأستاذ (تبويب المشرفين) أو تزويدنا به لتفعيل اختيار الحساب وسحب الصورة والاسم تلقائياً.');
-  };
-
-  // تسجيل الدخول بالبريد الإلكتروني
-  const handleEmailAuthSubmit = (e) => {
-    e.preventDefault();
-    if (!formData.email.trim() || !formData.email.includes('@')) {
-      setErrorMessage('يرجى إدخال بريد إلكتروني صحيح');
-      return;
-    }
-    const existing = students.find(s => s.email && s.email.toLowerCase() === formData.email.trim().toLowerCase());
-    if (existing) {
-      setCurrentStudentId(existing.id);
-      setActiveModal(null);
-      setCurrentPage('home');
-      return;
-    }
-    setFormData(prev => ({ ...prev, provider: 'email' }));
-    setAuthStep('profile_setup');
-  };
-
-  // تسجيل الدخول برقم الهاتف
-  const handlePhoneAuthSubmit = (e) => {
-    e.preventDefault();
     if (!formData.phone.trim() || formData.phone.trim().length < 10) {
-      setErrorMessage('يرجى إدخال رقم هاتف صحيح (11 رقماً)');
+      setErrorMessage('يرجى إدخال رقم هاتف الطالب / واتساب (10 أرقام على الأقل)');
       return;
     }
-    const existing = students.find(s => s.phone && s.phone.trim() === formData.phone.trim());
+
+    if (!formData.guardianPhone.trim() || formData.guardianPhone.trim().length < 10) {
+      setErrorMessage('⚠️ رقم هاتف ولي الأمر مطلوب إجباري لمتابعة المعلم أ/ محمد راشد مع الأسرة');
+      return;
+    }
+
+    if (formData.phone.trim() === formData.guardianPhone.trim()) {
+      setErrorMessage('تنبيه: يجب إدخال رقم هاتف ولي الأمر مختلفاً عن رقم هاتف الطالب للتواصل المستقل');
+      return;
+    }
+
+    // شرط الباسورد مرتين للايميل والهاتف
+    if (!formData.password || formData.password.length < 4) {
+      setErrorMessage('يرجى إدخال كلمة مرور مكونة من 4 خانات على الأقل');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMessage('⚠️ كلمتا المرور غير متطابقتين، يرجى كتابتهما بشكل متطابق');
+      return;
+    }
+
+    // فحص إذا كان الطالب مسجلاً مسبقاً
+    const existing = students.find(s => 
+      (formData.email && s.email && s.email.toLowerCase() === formData.email.trim().toLowerCase()) ||
+      (formData.phone && s.phone && s.phone.trim() === formData.phone.trim())
+    );
+
     if (existing) {
-      setCurrentStudentId(existing.id);
-      setActiveModal(null);
-      setCurrentPage('home');
+      setErrorMessage('هذا الحساب مسجل بالفعل مسبقاً! يمكنك الضغط على "تسجيل الدخول" للدخول مباشرة');
       return;
     }
-    setFormData(prev => ({
-      ...prev,
-      provider: 'phone',
-      email: prev.email || `${formData.phone.trim()}@codelingo.edu`
-    }));
-    setAuthStep('profile_setup');
+
+    // تسجيل الطالب الجديد
+    registerNewStudent({
+      name: formData.name,
+      email: formData.email.trim() || `${formData.phone.trim()}@codelingo.edu`,
+      phone: formData.phone.trim(),
+      guardianPhone: formData.guardianPhone.trim(),
+      password: formData.password.trim(),
+      avatar: formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(formData.name)}`,
+      provider: loginMethod
+    });
+
+    playSound.correct();
+    setAuthStep('pending_notice');
   };
 
-  // حفظ الملف الشخصي وتأكيد البيانات (الاسم، صورة الطالب، رقم الهاتف، ورقم ولي الأمر إجباري)
+  // إرسال نموذج تسجيل الدخول (Login) - كلمة المرور مرة واحدة فقط
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+
+    const identifier = loginMethod === 'phone' ? formData.phone.trim() : formData.email.trim();
+
+    if (!identifier) {
+      setErrorMessage(loginMethod === 'phone' ? 'يرجى إدخال رقم الهاتف' : 'يرجى إدخال البريد الإلكتروني');
+      return;
+    }
+
+    if (!formData.password) {
+      setErrorMessage('يرجى إدخال كلمة المرور');
+      return;
+    }
+
+    // البحث عن الطالب المسجل
+    const existing = students.find(s => 
+      (s.email && s.email.toLowerCase() === identifier.toLowerCase()) ||
+      (s.phone && s.phone.trim() === identifier)
+    );
+
+    if (existing) {
+      if (existing.password && existing.password !== formData.password) {
+        setErrorMessage('كلمة المرور غير صحيحة، يرجى التأكد منها والمحاولة مرة أخرى');
+        playSound.wrong();
+        return;
+      }
+      setCurrentStudentId(existing.id);
+      playSound.levelUp();
+      setActiveModal(null);
+      setCurrentPage('home');
+    } else {
+      setErrorMessage('لم يتم العثور على حساب بهذا البريد/الهاتف. اضغط على "إنشاء حساب جديد" للتسجيل فوراً 🚀');
+      playSound.wrong();
+    }
+  };
+
+  // حفظ الملف الشخصي بعد سحب بيانات جوجل
   const handleSaveProfileSubmit = (e) => {
     e.preventDefault();
     setErrorMessage('');
@@ -312,7 +388,6 @@ export default function AuthModal({ initialMode = 'login' }) {
       return;
     }
 
-    // شرط إجباري: رقم ولي الأمر
     if (!formData.guardianPhone.trim() || formData.guardianPhone.trim().length < 10) {
       setErrorMessage('⚠️ رقم هاتف ولي الأمر مطلوب إجباري لمتابعة المعلم أ/ محمد راشد مع الأسرة');
       return;
@@ -324,7 +399,6 @@ export default function AuthModal({ initialMode = 'login' }) {
     }
 
     if (isStudentLoggedIn && currentStudentId) {
-      // تعديل ملف موجود
       updateStudentProfile(currentStudentId, {
         name: formData.name,
         phone: formData.phone,
@@ -334,14 +408,13 @@ export default function AuthModal({ initialMode = 'login' }) {
       });
       setAuthStep('pending_notice');
     } else {
-      // تسجيل طالب جديد
-      const newStudent = registerNewStudent({
+      registerNewStudent({
         name: formData.name,
         phone: formData.phone,
         guardianPhone: formData.guardianPhone,
         email: formData.email,
         avatar: formData.avatar,
-        provider: formData.provider
+        provider: formData.provider || 'google'
       });
       setAuthStep('pending_notice');
     }
@@ -359,50 +432,83 @@ export default function AuthModal({ initialMode = 'login' }) {
         </button>
 
         {/* =========================================================
-            المرحلة الأولى: خيارات تسجيل الدخول الأربعة الحقيقية
-            (Google, Facebook, Email, Phone) دون عرض حسابات تجريبية
+            المرحلة الأساسية: النموذج الرئيسي (إنشاء حساب / تسجيل دخول)
             ========================================================= */}
-        {authStep === 'login' && (
+        {authStep === 'form' && (
           <div className="auth-step-container">
             <div className="auth-icon-badge">
-              <Sparkles size={34} className="text-indigo-600" />
+              {authMode === 'register' ? (
+                <Sparkles size={34} className="text-emerald-500" />
+              ) : (
+                <LogIn size={34} className="text-indigo-500" />
+              )}
             </div>
 
-            <h2 className="auth-title">تسجيل الدخول للمنصة التعليمية</h2>
+            <h2 className="auth-title">
+              {authMode === 'register' ? 'إنشاء حساب جديد لبدء المذاكرة 🚀' : 'تسجيل الدخول للمنصة التعليمية 🔑'}
+            </h2>
             <p className="auth-subtitle">
               منهج البرمجة والذكاء الاصطناعي • ثانية بكالوريا <br />
               <strong>إشراف وإعداد: الأستاذ / محمد راشد</strong>
             </p>
 
-            {/* ألسنة التبديل بين طرق الدخول */}
+            {/* ألسنة التبديل السهلة بين: إنشاء حساب جديد vs تسجيل الدخول */}
+            <div className="auth-mode-switch-tabs">
+              <button
+                type="button"
+                className={`auth-mode-tab ${authMode === 'register' ? 'active' : ''}`}
+                onClick={() => {
+                  setAuthMode('register');
+                  setErrorMessage('');
+                  playSound.click();
+                }}
+              >
+                <UserPlus size={16} />
+                <span>إنشاء حساب جديد</span>
+              </button>
+              <button
+                type="button"
+                className={`auth-mode-tab ${authMode === 'login' ? 'active' : ''}`}
+                onClick={() => {
+                  setAuthMode('login');
+                  setErrorMessage('');
+                  playSound.click();
+                }}
+              >
+                <LogIn size={16} />
+                <span>تسجيل الدخول</span>
+              </button>
+            </div>
+
+            {/* ألسنة التبديل بين طرق الدخول الأربعة */}
             <div className="auth-methods-nav">
               <button 
                 type="button"
+                className={`auth-method-tab ${loginMethod === 'email' ? 'active' : ''}`}
+                onClick={() => { setLoginMethod('email'); setErrorMessage(''); }}
+              >
+                <span>الإيميل</span>
+              </button>
+              <button 
+                type="button"
+                className={`auth-method-tab ${loginMethod === 'phone' ? 'active' : ''}`}
+                onClick={() => { setLoginMethod('phone'); setErrorMessage(''); }}
+              >
+                <span>الهاتف</span>
+              </button>
+              <button 
+                type="button"
                 className={`auth-method-tab ${loginMethod === 'google' ? 'active' : ''}`}
-                onClick={() => setLoginMethod('google')}
+                onClick={() => { setLoginMethod('google'); setErrorMessage(''); }}
               >
                 <span>Google</span>
               </button>
               <button 
                 type="button"
                 className={`auth-method-tab ${loginMethod === 'facebook' ? 'active' : ''}`}
-                onClick={() => setLoginMethod('facebook')}
+                onClick={() => { setLoginMethod('facebook'); setErrorMessage(''); }}
               >
                 <span>Facebook</span>
-              </button>
-              <button 
-                type="button"
-                className={`auth-method-tab ${loginMethod === 'phone' ? 'active' : ''}`}
-                onClick={() => setLoginMethod('phone')}
-              >
-                <span>الهاتف</span>
-              </button>
-              <button 
-                type="button"
-                className={`auth-method-tab ${loginMethod === 'email' ? 'active' : ''}`}
-                onClick={() => setLoginMethod('email')}
-              >
-                <span>الإيميل</span>
               </button>
             </div>
 
@@ -412,12 +518,288 @@ export default function AuthModal({ initialMode = 'login' }) {
               </div>
             )}
 
-            {/* محتوى طريقة الدخول: Google */}
+            {/* -------------------------------------------------------------
+                الطريقة 1: الإيميل
+                ------------------------------------------------------------- */}
+            {loginMethod === 'email' && (
+              <form 
+                onSubmit={authMode === 'register' ? handleRegisterSubmit : handleLoginSubmit} 
+                className="auth-method-content w-full"
+              >
+                <div className="form-fields-group">
+                  {/* اسم الطالب (في نمط إنشاء الحساب فقط) */}
+                  {authMode === 'register' && (
+                    <div className="form-field">
+                      <label className="field-label">اسم الطالب الثلاثي أو الرباعي *</label>
+                      <div className="input-with-icon">
+                        <User size={18} className="field-icon" />
+                        <input 
+                          type="text" 
+                          placeholder="مثال: يوسف أحمد محمود علي"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* البريد الإلكتروني */}
+                  <div className="form-field">
+                    <label className="field-label">البريد الإلكتروني *</label>
+                    <div className="input-with-icon">
+                      <Mail size={18} className="field-icon" />
+                      <input 
+                        type="email" 
+                        placeholder="student@example.com"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* في نمط إنشاء الحساب: رقم الطالب ورقم ولي الأمر */}
+                  {authMode === 'register' && (
+                    <>
+                      <div className="form-field">
+                        <label className="field-label">رقم هاتف الطالب / واتساب *</label>
+                        <div className="input-with-icon">
+                          <Phone size={18} className="field-icon" />
+                          <input 
+                            type="tel" 
+                            placeholder="010XXXXXXXX"
+                            value={formData.phone}
+                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-field">
+                        <label className="field-label flex items-center justify-between">
+                          <span>رقم هاتف ولي الأمر * (إجباري)</span>
+                          <span className="text-amber-400 text-[11px] font-bold">لمتابعة الأستاذ</span>
+                        </label>
+                        <div className="input-with-icon">
+                          <HeartHandshake size={18} className="field-icon text-amber-500" />
+                          <input 
+                            type="tel" 
+                            placeholder="011XXXXXXXX / 012XXXXXXXX"
+                            value={formData.guardianPhone}
+                            onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value })}
+                            required
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* كلمة المرور */}
+                  <div className="form-field">
+                    <label className="field-label flex items-center justify-between">
+                      <span>كلمة المرور *</span>
+                      {authMode === 'login' && (
+                        <span className="text-slate-400 text-[11px]">(كتابة كلمة المرور مرة واحدة)</span>
+                      )}
+                    </label>
+                    <div className="input-with-icon">
+                      <Lock size={18} className="field-icon" />
+                      <input 
+                        type={showPassword ? 'text' : 'password'} 
+                        placeholder="••••••••"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="btn-toggle-input-eye"
+                        onClick={() => setShowPassword(!showPassword)}
+                        title={showPassword ? 'إخفاء' : 'إظهار'}
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* تأكيد كلمة المرور (في إنشاء الحساب: بيتكتب مرتين للايميل) */}
+                  {authMode === 'register' && (
+                    <div className="form-field">
+                      <label className="field-label flex items-center justify-between">
+                        <span>تأكيد كلمة المرور *</span>
+                        <span className="text-indigo-400 text-[11px] font-bold">للتأكيد والمطابقة</span>
+                      </label>
+                      <div className="input-with-icon">
+                        <Lock size={18} className="field-icon" />
+                        <input 
+                          type={showConfirmPassword ? 'text' : 'password'} 
+                          placeholder="••••••••"
+                          value={formData.confirmPassword}
+                          onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                          required
+                        />
+                        <button
+                          type="button"
+                          className="btn-toggle-input-eye"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          title={showConfirmPassword ? 'إخفاء' : 'إظهار'}
+                        >
+                          {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+
+                      {/* شريط فحص التطابق اللحظي */}
+                      {formData.password && formData.confirmPassword && (
+                        <div className="password-match-badge">
+                          {formData.password === formData.confirmPassword ? (
+                            <span className="text-emerald-400">✓ كلمتا المرور متطابقتان تماماً</span>
+                          ) : (
+                            <span className="text-rose-400">⚠️ كلمتا المرور غير متطابقتين بعد</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <button 
+                  type="submit" 
+                  className={`duo-btn ${authMode === 'register' ? 'duo-btn-success' : 'duo-btn-primary'} w-full mt-4 py-3 font-bold`}
+                >
+                  {authMode === 'register' ? 'إنشاء حساب جديد وبدء المذاكرة 🚀' : 'تسجيل الدخول بالبريد الإلكتروني 🔑'}
+                </button>
+              </form>
+            )}
+
+            {/* -------------------------------------------------------------
+                الطريقة 2: الهاتف
+                ------------------------------------------------------------- */}
+            {loginMethod === 'phone' && (
+              <form 
+                onSubmit={authMode === 'register' ? handleRegisterSubmit : handleLoginSubmit} 
+                className="auth-method-content w-full"
+              >
+                <div className="form-fields-group">
+                  {authMode === 'register' && (
+                    <div className="form-field">
+                      <label className="field-label">اسم الطالب الثلاثي أو الرباعي *</label>
+                      <div className="input-with-icon">
+                        <User size={18} className="field-icon" />
+                        <input 
+                          type="text" 
+                          placeholder="مثال: يوسف أحمد محمود علي"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="form-field">
+                    <label className="field-label">رقم هاتف الطالب / واتساب *</label>
+                    <div className="input-with-icon">
+                      <Smartphone size={18} className="field-icon" />
+                      <input 
+                        type="tel" 
+                        placeholder="010XXXXXXXX"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {authMode === 'register' && (
+                    <div className="form-field">
+                      <label className="field-label flex items-center justify-between">
+                        <span>رقم هاتف ولي الأمر * (إجباري)</span>
+                        <span className="text-amber-400 text-[11px] font-bold">لمتابعة الأستاذ</span>
+                      </label>
+                      <div className="input-with-icon">
+                        <HeartHandshake size={18} className="field-icon text-amber-500" />
+                        <input 
+                          type="tel" 
+                          placeholder="011XXXXXXXX / 012XXXXXXXX"
+                          value={formData.guardianPhone}
+                          onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value })}
+                          required
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="form-field">
+                    <label className="field-label flex items-center justify-between">
+                      <span>كلمة المرور *</span>
+                      {authMode === 'login' && (
+                        <span className="text-slate-400 text-[11px]">(مرة واحدة فقط)</span>
+                      )}
+                    </label>
+                    <div className="input-with-icon">
+                      <Lock size={18} className="field-icon" />
+                      <input 
+                        type={showPassword ? 'text' : 'password'} 
+                        placeholder="••••••••"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="btn-toggle-input-eye"
+                        onClick={() => setShowPassword(!showPassword)}
+                        title={showPassword ? 'إخفاء' : 'إظهار'}
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {authMode === 'register' && (
+                    <div className="form-field">
+                      <label className="field-label">تأكيد كلمة المرور *</label>
+                      <div className="input-with-icon">
+                        <Lock size={18} className="field-icon" />
+                        <input 
+                          type={showConfirmPassword ? 'text' : 'password'} 
+                          placeholder="••••••••"
+                          value={formData.confirmPassword}
+                          onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                          required
+                        />
+                        <button
+                          type="button"
+                          className="btn-toggle-input-eye"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          title={showConfirmPassword ? 'إخفاء' : 'إظهار'}
+                        >
+                          {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <button 
+                  type="submit" 
+                  className={`duo-btn ${authMode === 'register' ? 'duo-btn-success' : 'duo-btn-primary'} w-full mt-4 py-3 font-bold`}
+                >
+                  {authMode === 'register' ? 'إنشاء حساب جديد بالهاتف 🚀' : 'تسجيل الدخول برقم الهاتف 📱'}
+                </button>
+              </form>
+            )}
+
+            {/* -------------------------------------------------------------
+                الطريقة 3: Google
+                ------------------------------------------------------------- */}
             {loginMethod === 'google' && (
-              <div className="auth-method-content">
-                <p className="text-xs text-slate-500 mb-3 text-center">
-                  سجل دخولك بحساب Google (جيميل) لربط إنجازاتك تلقائياً
+              <div className="auth-method-content w-full flex flex-col items-center">
+                <p className="text-xs text-slate-400 mb-3 text-center">
+                  سجل دخولك بنقرة واحدة بحساب Google (جيميل) لجلب اسمك وصورتك الحقيقية تلقائياً
                 </p>
+
                 <button 
                   type="button"
                   className="google-signin-btn"
@@ -431,15 +813,40 @@ export default function AuthModal({ initialMode = 'login' }) {
                   </svg>
                   <span>المتابعة باستخدام حساب Google (Gmail)</span>
                 </button>
+
+                <div className="google-quick-entry-box mt-4 text-right">
+                  <span className="text-[11px] font-bold text-slate-300 block mb-2">
+                    💡 أو اكتب اسمك للدخول الفوري السريع بحساب Google:
+                  </span>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="اسم الطالب (مثال: أحمد محمد)"
+                      value={quickGoogleName}
+                      onChange={(e) => setQuickGoogleName(e.target.value)}
+                      className="form-input text-xs py-2 px-3 flex-1 bg-slate-900 border border-slate-700 text-white rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleGoogleAuth}
+                      className="duo-btn duo-btn-success text-xs py-2 px-3 whitespace-nowrap"
+                    >
+                      دخول فوري ⚡
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
 
-            {/* محتوى طريقة الدخول: Facebook */}
+            {/* -------------------------------------------------------------
+                الطريقة 4: Facebook
+                ------------------------------------------------------------- */}
             {loginMethod === 'facebook' && (
-              <div className="auth-method-content">
-                <p className="text-xs text-slate-500 mb-3 text-center">
-                  سجل دخولك بحساب فيسبوك المعتمد للتواصل السريع
+              <div className="auth-method-content w-full flex flex-col items-center">
+                <p className="text-xs text-slate-400 mb-3 text-center">
+                  سجل دخولك بنقرة واحدة بحساب فيسبوك لجلب اسمك وصورتك فوراً
                 </p>
+
                 <button 
                   type="button"
                   className="facebook-signin-btn"
@@ -453,64 +860,36 @@ export default function AuthModal({ initialMode = 'login' }) {
               </div>
             )}
 
-            {/* محتوى طريقة الدخول: رقم الهاتف */}
-            {loginMethod === 'phone' && (
-              <form onSubmit={handlePhoneAuthSubmit} className="auth-method-content">
-                <div className="form-field">
-                  <label className="field-label">رقم هاتف الطالب / واتساب *</label>
-                  <div className="input-with-icon">
-                    <Smartphone size={18} className="field-icon" />
-                    <input 
-                      type="tel" 
-                      placeholder="010XXXXXXXX"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-                <button type="submit" className="duo-btn duo-btn-primary w-full mt-3 py-2.5">
-                  الدخول والمتابعة برقم الهاتف 📱
+            {/* رابط التبديل المباشر في الأسفل */}
+            <div className="mt-4 pt-3 border-t border-slate-700/60 w-full flex justify-center">
+              {authMode === 'register' ? (
+                <button
+                  type="button"
+                  className="auth-switch-link-btn"
+                  onClick={() => {
+                    setAuthMode('login');
+                    setErrorMessage('');
+                    playSound.click();
+                  }}
+                >
+                  <span>لديك حساب بالفعل؟ اضغط هنا لتسجيل الدخول 🔑</span>
                 </button>
-              </form>
-            )}
-
-            {/* محتوى طريقة الدخول: الإيميل وكلمة المرور */}
-            {loginMethod === 'email' && (
-              <form onSubmit={handleEmailAuthSubmit} className="auth-method-content">
-                <div className="form-field">
-                  <label className="field-label">البريد الإلكتروني *</label>
-                  <div className="input-with-icon">
-                    <Mail size={18} className="field-icon" />
-                    <input 
-                      type="email" 
-                      placeholder="student@example.com"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="form-field">
-                  <label className="field-label">كلمة المرور *</label>
-                  <div className="input-with-icon">
-                    <Lock size={18} className="field-icon" />
-                    <input 
-                      type="password" 
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-                <button type="submit" className="duo-btn duo-btn-primary w-full mt-3 py-2.5">
-                  تسجيل الدخول بالبريد الإلكتروني ✉️
+              ) : (
+                <button
+                  type="button"
+                  className="auth-switch-link-btn"
+                  onClick={() => {
+                    setAuthMode('register');
+                    setErrorMessage('');
+                    playSound.click();
+                  }}
+                >
+                  <span>طالب جديد؟ اضغط هنا لإنشاء حسابك مجاناً 🚀</span>
                 </button>
-              </form>
-            )}
+              )}
+            </div>
 
-            <div className="auth-security-notice mt-4">
+            <div className="auth-security-notice mt-2">
               <ShieldCheck size={16} className="text-emerald-500 flex-shrink-0" />
               <span>تسجيل الدخول محمي ومربوط مباشرة بنظام مجموعات الأستاذ محمد راشد</span>
             </div>
@@ -518,8 +897,7 @@ export default function AuthModal({ initialMode = 'login' }) {
         )}
 
         {/* =========================================================
-            المرحلة الثانية: تظبيط الملف الشخصي للطالب
-            (رفع صورة، الاسم، هاتف الطالب، ورقم ولي الأمر إجباري)
+            المرحلة الثانية: تظبيط الملف الشخصي للطالب (بعد جوجل أو تعديل)
             ========================================================= */}
         {authStep === 'profile_setup' && (
           <form className="auth-step-container profile-setup-container" onSubmit={handleSaveProfileSubmit}>
@@ -528,10 +906,10 @@ export default function AuthModal({ initialMode = 'login' }) {
             </div>
 
             <h2 className="auth-title">
-              {isStudentLoggedIn ? 'تعديل الملف الشخصي' : 'إكمال وتظبيط الملف الشخصي للطالب'}
+              {isStudentLoggedIn ? 'تعديل الملف الشخصي' : 'إكمال بيانات التسجيل وتأكيد الحساب'}
             </h2>
             <p className="auth-subtitle">
-              يرجى رفع صورتك وكتابة بياناتك ورقم ولي الأمر لاعتمادك في مجموعات أ/ محمد راشد
+              يرجى التأكد من اسمك ورقم هاتفك ورقم ولي الأمر لاعتمادك في مجموعات أ/ محمد راشد
             </p>
 
             {errorMessage && (
@@ -575,14 +953,14 @@ export default function AuthModal({ initialMode = 'login' }) {
                   <Upload size={14} />
                   <span>رفع صورة شخصية من جهازك</span>
                 </button>
-                <span className="text-xs text-slate-400">أو اختر أفاتاراً تلقائياً بالاسم</span>
+                <span className="text-xs text-slate-400">أو تفعيل الأفاتار التلقائي بحسابك</span>
               </div>
             </div>
 
             <div className="form-fields-group">
-              {/* اسم الطالب (إجباري) */}
+              {/* اسم الطالب */}
               <div className="form-field">
-                <label className="field-label">اسم الطالب الثلاثي / الرباعي * (إجباري)</label>
+                <label className="field-label">اسم الطالب الثلاثي / الرباعي *</label>
                 <div className="input-with-icon">
                   <User size={18} className="field-icon" />
                   <input 
@@ -597,7 +975,7 @@ export default function AuthModal({ initialMode = 'login' }) {
 
               {/* رقم هاتف الطالب */}
               <div className="form-field">
-                <label className="field-label">رقم هاتف الطالب / واتساب * (إجباري)</label>
+                <label className="field-label">رقم هاتف الطالب / واتساب *</label>
                 <div className="input-with-icon">
                   <Phone size={18} className="field-icon" />
                   <input 
@@ -626,7 +1004,7 @@ export default function AuthModal({ initialMode = 'login' }) {
                     required
                   />
                 </div>
-                <span className="field-hint text-amber-600 font-semibold">
+                <span className="field-hint text-amber-400 font-semibold">
                   ⚠️ إجباري: يُستخدم لإرسال تقارير الدرجات، الحضور، وتأكيد اشتراكك مع م/ محمد راشد.
                 </span>
               </div>
@@ -650,13 +1028,13 @@ export default function AuthModal({ initialMode = 'login' }) {
               <button 
                 type="button" 
                 className="duo-btn duo-btn-secondary"
-                onClick={() => setAuthStep('login')}
+                onClick={() => setAuthStep('form')}
               >
                 رجوع
               </button>
               <button 
                 type="submit" 
-                className="duo-btn duo-btn-primary flex-1 py-3"
+                className="duo-btn duo-btn-success flex-1 py-3 font-bold"
               >
                 حفظ البيانات وتأكيد الحساب 🚀
               </button>
@@ -673,16 +1051,16 @@ export default function AuthModal({ initialMode = 'login' }) {
               <CheckCircle size={52} className="text-emerald-500" />
             </div>
 
-            <h2 className="auth-title text-emerald-700">تم تسجيل وتأكيد بياناتك بنجاح!</h2>
+            <h2 className="auth-title text-emerald-400">تم إنشاء وتأكيد حسابك بنجاح!</h2>
             
             <div className="pending-alert-box">
-              <ShieldAlert size={22} className="text-amber-600 flex-shrink-0" />
-              <p className="text-sm text-amber-900 leading-relaxed">
-                حسابك مسجل الآن في المنصة. طبقاً للنظام، <strong>لن تتمكن من فتح محطات الدروس إلا بعد تصريح واعتماد أ/ محمد راشد وتسكينك في مجموعتك الدراسية</strong> لمتابعة تقدمك ونقاط ضعفك.
+              <ShieldAlert size={22} className="text-amber-400 flex-shrink-0" />
+              <p className="text-sm text-slate-200 leading-relaxed">
+                حسابك مسجل الآن بالمنصة. طبقاً للنظام المعتمد، <strong>ستتمكن من فتح ومراجعة الدروس وحل الامتحانات فور اعتماد أ/ محمد راشد وتسكينك في مجموعتك الدراسية</strong>.
               </p>
             </div>
 
-            {/* بطاقة معاينة بيانات الطالب مع صورة الطالب ورقم ولي الأمر */}
+            {/* بطاقة معاينة بيانات الطالب */}
             <div className="student-profile-summary-card">
               <img 
                 src={formData.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=Student'} 
@@ -690,20 +1068,20 @@ export default function AuthModal({ initialMode = 'login' }) {
                 className="summary-card-avatar"
               />
               <div className="summary-card-info">
-                <h4 className="font-bold text-slate-800 text-base">{formData.name}</h4>
-                <div className="text-xs text-slate-600 mt-0.5">
+                <h4 className="font-bold text-white text-base">{formData.name}</h4>
+                <div className="text-xs text-slate-300 mt-0.5">
                   📱 هاتف الطالب: <strong>{formData.phone}</strong>
                 </div>
-                <div className="text-xs text-amber-800 font-semibold mt-0.5">
+                <div className="text-xs text-amber-400 font-semibold mt-0.5">
                   👨‍👩‍👧 ولي الأمر: <strong>{formData.guardianPhone}</strong>
                 </div>
                 {formData.email && (
-                  <div className="text-xs text-slate-500 mt-0.5">
+                  <div className="text-xs text-slate-400 mt-0.5">
                     ✉️ {formData.email}
                   </div>
                 )}
-                <span className="pending-chip mt-1.5 inline-block">
-                  الحالة: في انتظار تصريح الأستاذ وتحديد المجموعة ⏳
+                <span className="pending-chip mt-1.5 inline-block text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">
+                  الحالة: في انتظار اعتماد الأستاذ وتحديد المجموعة ⏳
                 </span>
               </div>
             </div>

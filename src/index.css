@@ -3146,6 +3146,103 @@ input:checked + .slider-purple {
   line-height: 1.5;
 }
 
+/* التبديل بين إنشاء حساب جديد وتسجيل الدخول */
+.auth-mode-switch-tabs {
+  display: flex;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 4px;
+  gap: 4px;
+  width: 100%;
+  margin: 6px 0 10px 0;
+}
+
+.auth-mode-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-family: var(--font-arabic);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.auth-mode-tab:hover {
+  color: #ffffff;
+}
+
+.auth-mode-tab.active {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+}
+
+.auth-switch-link-btn {
+  background: transparent;
+  border: none;
+  color: #818cf8;
+  font-family: var(--font-arabic);
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: all 0.15s ease;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.auth-switch-link-btn:hover {
+  color: #a5b4fc;
+}
+
+.input-with-icon .btn-toggle-input-eye {
+  position: absolute;
+  left: 12px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color 0.15s ease;
+}
+
+.input-with-icon .btn-toggle-input-eye:hover {
+  color: #818cf8;
+}
+
+.password-match-badge {
+  font-size: 0.76rem;
+  font-weight: 800;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.google-quick-entry-box {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px dashed rgba(99, 102, 241, 0.35);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  width: 100%;
+  margin-top: 10px;
+}
+
 .google-signin-btn {
   background: #ffffff;
   color: #1e293b;

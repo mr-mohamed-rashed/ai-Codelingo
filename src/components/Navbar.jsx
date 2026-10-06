@@ -30,7 +30,7 @@ export const Navbar = () => {
     } else if (isStudentLoggedIn) {
       logoutStudent();
     } else {
-      setActiveModal('auth');
+      setActiveModal('auth_login');
     }
   };
 

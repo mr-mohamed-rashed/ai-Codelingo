@@ -179,20 +179,34 @@ function MainAppContent() {
                 }
               </p>
 
-              {/* زر الإجراء الرئيسي الواضح والوحيد (دون تكرار) */}
-              <div className="home-hero-cta-group">
+              {/* زرا الإجراء: إنشاء حساب جديد وبدء المذاكرة أو تسجيل الدخول */}
+              <div className="home-hero-cta-group flex flex-wrap items-center gap-3">
                 {!isStudentLoggedIn ? (
-                  <button 
-                    className="duo-btn duo-btn-primary home-cta-primary-btn"
-                    onClick={() => {
-                      playSound.click();
-                      setActiveModal('auth');
-                    }}
-                    id="btn-login-start"
-                  >
-                    <LogIn size={20} />
-                    <span>{lang === 'ar' ? 'تسجيل الدخول لبدء المذاكرة 🔐' : 'Sign in to Start Learning 🔐'}</span>
-                  </button>
+                  <>
+                    <button 
+                      className="duo-btn duo-btn-success home-cta-primary-btn"
+                      onClick={() => {
+                        playSound.click();
+                        setActiveModal('auth_register');
+                      }}
+                      id="btn-create-account-start"
+                    >
+                      <Sparkles size={20} />
+                      <span>{lang === 'ar' ? 'إنشاء حساب لبدء المذاكرة 🚀' : 'Create Account to Start 🚀'}</span>
+                    </button>
+
+                    <button 
+                      className="duo-btn duo-btn-secondary home-cta-secondary-btn py-3 px-5 text-sm font-bold flex items-center gap-2"
+                      onClick={() => {
+                        playSound.click();
+                        setActiveModal('auth_login');
+                      }}
+                      id="btn-login-existing"
+                    >
+                      <LogIn size={18} />
+                      <span>{lang === 'ar' ? 'تسجيل الدخول 🔑' : 'Sign In 🔑'}</span>
+                    </button>
+                  </>
                 ) : (
                   <div className="home-student-portal-row">
                     <button 
@@ -332,8 +346,16 @@ function MainAppContent() {
         {activeModal === 'lesson' && <MicroLessonModal />}
         {activeModal === 'ai_tutor' && <AITutorModal />}
         {activeModal === 'quiz' && <QuizEngine />}
-        {(activeModal === 'auth' || activeModal === 'profile') && (
-          <AuthModal initialMode={activeModal === 'profile' ? 'profile' : 'login'} />
+        {(activeModal === 'auth' || activeModal === 'profile' || activeModal === 'auth_register' || activeModal === 'auth_login') && (
+          <AuthModal 
+            initialMode={
+              activeModal === 'profile' 
+                ? 'profile' 
+                : activeModal === 'auth_login' 
+                  ? 'login' 
+                  : 'register'
+            } 
+          />
         )}
         {activeModal === 'approval_notice' && <ApprovalNoticeModal />}
         {activeModal === 'teacher_login' && <TeacherLoginModal />}
