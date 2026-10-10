@@ -121,7 +121,7 @@ export const LeaderboardPodium = () => {
                   <span>🥈</span>
                 </div>
               </div>
-              <h4 className="podium-student-name">{secondPlace.name}</h4>
+              <h3 className="podium-student-name">{secondPlace.name}</h3>
               <span className="podium-group-tag" style={{ color: secondPlace.groupColor }}>
                 {secondPlace.groupName}
               </span>
@@ -145,7 +145,7 @@ export const LeaderboardPodium = () => {
               <div className="podium-avatar-wrap silver-glow">
                 <div className="podium-avatar empty-avatar-box">🥈</div>
               </div>
-              <h4 className="podium-student-name empty-name">{lang === 'en' ? 'Available' : 'متاح للتنافس'}</h4>
+              <h3 className="podium-student-name empty-name">{lang === 'en' ? 'Available' : 'متاح للتنافس'}</h3>
               <span className="podium-group-tag empty-tag">{lang === 'en' ? 'Rank 2' : 'المركز الثاني'}</span>
             </div>
             <div className="podium-pillar pillar-silver">
@@ -168,7 +168,7 @@ export const LeaderboardPodium = () => {
                   <span>🥇</span>
                 </div>
               </div>
-              <h4 className="podium-student-name champion-name">{firstPlace.name}</h4>
+              <h3 className="podium-student-name champion-name">{firstPlace.name}</h3>
               <span className="podium-group-tag" style={{ color: firstPlace.groupColor }}>
                 {firstPlace.groupName}
               </span>
@@ -198,7 +198,7 @@ export const LeaderboardPodium = () => {
               <div className="podium-avatar-wrap gold-glow">
                 <div className="podium-avatar champion-avatar empty-avatar-box">🥇</div>
               </div>
-              <h4 className="podium-student-name champion-name empty-name">{lang === 'en' ? 'Top Spot' : 'قمة المدرج'}</h4>
+              <h3 className="podium-student-name champion-name empty-name">{lang === 'en' ? 'Top Spot' : 'قمة المدرج'}</h3>
               <span className="podium-group-tag empty-tag">{lang === 'en' ? 'Rank 1' : 'المركز الأول'}</span>
             </div>
             <div className="podium-pillar pillar-gold">
@@ -218,7 +218,7 @@ export const LeaderboardPodium = () => {
                   <span>🥉</span>
                 </div>
               </div>
-              <h4 className="podium-student-name">{thirdPlace.name}</h4>
+              <h3 className="podium-student-name">{thirdPlace.name}</h3>
               <span className="podium-group-tag" style={{ color: thirdPlace.groupColor }}>
                 {thirdPlace.groupName}
               </span>
@@ -242,7 +242,7 @@ export const LeaderboardPodium = () => {
               <div className="podium-avatar-wrap bronze-glow">
                 <div className="podium-avatar empty-avatar-box">🥉</div>
               </div>
-              <h4 className="podium-student-name empty-name">{lang === 'en' ? 'Available' : 'متاح للتنافس'}</h4>
+              <h3 className="podium-student-name empty-name">{lang === 'en' ? 'Available' : 'متاح للتنافس'}</h3>
               <span className="podium-group-tag empty-tag">{lang === 'en' ? 'Rank 3' : 'المركز الثالث'}</span>
             </div>
             <div className="podium-pillar pillar-bronze">

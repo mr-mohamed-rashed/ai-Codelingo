@@ -62,7 +62,7 @@ export const Navbar = () => {
           </picture>
         </div>
         <div className="brand-title-wrap">
-          <h1>{t('appTitle')}</h1>
+          <div className="brand-title-heading">{t('appTitle')}</div>
           <span className="brand-subtitle">{t('appSubtitle')}</span>
         </div>
       </div>

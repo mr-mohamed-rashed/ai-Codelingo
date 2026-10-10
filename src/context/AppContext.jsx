@@ -101,7 +101,7 @@ export const INITIAL_STUDENTS = [
 export const AppProvider = ({ children }) => {
   // Theme state: 'light' | 'dark' (المود الأساسي هو اللايت Light)
   const [theme, setTheme] = useState(() => {
-    const userChoice = localStorage.getItem('codelingo_theme_user_choice') || localStorage.getItem('agy_theme_user_choice');
+    const userChoice = localStorage.getItem('codelingo_theme_user_choice');
     if (userChoice === 'dark' || userChoice === 'light') {
       return userChoice;
     }
@@ -110,7 +110,7 @@ export const AppProvider = ({ children }) => {
 
   // Language state: 'ar' | 'en' (اللغة الأساسية هي العربية Arabic)
   const [lang, setLang] = useState(() => {
-    const userChoice = localStorage.getItem('codelingo_lang_user_choice') || localStorage.getItem('agy_lang_user_choice');
+    const userChoice = localStorage.getItem('codelingo_lang_user_choice');
     if (userChoice === 'ar' || userChoice === 'en') {
       return userChoice;
     }
@@ -197,11 +197,8 @@ export const AppProvider = ({ children }) => {
   // حفظ واسترجاع بيانات الطلاب من التخزين المحلي (نسخة نظيفة خالية من الحسابات الوهمية)
   const [students, setStudents] = useState(() => {
     try {
-      localStorage.removeItem('agy_students_list_v3');
-      localStorage.removeItem('agy_students_list_v2');
-      localStorage.removeItem('agy_students_list');
 
-      const saved = localStorage.getItem('codelingo_students_clean_v1') || localStorage.getItem('agy_students_clean_v1');
+      const saved = localStorage.getItem('codelingo_students_clean_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
@@ -237,8 +234,7 @@ export const AppProvider = ({ children }) => {
   // حفظ واسترجاع بيانات المجموعات الدراسية
   const [groups, setGroups] = useState(() => {
     try {
-      localStorage.removeItem('agy_groups_list_v3');
-      const saved = localStorage.getItem('codelingo_groups_clean_v1') || localStorage.getItem('agy_groups_clean_v1');
+      const saved = localStorage.getItem('codelingo_groups_clean_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -258,10 +254,9 @@ export const AppProvider = ({ children }) => {
 
   // الطالب الحالي المسجل دخوله
   const [currentStudentId, setCurrentStudentId] = useState(() => {
-    const savedId = localStorage.getItem('codelingo_current_student_id') || localStorage.getItem('agy_current_student_id');
+    const savedId = localStorage.getItem('codelingo_current_student_id');
     if (savedId && String(savedId).startsWith('std-00')) {
       localStorage.removeItem('codelingo_current_student_id');
-      localStorage.removeItem('agy_current_student_id');
       return null;
     }
     return savedId || null;
@@ -269,7 +264,7 @@ export const AppProvider = ({ children }) => {
 
   // الصفحة المعروضة الحالية: 'home' (الرئيسية ومدرج الأوائل) أو 'content' (صفحة المحتوى ومسار التعلم)
   const [currentPage, setCurrentPage] = useState(() => {
-    return localStorage.getItem('codelingo_current_page') || localStorage.getItem('agy_current_page') || 'home';
+    return localStorage.getItem('codelingo_current_page') || 'home';
   });
 
   useEffect(() => {
@@ -281,7 +276,6 @@ export const AppProvider = ({ children }) => {
     playSound.click();
     setCurrentStudentId(null);
     localStorage.removeItem('codelingo_current_student_id');
-    localStorage.removeItem('agy_current_student_id');
     setCurrentPage('home');
   };
 
@@ -291,7 +285,7 @@ export const AppProvider = ({ children }) => {
   // إدارة حسابات المشرفين والأدمن
   const [admins, setAdmins] = useState(() => {
     try {
-      const saved = localStorage.getItem('codelingo_admin_accounts') || localStorage.getItem('agy_admin_accounts');
+      const saved = localStorage.getItem('codelingo_admin_accounts');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -311,7 +305,7 @@ export const AppProvider = ({ children }) => {
   // المشرف / الأدمن الحالي المسجل دخوله
   const [currentAdmin, setCurrentAdmin] = useState(() => {
     try {
-      const saved = localStorage.getItem('codelingo_current_admin') || localStorage.getItem('agy_current_admin');
+      const saved = localStorage.getItem('codelingo_current_admin');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
     return null;
@@ -328,7 +322,6 @@ export const AppProvider = ({ children }) => {
       localStorage.setItem('codelingo_current_admin', JSON.stringify(currentAdmin));
     } else {
       localStorage.removeItem('codelingo_current_admin');
-      localStorage.removeItem('agy_current_admin');
     }
   }, [currentAdmin]);
 
@@ -363,7 +356,6 @@ export const AppProvider = ({ children }) => {
     setCurrentAdmin(null);
     setIsTeacherMode(false);
     localStorage.removeItem('codelingo_current_admin');
-    localStorage.removeItem('agy_current_admin');
   };
 
   // إضافة حساب أدمن جديد (خاص بالسوبر أدمن الماستر فقط)
@@ -421,7 +413,6 @@ export const AppProvider = ({ children }) => {
       localStorage.setItem('codelingo_current_student_id', currentStudentId);
     } else {
       localStorage.removeItem('codelingo_current_student_id');
-      localStorage.removeItem('agy_current_student_id');
     }
   }, [currentStudentId]);
 
@@ -835,7 +826,6 @@ export const AppProvider = ({ children }) => {
     if (currentStudentId === studentId) {
       setCurrentStudentId(null);
       localStorage.removeItem('codelingo_current_student_id');
-      localStorage.removeItem('agy_current_student_id');
     }
 
     playSound.wrong();

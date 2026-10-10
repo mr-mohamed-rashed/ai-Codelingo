@@ -207,7 +207,8 @@ body {
   display: block;
 }
 
-.brand-title-wrap h1 {
+.brand-title-wrap h1,
+.brand-title-heading {
   font-size: 1.05rem;
   font-weight: 900;
   color: #fff;
@@ -6309,14 +6310,53 @@ html[data-theme='light'] .app-navbar {
   border-bottom: 1.5px solid rgba(0, 0, 0, 0.08);
 }
 
-html[data-theme='light'] .brand-title-wrap h1 {
+html[data-theme='light'] .brand-title-wrap h1,
+html[data-theme='light'] .brand-title-heading,
+body.theme-light .brand-title-wrap h1,
+body.theme-light .brand-title-heading {
   color: #0f172a;
 }
 
-html[data-theme='light'] .hud-stat-chip {
+html[data-theme='light'] .hud-stat-chip,
+body.theme-light .hud-stat-chip {
   background: #ffffff;
-  border-color: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.12);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme='light'] .hud-stat-chip.stat-streak,
+body.theme-light .hud-stat-chip.stat-streak {
+  color: #c2410c !important;
+  background: #fff7ed !important;
+  border-color: rgba(194, 65, 12, 0.35) !important;
+}
+
+html[data-theme='light'] .hud-stat-chip.stat-trophies,
+body.theme-light .hud-stat-chip.stat-trophies,
+html[data-theme='light'] .hud-stat-chip.stat-stars,
+body.theme-light .hud-stat-chip.stat-stars {
+  color: #b45309 !important;
+  background: #fffbeb !important;
+  border-color: rgba(180, 83, 9, 0.35) !important;
+}
+
+html[data-theme='light'] .hud-stat-chip.stat-xp,
+body.theme-light .hud-stat-chip.stat-xp {
+  color: #3730a3 !important;
+  background: #eef2ff !important;
+  border-color: rgba(55, 48, 163, 0.35) !important;
+}
+
+html[data-theme='light'] .nav-main-pages-links,
+body.theme-light .nav-main-pages-links {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+html[data-theme='light'] .nav-page-tab-btn,
+body.theme-light .nav-page-tab-btn {
+  color: #0f172a !important;
+  font-weight: 700;
 }
 
 html[data-theme='light'] .nav-utilities-capsule {

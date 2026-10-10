@@ -181,7 +181,7 @@ export default function AuthModal({ initialMode = 'register' }) {
     }
 
     // 2. استخدام Google Client ID المباشر مع تحميل سكربت Google GIS عند الطلب فقط
-    const googleClientId = import.meta.env?.VITE_GOOGLE_CLIENT_ID || localStorage.getItem('codelingo_google_client_id') || localStorage.getItem('agy_google_client_id');
+    const googleClientId = import.meta.env?.VITE_GOOGLE_CLIENT_ID || localStorage.getItem('codelingo_google_client_id');
     if (googleClientId) {
       if (!window.google?.accounts?.oauth2) {
         await loadScriptAsync('https://accounts.google.com/gsi/client');
@@ -250,7 +250,7 @@ export default function AuthModal({ initialMode = 'register' }) {
       }
     }
 
-    const fbAppId = import.meta.env?.VITE_FACEBOOK_APP_ID || localStorage.getItem('codelingo_fb_app_id') || localStorage.getItem('agy_fb_app_id');
+    const fbAppId = import.meta.env?.VITE_FACEBOOK_APP_ID || localStorage.getItem('codelingo_fb_app_id');
     if (fbAppId) {
       if (!window.FB) {
         await loadScriptAsync('https://connect.facebook.net/ar_AR/sdk.js');
