@@ -226,9 +226,13 @@ function MainAppContent() {
 
                       <div className="student-card-welcome-row">
                         <img 
-                          src={currentStudent?.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=Student'} 
-                          alt={currentStudent?.name} 
+                          src={currentStudent?.avatar || './student-avatar.svg'} 
+                          alt={currentStudent?.name || 'صورة الطالب'} 
                           className="student-card-avatar" 
+                          width="56"
+                          height="56"
+                          loading="lazy"
+                          decoding="async"
                         />
                         <div className="student-card-greeting-info">
                           <span className="student-card-title">

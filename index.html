@@ -136,16 +136,19 @@
     }
     </script>
 
-    <!-- Resource Preconnects & DNS Prefetch for High Performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="dns-prefetch" href="https://api.dicebear.com" />
+    <!-- Resource Preconnects for High Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://api.dicebear.com" crossorigin>
+
+    <!-- Preload Critical LCP Avatar Image -->
+    <link rel="preload" as="image" href="./teacher-avatar.svg" type="image/svg+xml">
 
     <!-- Google Fonts Optimized Non-blocking Loading (Zero Render-Blocking) -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'">
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&display=swap" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&display=swap">
     </noscript>
   </head>
   <body>

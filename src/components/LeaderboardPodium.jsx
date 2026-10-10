@@ -116,7 +116,15 @@ export const LeaderboardPodium = () => {
           <div className="podium-slot rank-silver">
             <div className="podium-student-card">
               <div className="podium-avatar-wrap silver-glow">
-                <img src={secondPlace.avatar} alt={secondPlace.name} className="podium-avatar" />
+                <img 
+                  src={secondPlace.avatar} 
+                  alt={secondPlace.name} 
+                  className="podium-avatar" 
+                  width="80" 
+                  height="80" 
+                  loading="eager" 
+                  decoding="async" 
+                />
                 <div className="podium-medal-badge silver-medal">
                   <span>🥈</span>
                 </div>
@@ -163,7 +171,16 @@ export const LeaderboardPodium = () => {
             </div>
             <div className="podium-student-card champion-card">
               <div className="podium-avatar-wrap gold-glow">
-                <img src={firstPlace.avatar} alt={firstPlace.name} className="podium-avatar champion-avatar" />
+                <img 
+                  src={firstPlace.avatar} 
+                  alt={firstPlace.name} 
+                  className="podium-avatar champion-avatar" 
+                  width="90" 
+                  height="90" 
+                  loading="eager" 
+                  decoding="async" 
+                  fetchPriority="high"
+                />
                 <div className="podium-medal-badge gold-medal">
                   <span>🥇</span>
                 </div>
@@ -213,7 +230,15 @@ export const LeaderboardPodium = () => {
           <div className="podium-slot rank-bronze">
             <div className="podium-student-card">
               <div className="podium-avatar-wrap bronze-glow">
-                <img src={thirdPlace.avatar} alt={thirdPlace.name} className="podium-avatar" />
+                <img 
+                  src={thirdPlace.avatar} 
+                  alt={thirdPlace.name} 
+                  className="podium-avatar" 
+                  width="80" 
+                  height="80" 
+                  loading="eager" 
+                  decoding="async" 
+                />
                 <div className="podium-medal-badge bronze-medal">
                   <span>🥉</span>
                 </div>

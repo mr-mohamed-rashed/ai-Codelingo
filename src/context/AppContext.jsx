@@ -74,7 +74,7 @@ export const INITIAL_STUDENTS = [
     phone: "01000000777",
     guardianPhone: "01000000778",
     email: "mrrashed0777@gmailc.om",
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=TeacherRashed",
+    avatar: "./teacher-avatar.svg",
     provider: "email",
     password: "risho123man",
     status: "approved",
