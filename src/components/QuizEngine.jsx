@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { playSound, speakArabic, speakEnglish } from '../utils/audioEngine';
-import { CURRICULUM_DATA, CHAPTERS_METADATA } from '../data/curriculumData';
+import { CHAPTERS_METADATA, ALL_CHUNK_IDS } from '../data/curriculumMeta.js';
 
 /**
  * دالة مساعدة لتوليد وجه بديل للسؤال عند الخطأ
@@ -417,11 +417,11 @@ export default function QuizEngine() {
 
   // الانتقال للمرحلة التالية في المنهج بعد النجاح وتحريك المرشد الآلي مع نسبة التهنئة
   const handleGoToNextChunk = () => {
-    const currentIndexInCurriculum = CURRICULUM_DATA.findIndex(c => c.id === activeChunk.id);
-    if (currentIndexInCurriculum !== -1 && currentIndexInCurriculum + 1 < CURRICULUM_DATA.length) {
-      const nextChunk = CURRICULUM_DATA[currentIndexInCurriculum + 1];
+    const currentIndexInCurriculum = ALL_CHUNK_IDS.indexOf(activeChunk.id);
+    if (currentIndexInCurriculum !== -1 && currentIndexInCurriculum + 1 < ALL_CHUNK_IDS.length) {
+      const nextChunkId = ALL_CHUNK_IDS[currentIndexInCurriculum + 1];
       // إغلاق المودال وتحريك المرشد الآلي على الخريطة بتهنئة بالنسبة المئوية والانتقال للمحطة التالية
-      triggerRobotMove(activeChunk.id, nextChunk.id, finalScorePercent);
+      triggerRobotMove(activeChunk.id, nextChunkId, finalScorePercent);
     } else {
       setActiveModal(null);
     }

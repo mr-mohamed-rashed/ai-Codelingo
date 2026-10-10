@@ -1,0 +1,1752 @@
+[
+  {
+    "id": "ch1-l1-c1",
+    "chapter_id": 1,
+    "lesson_id": "1-1",
+    "chunk_index": 1,
+    "chunk_title": "المراحل الخمس التاريخية لتطور الحوسبة",
+    "en_chunk_title": "The 5 Historical Eras of Computing Evolution",
+    "type": "chunk",
+    "icon_emoji": "⏳",
+    "xp_reward": 30,
+    "stars_reward": 1,
+    "summary": "المحطات الخمس الكبرى: من حواسب الصمامات المفرغة الضخمة (ENIAC) إلى ثورة الحواسيب الشخصية والإنترنت والهواتف والحوسبة السحابية.",
+    "audio_narration_text": "مرحباً يا بطل في بداية رحلتنا في هذه المحطة التعليمية! تكنولوجيا المعلومات مرت بخمس محطات تاريخية رئيسية: الأولى في الأربعينيات مع حواسيب الصمامات المفرغة الضخمة مثل حاسوب إينياك للأغراض العسكرية، ثم السبعينيات مع انتشار الحواسيب الشخصية في المنازل، ثم التسعينيات بإتاحة الإنترنت تجارياً وظهور الويب، ثم العقد الأول من الألفية مع ثورة الهواتف الذكية، وأخيراً من العقد الثاني فصاعداً مع الحوسبة السحابية والبيانات الضخمة والذكاء الاصطناعي.",
+    "en_audio_narration_text": "Welcome champion! Information technology evolved through five major historical eras: first, the 1940s brought giant vacuum-tube electronic computers like ENIAC for military and scientific calculations. Second, the 1970s and 80s witnessed the personal computer revolution entering homes and offices. Third, the 1990s introduced commercial internet and the World Wide Web. Fourth, the 2000s ushered in mobile smartphones. And fifth, from 2010 onward, cloud computing and big data transformed IT into on-demand services.",
+    "ai_tutor_prompt": "عاش يا بطل! استوعبت المحطات الخمس لتطور الحوسبة من حاسوب إينياك حتى السحابة الذكية؟ ولا تحب نراجعها بمثال سريع؟",
+    "simplified_explanation": "الكمبيوتر في البداية كان جهازاً ضخماً بحجم غرفة كاملة وبطيئاً جداً، ومع مرور العقود صغر حجمه حتى دخل المنازل، ثم اتصل بالإنترنت، ثم تحول لهاتف ذكي في جيبك، واليوم أصبح عقل حاسوبي سحابي خارق!",
+    "key_terms": [
+      {
+        "term": "حاسوب ENIAC",
+        "en": "ENIAC",
+        "definition": "أول حاسوب إلكتروني رقمي للأغراض العامة في الأربعينيات، اعتمد على الصمامات المفرغة وشغل حجماً كبيراً جداً لأغراض عسكرية وعلمية.",
+        "example": "كان وزنه يبلغ 30 طناً ويستهلك كهرباء تكفي لقرية كاملة!",
+        "examTip": "سؤال متكرر: المكون الأساسي للجيل الأول هو الصمامات المفرغة (Vacuum Tubes)."
+      },
+      {
+        "term": "الحوسبة السحابية",
+        "en": "Cloud Computing",
+        "definition": "تقديم موارد تكنولوجيا المعلومات (الخوادم، التخزين، والمعالجة) كخدمة عبر الإنترنت مع الدفع حسب الاستهلاك.",
+        "example": "تخزين ملفاتك على Google Drive أو تشغيل نماذج الذكاء الاصطناعي دون جهاز باهظ الثمن.",
+        "examTip": "المحطة الخامسة بدأت من العقد الثاني من الألفية فصاعداً ودعمت ثورة البيانات الضخمة."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "جدول المحطات الخمس لتطور تكنولوجيا المعلومات (كتاب الوزارة ص 7):",
+        "points": [
+          "1️⃣ الأربعينيات – الستينيات: ظهور الحواسيب الإلكترونية (ENIAC) والصمامات المفرغة للحسابات العسكرية والعلمية.",
+          "2️⃣ السبعينيات – الثمانينيات: انتشار الحواسب الشخصية (PCs) في المنازل والمكاتب.",
+          "3️⃣ التسعينيات: إتاحة الإنترنت تجارياً وظهور الويب والبريد الإلكتروني والوصول العالمي للمعلومة.",
+          "4️⃣ العقد الأول من الألفية: ظهور الهواتف الذكية والإنترنت المتنقل في كل مكان.",
+          "5️⃣ العقد الثاني فصاعداً: البيانات الضخمة والحوسبة السحابية والذكاء الاصطناعي (IT as a Service)."
+        ]
+      },
+      {
+        "type": "teacherTip",
+        "title": "💡 مفتاح الحفظ السريع الامتحاني:",
+        "text": "احفظها بالترتيب الزمني: إينياك عملاق الأربعينيات ← كمبيوتر شخصي بالسبعينيات ← إنترنت التسعينيات ← هاتف الألفية الذكي ← سحابة وذكاء اصطناعي اليوم!"
+      }
+    ]
+  },
+  {
+    "id": "ch1-l1-c2",
+    "chapter_id": 1,
+    "lesson_id": "1-1",
+    "chunk_index": 2,
+    "chunk_title": "قانون مور وحدود السيليكون الفيزيائية والبدائل",
+    "en_chunk_title": "Moore's Law, Silicon Physical Limits & Alternatives",
+    "type": "chunk",
+    "icon_emoji": "🔬",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "ملاحظة تضاعف الترانزستورات كل سنتين، تحديات النفق الكمومي وتيارات التسرب والحرارة، والحلول بالمعالجة المتوازية وتعدد الأنوية.",
+    "audio_narration_text": "قانون مور هو ملاحظة تجريبية شهيرة لاحظها جوردون مور، وتنص على أن عدد الترانزستورات في الشريحة يتضاعف تقريباً كل عامين. هذا القانون قاد تطور الصناعة لعقود وخفّض الأسعار وزاد السرعة، لكنه اليوم يواجه حدوداً فيزيائية حتمية مثل تيارات التسرب وظاهرة النفق الكمومي وتوليد الحرارة الفائقة. ولذلك لجأت الصناعة إلى تعدد الأنوية والمعالجة المتوازية بدلاً من مجرد زيادة تردد المعالج المنفرد.",
+    "en_audio_narration_text": "Moore's Law is an empirical observation stating that the number of transistors on a microchip doubles approximately every two years. Today, it encounters physical barriers: when transistors shrink to nanometer scales, quantum tunneling occurs, electrical leakage increases, and heat dissipation becomes overwhelming. Engineers solve this using multi-core processors and parallel computing architectures.",
+    "ai_tutor_prompt": "ممتاز يا بطل! فهمت ليه الترانزستور ما نقدرش نصغره إلى ما لا نهاية بسبب حاجز الذرة والحرارة؟ ولا تحب نوضحها أكتر؟",
+    "simplified_explanation": "تخيل أنك ترسم خطوطاً بقلم: كلما كان سن القلم أدق رسمت تفاصيل أكثر، لكن عند الوصول لحجم الذرة، الحبر يبدأ يسيل من تلقاء نفسه! لذلك أصبح الحل وضع عدة عقول (أنوية) تفكر معاً بدلاً من تصغير القلم فقط!",
+    "key_terms": [
+      {
+        "term": "قانون مور",
+        "en": "Moore's Law",
+        "definition": "ملاحظة تجريبية تفيد بأن عدد الترانزستورات في الدائرة المتكاملة يتضاعف تقريباً كل عامين.",
+        "example": "هاتفك الذكي الحالي يحمل مليارات الترانزستورات وأقوى بملايين المرات من حواسيب رحلة أبوللو!",
+        "examTip": "سؤال صح وخطأ: قانون مور هو قانون فيزيائي حتمي ثابت؟ الإجابة خطأ؛ هو ملاحظة وتوجيه تجريبي للصناعة."
+      },
+      {
+        "term": "النفق الكمومي",
+        "en": "Quantum Tunneling",
+        "definition": "ظاهرة في ميكانيكا الكم تجعل الإلكترونات تقفز عبر الحواجز العازلة الدقيقة جداً عند الاقتراب من حجم الذرة.",
+        "example": "تسبب تسرباً للتيار وأخطاء في تشغيل الترانزستور (0 و 1).",
+        "examTip": "أحد التحديات الفيزيائية الرئيسية التي تحد من استمرار تصغير الترانزستور."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "التحديات الفيزيائية الثلاثة لقانون مور (كتاب الوزارة ص 6):",
+        "points": [
+          "⚡ تيارات التسرب (Leakage): تسرب الإلكترونات حتى في حالة إيقاف الترانزستور بسبب دقة النانومتر.",
+          "⚛️ التأثيرات الكمومية (Quantum Tunneling): قفز الإلكترونات عبر الحواجز العازلة دون تحكم.",
+          "🔥 توليد الحرارة الفائقة: الكثافة الهائلة لمليارات الترانزستورات يصعب تبريدها بالوسائل المعتادة."
+        ]
+      },
+      {
+        "type": "concept",
+        "title": "الحلول الهندسية والبدائل التكنولوجية:",
+        "points": [
+          "🧩 تعدد الأنوية (Multi-core): دمج عدة أنوية في الشريحة وتوزيع الأعباء بالتوازي.",
+          "🚀 المعالجات المتخصصة: تصميم رقائق مخصصة للذكاء الاصطناعي (TPU/NPU) والحوسبة السحابية."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch1-l1-c3",
+    "chapter_id": 1,
+    "lesson_id": "1-1",
+    "chunk_index": 3,
+    "chunk_title": "التحولات المجتمعية الخمسة لتكنولوجيا المعلومات",
+    "en_chunk_title": "The 5 Societal Shifts of Information Technology",
+    "type": "chunk",
+    "icon_emoji": "🌐",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "التحولات الخمسة التي أعادت صياغة حياة المجتمع: شبكات التواصل الاجتماعي، التجارة الإلكترونية، العمل عن بُعد، التعلم عبر الإنترنت، والدفع غير النقدي.",
+    "audio_narration_text": "لم تكتفِ تكنولوجيا المعلومات بتطوير أجهزة أسرع؛ بل غيرت أسلوب حياة المجتمع تماماً في خمسة مجالات: شبكات التواصل الاجتماعي لنشر ومشاركة المعلومات، التجارة الإلكترونية لبيع وشراء السلع عبر الحدود، العمل عن بعد الذي وفر مرونة وتجاوز المسافات، التعلم عبر الإنترنت لتحقيق تكافؤ الفرص في المعرفة، والدفع غير النقدي كالنقود الإلكترونية ورموز الاستجابة السريعة كيو آر.",
+    "en_audio_narration_text": "Information technology profoundly revolutionized human society across five fundamental pillars: first, E-Commerce enabling global retail shopping from home. Second, Remote Work allowing collaborative telecommuting across continents. Third, Cashless Digital Payments eliminating physical cash. Fourth, E-Learning providing customized digital instruction. And fifth, Social Networking Services connecting billions of people worldwide.",
+    "ai_tutor_prompt": "عظيم جداً يا بطل! عرفت التحولات الخمسة التي غيرت شكل المجتمع وطريقة تعاملنا مع التعليم والعمل والأموال؟ تحب نبدأ أسئلتها؟",
+    "simplified_explanation": "قبل التكنولوجيا: كنت تضطر للسفر لشراء سلعة، والذهاب للمكتب للعمل، وحمل نقود ورقية ثقيلة. اليوم: بضغطة زر تشتري، وتعمل، وتتعلم، وتدفع أموالك وأنت في بيتك!",
+    "key_terms": [
+      {
+        "term": "شبكات التواصل الاجتماعي",
+        "en": "SNS",
+        "definition": "منصات رقمية تربط المستخدمين فيما بينهم لنشر ومشاركة المعلومات والتفاعل الفوري دون حواجز جغرافية.",
+        "example": "تطبيقات المحادثات والمواقع التفاعلية الإخبارية.",
+        "examTip": "تعريف نصي في كتاب الوزارة ص 12."
+      },
+      {
+        "term": "الدفع غير النقدي",
+        "en": "Cashless Payment",
+        "definition": "إجراء المعاملات المالية دون استخدام النقد الورقي، مثل البطاقات البنكية، والمحافظ الإلكترونية، ورموز QR.",
+        "example": "الدفع عبر فودافون كاش أو إنستاباي أو بطاقة ميزة.",
+        "examTip": "سؤال امتحاني: ميزته توثيق المعاملات وسرعتها؛ ومصدر القلق هو استبعاد غير القادرين تقنياً ومخاطر انقطاع الشبكة."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "التحولات المجتمعية الخمسة (كتاب الوزارة ص 6–7):",
+        "points": [
+          "💬 1. شبكات التواصل (SNS): نشر ومشاركة المعلومات وتجاوز الحواجز الجغرافية.",
+          "🛒 2. التجارة الإلكترونية (E-Commerce): تسوق عالمي، مقارنة أسعار، وخفض تكاليف المتاجر.",
+          "💼 3. العمل عن بُعد (Remote Work): إنجاز المهام من أي موقع، خفض الازدحام، ومرونة الوقت.",
+          "🎓 4. التعلم عبر الإنترنت (Online Learning): تكافؤ الفرص والوصول لمصادر تعليمية ثرية في أي وقت.",
+          "💳 5. الدفع غير النقدي (Cashless Payment): أمان ضد السرقة، سرعة الإجراءات، وتوثيق الإنفاق إلكترونياً."
+        ]
+      },
+      {
+        "type": "teacherTip",
+        "title": "⚠️ تنبيه وزاري على سؤال الامتحان (6 درجات):",
+        "text": "في الامتحان لو سألك عن تحديات المجتمع الرقمي: اذكر الفجوة الرقمية (استبعاد كبار السن أو من لا يملكون أجهزة) ومخاطر الأمن السيبراني وانقطاع الكهرباء والإنترنت!"
+      }
+    ]
+  },
+  {
+    "id": "ch1-l1-c4",
+    "chapter_id": 1,
+    "lesson_id": "1-1",
+    "chunk_index": 4,
+    "chunk_title": "التقنيات الناشئة: القيادة الذاتية، AR/VR، والكمومية",
+    "en_chunk_title": "Emerging Technologies: Autonomous Vehicles, AR/VR & Quantum",
+    "type": "chunk",
+    "icon_emoji": "🚀",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "التقنيات الناشئة المعتمدة بالمنهج: القيادة الذاتية والحوسبة الطرفية (Edge Computing)، الواقع المعزز (AR) والواقع الافتراضي (VR)، والحوسبة الكمومية ومفهوم الكيوبت والتراكب.",
+    "audio_narration_text": "التقنيات الناشئة هي التي تصنع المستقبل اليوم: أولاً، السيارات ذاتية القيادة، والتي تعتمد على الحوسبة الطرفية لمعالجة البيانات فورياً على متن السيارة لتفادي الحوادث دون انتظار السحابة. ثانياً، الواقع المعزز الذي يركب عناصر رقمية فوق عالمنا الحقيقي، مقابل الواقع الافتراضي الذي يغمرك في عالم رقمي ثلاثي الأبعاد بالكامل. ثالثاً، الحوسبة الكمومية التي تعتمد على الكيوبت ومبدأ التراكب الكمومي لتمثيل الصفر والواحد في نفس الوقت، مما يحل معضلات حسابية هائلة تعجز عنها أقوى الحواسيب الخارقة.",
+    "en_audio_narration_text": "Emerging technologies represent the frontier of modern computing: Autonomous vehicles use AI, computer vision, and LiDAR sensors to navigate safely without human drivers. Augmented Reality overlays synthetic digital information onto the real physical world, whereas Virtual Reality immerses users into completely simulated 3D environments. Quantum computing utilizes qubits, superposition, and quantum entanglement to solve calculations that classical computers cannot solve in millennia.",
+    "ai_tutor_prompt": "ممتاز يا عبقري! أتقنت الفارق الجوهري بين الواقع المعزز والواقع الافتراضي، ولماذا تعتمد السيارة ذاتية القيادة على الحوسبة الطرفية؟",
+    "simplified_explanation": "الواقع المعزز AR مثل فلاتر السناب شات (وجهك حقيقي ونظارة رقمية فوقه)، والواقع الافتراضي VR مثل ارتداء خوذة مغلقة تعيش داخل لعبة فضائية! أما السيارة فتفكر بمخها الداخلي (طرفي) لأن الانتظار ثانية واحدة للسحابة قد يسبب حادثاً!",
+    "key_terms": [
+      {
+        "term": "الحوسبة الطرفية",
+        "en": "Edge Computing",
+        "definition": "معالجة البيانات محلياً على متن الجهاز أو المركبة نفسها بالقرب من مصدر البيانات دون انتظار إرسالها للسحابة لتقليل زمن التأخير وحفظ السلامة.",
+        "example": "كمبيوتر السيارة ذاتية القيادة يفرمل فوراً عند ظهور عائق في أجزاء من الثانية.",
+        "examTip": "سؤال وزاري: لماذا تعتمد السيارات ذاتية القيادة على الحوسبة الطرفية؟ الإجابة: لأن التأخير يمس السلامة ويجب اتخاذ القرار محلياً فوراً."
+      },
+      {
+        "term": "الكيوبت والتراكب الكمومي",
+        "en": "Qubit & Superposition",
+        "definition": "وحدة الحوسبة الكمومية التي تمثل حالتي (0 و 1) معاً في آن واحد بفضل التراكب الكمومي، على عكس البت الكلاسيكي الذي يحمل حالة واحدة فقط.",
+        "example": "تتيح للحاسوب الكمي استكشاف ملايين الاحتمالات بالتوازي في ثوانٍ.",
+        "examTip": "البت الكلاسيكي يحمل 0 أو 1؛ بينما الكيوبت Qubit يحمل الحالتين معاً في تراكب كمومي."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "التقنيات الناشئة الثلاث المعتمدة بنص كتاب الوزارة (ص 8):",
+        "points": [
+          "🚗 1. القيادة الذاتية والحوسبة الطرفية: مستشعرات وذكاء اصطناعي يتخذ القرار على متن المركبة لحماية الأرواح وتفادي بطء السحابة.",
+          "🥽 2. الواقع المعزز (AR) مقابل الافتراضي (VR): الـ AR يدمج الرقمي بالواقع الحقيقي • الـ VR يعزلك داخل عالم افتراضي بالكامل.",
+          "⚛️ 3. الحوسبة الكمومية (Quantum): تعتمد على مبادئ ميكانيكا الكم والكيوبت لمعالجة أعقد العمليات العلمية والتشفير."
+        ]
+      },
+      {
+        "type": "teacherTip",
+        "title": "💡 قارن في خطوة واحدة (سؤال امتحان ص 12):",
+        "text": "البريد الإلكتروني والحواسب الشخصية تقنيات سابقة • أما القيادة الذاتية، AR، VR، والحوسبة الكمومية هي التقنيات الناشئة!"
+      }
+    ]
+  },
+  {
+    "id": "ch1-l1-exam",
+    "chapter_id": 1,
+    "lesson_id": "1-1",
+    "chunk_index": 5,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (1-1) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (1-1) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "🏆",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار امتحاني وزاري شامل مجمع يغطي كل محاور وفقرات الدرس (1-1): مراحل التطور، قانون مور، التحولات المجتمعية، والتقنيات الناشئة.",
+    "audio_narration_text": "أهلاً بك يا بطل في التحدي الختامي لاجتياز الدرس الأول كاملاً! هذا الاختبار يجمع الأسئلة الوزارية الشاملة من كتاب الوزارة ص 11 و 12. عند اجتيازك هذا التحدي ستحصل على كأس التفوق والنجوم الثلاثة ويفتح لك الدرس الثاني مباشرة!",
+    "en_audio_narration_text": "You have arrived at the Final Mastery Challenge of Lesson 1-1! Answer all five comprehensive questions correctly to claim your Golden Trophy and unlock the next lesson!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch1-l2-c1",
+    "chapter_id": 1,
+    "lesson_id": "1-2",
+    "chunk_index": 1,
+    "chunk_title": "مفهوم الذكاء الاصطناعي وهرميته (AI vs ML vs DL vs GenAI)",
+    "en_chunk_title": "Artificial Intelligence: Machine Learning, Deep Learning & Generative AI",
+    "type": "chunk",
+    "icon_emoji": "🧠",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "العلاقة الهرمية المتداخلة: الذكاء الاصطناعي (المظلة الأكبر) ← تعلم الآلة (ML) ← التعلم العميق (DL) ← الذكاء الاصطناعي التوليدي (GenAI).",
+    "audio_narration_text": "الذكاء الاصطناعي ليس مصطلحاً مبهماً بل هو هرمية واضحة كطبقات القبة: المظلة الكبرى هي الذكاء الاصطناعي (AI) لمحاكاة الذكاء البشري، وبداخله مجال تعلم الآلة (Machine Learning) لتدريب النظم على البيانات دون برمجة صريحة، وبداخله التعلم العميق (Deep Learning) بالشبكات العصبية متعددة الطبقات، وفي قلبه اليوم الذكاء الاصطناعي التوليدي (Generative AI) لإنشاء نصوص وصور وأكواد جديدة كلياً.",
+    "en_audio_narration_text": "Artificial Intelligence is the broad umbrella science of creating machines that simulate human cognitive intelligence. Inside AI sits Machine Learning, where systems learn mathematical patterns from training data rather than following hardcoded rules. Within ML lies Deep Learning, which uses deep multi-layered Artificial Neural Networks. And inside Deep Learning sits Generative AI, capable of producing entirely new text, images, and audio from user prompts.",
+    "ai_tutor_prompt": "عاش يا بطل! استوعبت شكل الهرمية المتداخلة بين الذكاء الاصطناعي وتعلم الآلة والتعلم العميق والتوليدي؟ تحب نختبر فهمك؟",
+    "simplified_explanation": "الذكاء الاصطناعي مثل شجرة ضخمة: جذعها هو الذكاء الاصطناعي، فرعها الرئيسي هو تعلم الآلة، أغصانها هي التعلم العميق، وأحدث ثمارها العبقرية هو الذكاء التوليدي!",
+    "key_terms": [
+      {
+        "term": "الذكاء الاصطناعي (AI)",
+        "en": "Artificial Intelligence",
+        "definition": "المجال العام في علوم الحاسوب الذي يهدف لبناء أنظمة وبرمجيات قادرة على محاكاة القدرات الذهنية البشرية كالتفكير والتعلم والاستنتاج.",
+        "example": "المساعدات الصوتية الذكية وأنظمة التعرف على الوجوه.",
+        "examTip": "المظلة الكبرى التي تشمل بداخلها التعلم الآلي والتعلم العميق."
+      },
+      {
+        "term": "الذكاء الاصطناعي التوليدي",
+        "en": "Generative AI",
+        "definition": "نماذج متطورة من التعلم العميق قادرة على ابتكار وإنشاء محتوى جديد تماماً (نصوص، صور، فيديو، صوت، أكواد برمجة).",
+        "example": "ChatGPT, Gemini, Midjourney.",
+        "examTip": "يقع في أدق وأحدث طبقات هرمية الذكاء الاصطناعي اليوم."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "هرمية الذكاء الاصطناعي ذات الطبقات الأربعة المتداخلة:",
+        "points": [
+          "🌐 1. الذكاء الاصطناعي (AI): المظلة الشاملة لمحاكاة السلوك الذكي.",
+          "📊 2. تعلم الآلة (ML): تدريب الخوارزميات على استخراج الأنماط من البيانات.",
+          "🧠 3. التعلم العميق (DL): استخدام شبكات عصبية اصطناعية عميقة متعددة الطبقات تحاكي خلايا المخ.",
+          "✨ 4. الذكاء التوليدي (GenAI): توليد محتوى إبداعي جديد بناءً على تدريب ملياري."
+        ]
+      },
+      {
+        "type": "teacherTip",
+        "title": "💡 معادلة م / محمد راشد الذهبية:",
+        "text": "الذكاء الاصطناعي (المحيط) ⊃ تعلم الآلة (البحر) ⊃ التعلم العميق (البحيرة) ⊃ الذكاء التوليدي (الينبوع المبدع)!"
+      }
+    ]
+  },
+  {
+    "id": "ch1-l2-c2",
+    "chapter_id": 1,
+    "lesson_id": "1-2",
+    "chunk_index": 2,
+    "chunk_title": "الأنماط الثلاثة لتعلم الآلة: الموجه وغير الموجه والتعزيزي",
+    "en_chunk_title": "Artificial Neural Networks (ANN): Input, Hidden & Output Layers",
+    "type": "chunk",
+    "icon_emoji": "⚡",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "خوارزميات التعلم الثلاث: التعلم الخاضع للإشراف (Supervised - ببيانات موسومة)، غير الخاضع للإشراف (Unsupervised - استكشاف أنماط وتجميع)، والتعلم التعزيزي (Reinforcement - مكافأة وعقاب).",
+    "audio_narration_text": "كيف تتعلم الآلة؟ هناك ثلاث طرق رئيسية معتمدة: أولاً، التعلم الموجه أو الخاضع للإشراف، حيث نقدم للآلة بيانات ومعها الإجابة الصحيحة كالمعلم الذي يصحح للطالب. ثانياً، التعلم غير الخاضع للإشراف، حيث نقدم بيانات بدون تسميات ونترك الآلة تستكشف المجموعات والأنماط المخفية بنفسها. ثالثاً، التعلم التعزيزي، حيث تتعلم الآلة بالتجربة والخطأ عبر نظام المكافآت والعقوبات مثل تدريب الروبوتات على المشي أو الفوز في ألعاب الشطرنج.",
+    "en_audio_narration_text": "Artificial Neural Networks are computational architectures inspired by biological brain neurons. An ANN consists of three principal layers: first, the Input Layer which ingests raw data features. Second, one or more Hidden Layers that calculate weighted sums, apply non-linear mathematical activation functions, and extract deep features. Third, the Output Layer which produces final classifications or predictions. During training, the network adjusts its connection weights using an algorithm called Backpropagation.",
+    "ai_tutor_prompt": "عظيم يا بطل! هل تفرّق بين التعلم الموجه وغير الموجه والتعزيزي من حيث نوع البيانات ودور المكافأة؟",
+    "simplified_explanation": "إذا أعطيت الحاسوب صور قطط ومكتوب عليها 'قطة' فهذا تعلم موجه. وإذا أعطيته صوراً كثيرة وقلت له رتب المتشابهين فهذا غير موجه. وإذا دربته على قيادة سيارة وأعطيته نقطة لكل ثانية دون اصطدام فهذا تعزيزي!",
+    "key_terms": [
+      {
+        "term": "التعلم الخاضع للإشراف",
+        "en": "Supervised Learning",
+        "definition": "تدريب النموذج على بيانات موسومة (Labeled Data) تتضمن المدخلات ومخرجاتها المستهدفة الصحيحة.",
+        "example": "توقع أسعار المنازل بناءً على مساحتها، أو تصنيف رسائل البريد (مهم / غير مرغوب Spam).",
+        "examTip": "يستخدم لحل مشاكل التصنيف (Classification) والانحدار (Regression)."
+      },
+      {
+        "term": "التعلم التعزيزي",
+        "en": "Reinforcement Learning",
+        "definition": "تعلم الوكيل البرمجي (Agent) عبر التفاعل مع البيئة وتجربة القرارات لتعظيم المكافآت (Rewards) وتقليل العقوبات.",
+        "example": "روبوت يتعلم تخطي العقبات، أو نظام AlphaGo في لعبة جو.",
+        "examTip": "يعتمد على المحاولة والخطأ ودالة المكافأة/العقاب."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "الأنماط الثلاثة لتعلم الآلة في مقارنة حاسمة:",
+        "points": [
+          "🎯 1. الموجه (Supervised): بيانات موسومة (Labels) ← تصنيف وتوقع قيم مستقبلية.",
+          "🔍 2. غير الموجه (Unsupervised): بيانات غير موسومة ← كشف الأنماط، والتجميع (Clustering).",
+          "🎮 3. التعزيزي (Reinforcement): بيئة تفاعلية + نظام مكافأة وعقاب ← اتخاذ قرارات متتابعة."
+        ]
+      },
+      {
+        "type": "teacherTip",
+        "title": "💡 تشبيه م / محمد راشد للأنماط الثلاثة:",
+        "text": "الموجه مثل طالب يذاكر ومعه كتاب الإجابات النموذجية؛ غير الموجه مثل محقق يبحث عن خيوط جريمة غامضة؛ والتعزيزي مثل طفل يتعلم المشي ويقفز فرحاً إذا نجح ويتفادى السقوط!"
+      }
+    ]
+  },
+  {
+    "id": "ch1-l2-c3",
+    "chapter_id": 1,
+    "lesson_id": "1-2",
+    "chunk_index": 3,
+    "chunk_title": "الشبكات العصبية الاصطناعية (ANN) وبنية الطبقات",
+    "en_chunk_title": "Generative AI, Hallucinations, and Verification",
+    "type": "chunk",
+    "icon_emoji": "🤖",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "محاكاة الخلايا العصبية البيولوجية: طبقة المدخلات (Input Layer)، الطبقات المخفية (Hidden Layers)، طبقة المخرجات (Output Layer)، ودور الأوزان والانحياز ودوال التنشيط.",
+    "audio_narration_text": "الشبكات العصبية الاصطناعية تحاكي تشابك خلايا المخ البشري: تتكون من عُقد متصلة موزعة على ثلاث طبقات رئيسية: طبقة المدخلات لاستقبال البيانات، وطبقات مخفية في المنتصف تستخرج الأنماط والملامح المعقدة، وأخيراً طبقة المخرجات لتقديم القرار أو التوقع النهائي. وكل اتصال يحمل وزناً رقمياً يتعدل أثناء التدريب، بالإضافة إلى دوال التنشيط التي تحدد متى تنشط الخلية العصبية الرقمية.",
+    "en_audio_narration_text": "Generative AI models, such as Large Language Models, generate responses by predicting the statistically most probable next word or token. Because they predict probabilities rather than verifying truth, they are prone to AI Hallucinations—producing fabricated statements that sound convincingly authoritative. Students must therefore always apply critical thinking and human fact-checking to any AI-generated output.",
+    "ai_tutor_prompt": "ممتاز يا بطل! عرفت دور الطبقات المخفية في استخراج الملامح تدريجياً؟ تحب نبدأ أسئلتها؟",
+    "simplified_explanation": "الشبكة العصبية مثل لجنة مصغرة: في البداية يستلم الأعضاء الملف (مدخلات)، يمررونه للمساعدين في الغرف المغلقة للتحليل والتدقيق (طبقات مخفية)، وأخيراً يخرج المتحدث الرسمي بالقرار النهائي (مخرجات)!",
+    "key_terms": [
+      {
+        "term": "الطبقات المخفية",
+        "en": "Hidden Layers",
+        "definition": "الطبقات الواقعة بين المدخلات والمخرجات داخل الشبكة العصبية، ومسؤوليتها استخراج الميزات الحسابية والأنماط المعقدة تدريجياً.",
+        "example": "في التعرف على الوجوه: طبقة تكتشف الحواف، تليها طبقة تكتشف العين والأنف، ثم طبقة تدرك الوجه كاملاً.",
+        "examTip": "كلما زادت الطبقات المخفية، أصبحت الشبكة 'عميقة' (Deep Neural Network)."
+      },
+      {
+        "term": "دالة التنشيط",
+        "en": "Activation Function",
+        "definition": "معادلة رياضية تحدد ما إذا كانت الخلية العصبية ستمرر الإشارة للطبقة التالية أم لا، وتضفي صفة اللاخطية (Non-linearity) على النموذج.",
+        "example": "دوال مثل ReLU و Sigmoid.",
+        "examTip": "بدونها تكون الشبكة مجرد معادلة خطية بسيطة غير قادرة على حل المشكلات المعقدة."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "التشريح الهندسي للشبكة العصبية الاصطناعية:",
+        "points": [
+          "📥 1. طبقة المدخلات (Input Layer): تستقبل البيانات الأولية (قيم بكسلات الصورة، نصوص، أرقام).",
+          "⚙️ 2. الطبقات المخفية (Hidden Layers): معالجة الأوزان (Weights) وحساب الأنماط المعقدة.",
+          "📤 3. طبقة المخرجات (Output Layer): إعطاء النتيجة النهائية (مثلاً: 98% هذا قط).",
+          "🔄 4. الانتشار الخلفي (Backpropagation): خوارزمية تعديل الأوزان لتقليل نسبة الخطأ."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch1-l2-exam",
+    "chapter_id": 1,
+    "lesson_id": "1-2",
+    "chunk_index": 4,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (1-2) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (1-2) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار وزاري شامل يجمع مفاهيم الدرس (1-2): هرمية الذكاء الاصطناعي، أنماط تعلم الآلة الثلاثة، وبنية الشبكات العصبية.",
+    "audio_narration_text": "وصلت للتحدي النهائي للدرس الثاني! استعد لخوض هذا الاختبار الامتحاني الشامل لإثبات إتقانك لكيفية عمل الذكاء الاصطناعي وخوارزمياته!",
+    "en_audio_narration_text": "Welcome to the Lesson 1-2 Mastery Challenge! Test your deep understanding of neural networks, machine learning paradigms, and generative AI to claim your trophy!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch1-l3-c1",
+    "chapter_id": 1,
+    "lesson_id": "1-3",
+    "chunk_index": 1,
+    "chunk_title": "تطبيقات الذكاء الاصطناعي في الصحة والطب والتعليم",
+    "en_chunk_title": "AI in Healthcare, Personalized Medicine & Adaptive Learning",
+    "type": "chunk",
+    "icon_emoji": "🏥",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "تحليل الأشعة والتشخيص المبكر للأمراض، اكتشاف الأدوية وتسريع التجارب، ومنظومات التعلم التكيفي المخصص لكل طالب.",
+    "audio_narration_text": "أحدث الذكاء الاصطناعي ثورة إنقاذية في القطاع الطبي؛ حيث أصبحت الخوارزميات قادرة على فحص آلاف صور الرنين المغناطيسي والأشعة في ثوانٍ بدقة تفوق أحياناً العين البشرية لاكتشاف الأورام في مراحلها المبكرة، وتسريع تصميم وتركيب جزيئات الأدوية الجديدة. وفي التعليم، فتح الذكاء الاصطناعي الباب لمنصات التعلم التكيفي التي تصمم مساراً تعليمياً مخصصاً لكل طالب وفق نقاط قوته وسرعة استيعابه.",
+    "en_audio_narration_text": "Artificial intelligence has transformed healthcare and education: In medicine, AI models analyze radiographic imagery (X-rays, MRIs, and CT scans) to detect early-stage oncological tumors with remarkable diagnostic accuracy, and accelerate drug discovery from decades to months. In education, intelligent adaptive learning platforms track individual student progress and dynamically calibrate lesson difficulty.",
+    "ai_tutor_prompt": "عظيم يا بطل! كيف يسهم الذكاء الاصطناعي في إنقاذ الأرواح وتحسين التعليم؟ تحب نخوض التحدي؟",
+    "simplified_explanation": "في الطب: الذكاء الاصطناعي مثل مجهر ذكي يرى أصغر خلية مريضة قبل أن يراها الطبيب. وفي التعليم: مثل معلم خصوصي يجلس بجوارك ويفهم سرعتك وأسلوبك المفضل في الفهم!",
+    "key_terms": [
+      {
+        "term": "التشخيص الطبي المعزز بالذكاء الاصطناعي",
+        "en": "AI Medical Diagnostics",
+        "definition": "استخدام خوارزميات الرؤية الحاسوبية والتعلم العميق لتحليل الصور الطبية والفحوصات لاكتشاف الأمراض بدقة وسرعة فائقة.",
+        "example": "اكتشاف أمراض اعتلال الشبكية أو أورام الرئة في مراحل مبكرة جداً.",
+        "examTip": "الهدف هو مساعدة الطبيب وتعزيز قدرته وليس الاستغناء الكامل عن الخبرة الطبية البشرية."
+      },
+      {
+        "term": "التعلم التكيفي",
+        "en": "Adaptive Learning",
+        "definition": "نظام تعليمي رقمي ذكي يغير صعوبة المحتوى والتمارين وسرعة الشرح تلقائياً بناءً على أداء واستجابة كل طالب.",
+        "example": "تطبيقات اللغات مثل Duolingo ومنصات المناهج الذكية.",
+        "examTip": "يحقق الفردية وتكافؤ الفرص في التحصيل الأكاديمي."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "مجالات التطبيق في الصحة والتعليم:",
+        "points": [
+          "🏥 الصحة: تحليل الأشعة المقطعية، التنبؤ بالانتكاسات الصحية، وتصميم أدوية مخصصة للجينات.",
+          "📚 التعليم: المنصات التكيفية الذكية، التقييم الآلي الفوري للواجبات، وتوفير مساعد ذكي لكل طالب طوال 24 ساعة."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch1-l3-c2",
+    "chapter_id": 1,
+    "lesson_id": "1-3",
+    "chunk_index": 2,
+    "chunk_title": "تطبيقات الذكاء الاصطناعي في النقل والتصنيع والمدن الذكية",
+    "en_chunk_title": "Predictive Maintenance, Smart Manufacturing & Smart Cities",
+    "type": "chunk",
+    "icon_emoji": "🏭",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "إدارة إشارات المرور الذكية، التنبؤ بأعطال المصانع (الصيانة التنبؤية Predictive Maintenance)، والروبوتات الصناعية في خطوط الإنتاج.",
+    "audio_narration_text": "في قطاع النقل، يحلل الذكاء الاصطناعي بيانات الحركة المرورية من الكاميرات والمستشعرات لضبط توقيت إشارات المرور آلياً وتقليل الاختناقات وحوادث الطرق. وفي قطاع الصناعة، أحدثت تقنية الصيانة التنبؤية نقلة نوعية؛ حيث ترصد الحساسات اهتزازات وحرارة الآلات وتتنبأ بالعطل قبل وقوعه بأسابيع، مما يوفر مليارات الدولارات ويمنع توقف خطوط الإنتاج، بجانب الروبوتات الذكية التي تتعاون مع العمال بأمان.",
+    "en_audio_narration_text": "In industrial and urban domains, AI enables Predictive Maintenance: IoT sensors continuously monitor vibration, temperature, and wear on industrial machines, allowing AI to forecast component failures before breakdowns occur. In Smart Cities, AI optimizes dynamic traffic light signaling to alleviate urban congestion, and manages power grids to minimize carbon emissions.",
+    "ai_tutor_prompt": "رائع يا بطل! كيف تمنع الصيانة التنبؤية كوارث التوقف في المصانع؟ جاهز لتحدي الأسئلة؟",
+    "simplified_explanation": "الصيانة القديمة كانت تنتظر حتى تنكسر الماكينة لتصلحها، أو تغير قطع غيار سليمة بدون داعٍ. الصيانة التنبؤية مثل طبيب يسمع نبض الآلة ويقول: هذه القطعة ستتعب بعد أسبوع، غيرها الآن وأنت مستريح!",
+    "key_terms": [
+      {
+        "term": "الصيانة التنبؤية",
+        "en": "Predictive Maintenance",
+        "definition": "تقنية تعتمد على الذكاء الاصطناعي ومستشعرات إنترنت الأشياء (IoT) للتنبؤ بأعطال الماكينات قبل حدوثها وإجراء الصيانة في الوقت المثالي.",
+        "example": "تنبيه مصنع بأن توربين معين سيتعطل بعد 15 يوماً بسبب ارتفاع طفيف في اهتزاز التروس.",
+        "examTip": "توفر تكاليف الصيانة الدورية وتمنع التوقف المفاجئ للمصانع."
+      },
+      {
+        "term": "المدن الذكية",
+        "en": "Smart Cities",
+        "definition": "مدن حضرية تستخدم تكنولوجيا المعلومات وإنترنت الأشياء والذكاء الاصطناعي لإدارة الموارد والطاقة والمرور والنفايات بكفاءة واستدامة.",
+        "example": "التحكم في إضاءة الشوارع حسب وجود المشاة والسيارات.",
+        "examTip": "تسهم في تقليل التلوث وترشيد استهلاك الطاقة وتسهيل حياة المواطنين."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "التطبيقات الصناعية والحضرية البارزة:",
+        "points": [
+          "🚦 النقل الذكي: تحسين مسارات الشحن، تقليل الازدحام بنسب تصل لـ 30%، وتنسيق أساطيل الحافلات.",
+          "🏭 التصنيع الذكي: خطوط إنتاج ذاتية التعديل، فحص الجودة بالرؤية الحاسوبية، والصيانة التنبؤية.",
+          "🏙️ المدن الذكية: ترشيد شبكات الكهرباء والمياه، والاستجابة السريعة لحالات الطوارئ."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch1-l3-exam",
+    "chapter_id": 1,
+    "lesson_id": "1-3",
+    "chunk_index": 3,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (1-3) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (1-3) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار امتحاني شامل يغطي تطبيقات الذكاء الاصطناعي في الطب، التعليم، النقل، والصيانة التنبؤية والمدن الذكية.",
+    "audio_narration_text": "وصلت لاختبار إتقان الدرس الثالث! أجب عن الأسئلة الامتحانية لتنال كأس التميز وتفتح الدرس الرابع من الفصل الأول!",
+    "en_audio_narration_text": "You have reached the Lesson 1-3 Mastery Exam! Show your expertise in industrial AI applications, healthcare technologies, and smart city infrastructure to earn your gold trophy!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch1-l4-c1",
+    "chapter_id": 1,
+    "lesson_id": "1-4",
+    "chunk_index": 1,
+    "chunk_title": "التحيز الخوارزمي وعدالة البيانات (Algorithmic Bias)",
+    "en_chunk_title": "Algorithmic Bias, Fairness & Accountability",
+    "type": "chunk",
+    "icon_emoji": "⚖️",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "كيف ينتقل التحيز البشري إلى الخوارزميات عبر بيانات التدريب غير المتوازنة، ومخاطر التمييز في التوظيف والقروض والقضاء.",
+    "audio_narration_text": "الذكاء الاصطناعي لا ينشأ محايداً بذاته؛ بل يعكس بدقة طبيعة البيانات التي تم تدريبه عليها! فإذا كانت بيانات التدريب تحتوي على تحيزات بشرية أو تمثيلاً ناقصاً لفئة معينة، ستتعلم الخوارزمية هذا التحيز وتكرره في قراراتها، كأن تفضل فئة معينة في التوظيف أو تقييم القروض. ولذلك يُعد التحيز الخوارزمي وعدالة البيانات من أخطر القضايا الأخلاقية التي تستوجب مراجعة دقيقة وتدقيقاً مستمراً للبيانات.",
+    "en_audio_narration_text": "Because artificial intelligence learns from human-generated historical data, it can absorb, amplify, and perpetuate systemic social prejudices—a dilemma known as Algorithmic Bias. If a loan assessment or hiring algorithm is trained on biased historical records, it will discriminate against certain demographic groups. Ethical AI mandates Fairness, Accountability, and Explainability (XAI) so human stakeholders understand how decisions are reached.",
+    "ai_tutor_prompt": "عاش يا بطل! استوعبت ليه الآلة ممكن تكون متحيزة إذا درّبناها ببيانات غير عادلة؟ جاهز للأسئلة؟",
+    "simplified_explanation": "الذكاء الاصطناعي مثل طفل صغير يتعلم مما يراه حوله: لو ربيته في بيئة تشاهد لوناً واحداً فقط وتكره باقي الألوان، سيكبر وهو يظن أن هذا هو الصواب! الخوارزمية مرآة لبياناتنا!",
+    "key_terms": [
+      {
+        "term": "التحيز الخوارزمي",
+        "en": "Algorithmic Bias",
+        "definition": "حدوث أخطاء منهجية ومتكررة في نظام الذكاء الاصطناعي تؤدي لمعاملة غير عادلة أو تفضيل فئة ضد أخرى نتيجة تحيز بيانات التدريب.",
+        "example": "خوارزمية توظيف تستبعد طلبات النساء لأن بيانات التوظيف التاريخية كانت أغلبيتها رجالاً.",
+        "examTip": "السبب الرئيسي للتحيز الخوارزمي هو عدم توازن أو عدالة بيانات التدريب البشرية."
+      },
+      {
+        "term": "عدالة البيانات",
+        "en": "Data Fairness",
+        "definition": "ضمان تمثيل جميع الفئات المجتمعية بنزاهة وتوازن في مجموعات البيانات المستخدمة لتدريب النماذج.",
+        "example": "تدريب نظام التعرف على الوجوه بصور تمثل كل الأعراق والأعمار والظروف.",
+        "examTip": "الحل التقني الأول لمنع التمييز الآلي."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "أسباب ومظاهر التحيز الخوارزمي:",
+        "points": [
+          "📉 بيانات التدريب غير المتوازنة: نقص تمثيل فئات معينة يقلل دقة النموذج معها.",
+          "⚖️ تكرار التحيزات التاريخية: الخوارزمية تتعلم التمييز الموجود تاريخياً وتضخمه.",
+          "🚨 مجالات الخطر: قرارات التوظيف، الموافقات الائتمانية، والتشخيص الطبي."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch1-l4-c2",
+    "chapter_id": 1,
+    "lesson_id": "1-4",
+    "chunk_index": 2,
+    "chunk_title": "الخصوصية، معضلة الصندوق الأسود، والمسؤولية القانونية",
+    "en_chunk_title": "AI Governance, Regulations & The AI Act",
+    "type": "chunk",
+    "icon_emoji": "📦",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "حماية البيانات الشخصية، مشكلة الصندوق الأسود (Black Box Problem) وصعوبة تفسير القرارات، ومن يتحمل المسؤولية القانونية عند وقوع أخطاء؟",
+    "audio_narration_text": "تواجه حوكمة الذكاء الاصطناعي ثلاثة تحديات جوهرية: أولاً، حماية الخصوصية ومنع استغلال بيانات الأفراد دون موافقتهم الصريحة. ثانياً، معضلة الصندوق الأسود، حيث تصل الشبكات العصبية العميقة لقرارات بالغة التعقيد دون أن يتمكن حتى المهندسون من شرح 'لماذا اتخذت الآلة هذا القرار بالتحديد؟'؛ مما يثير قلقاً في الطب والقضاء. وثالثاً، المسؤولية القانونية: لو تسببت سيارة ذاتية القيادة في حادث، فمن المسؤول؟ المبرمج أم الشركة المصنعة أم الراكب؟",
+    "en_audio_narration_text": "To prevent technological abuses, global governments and international institutions have enacted rigorous AI Governance frameworks, such as the European Union's Artificial Intelligence Act (AI Act). These regulations categorize AI deployments into distinct risk tiers: Unacceptable Risk systems (like biometric social scoring) which are strictly outlawed, High-Risk systems (in healthcare, policing, and employment) requiring strict audits and data controls, and Low-Risk systems requiring basic transparency.",
+    "ai_tutor_prompt": "عظيم يا بطل! لماذا تمثل معضلة الصندوق الأسود تحدياً كبيراً في الطب والقضاء؟ تحب نراجعها؟",
+    "simplified_explanation": "لو أن طبيباً قال لك: 'عليك إجراء جراحة عاجلة لكن لا أعرف السبب والكمبيوتر قال هكذا!' هل ستوافق؟ بالتأكيد لا! لذلك يجب أن يكون الذكاء الاصطناعي شفافاً ويشرح أسبابه بدلاً من الصندوق الأسود المغلق!",
+    "key_terms": [
+      {
+        "term": "معضلة الصندوق الأسود",
+        "en": "Black Box Problem",
+        "definition": "عجز المطورين والمستخدمين عن فهم وتفسير الآلية الداخلية التي اتبعتها الشبكة العصبية العميقة للوصول إلى قرار معين.",
+        "example": "خوارزمية ترفض علاجاً لمريض دون إبداء أسباب طبية واضحة يمكن للطبيب مراجعتها.",
+        "examTip": "الحل المنشود في الأبحاث الحديثة هو الذكاء الاصطناعي القابل للتفسير (Explainable AI - XAI)."
+      },
+      {
+        "term": "المسؤولية القانونية الأخلاقية",
+        "en": "Legal & Ethical Accountability",
+        "definition": "تحديد الطرف البشري أو المؤسسي المسؤول نظامياً وقانونياً عند وقوع أضرار أو أخطاء ناتجة عن قرارات الذكاء الاصطناعي.",
+        "example": "تحديد المسؤولية في حوادث السيارات ذاتية القيادة أو أخطاء التشخيص الآلي.",
+        "examTip": "القوانين الحديثة تؤكد أن المسؤولية تقع دائماً على عاتق البشر والشركات المطورة وليس الآلة المجردة."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "التحديات الأخلاقية الثلاثية:",
+        "points": [
+          "🔒 الخصوصية والبيانات: ضرورة التشفير وموافقة المستخدم الصريحة (Consent).",
+          "📦 الصندوق الأسود (Black Box): غياب الشفافية في القرارات المصيرية وصعوبة التفسير.",
+          "⚖️ المسؤولية والمساءلة: تشريعات أطر الذكاء الاصطناعي الموثوق (Trustworthy AI)."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch1-l4-exam",
+    "chapter_id": 1,
+    "lesson_id": "1-4",
+    "chunk_index": 3,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (1-4) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (1-4) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار امتحاني شامل يغطي أخلاقيات وحوكمة الذكاء الاصطناعي: التحيز الخوارزمي، عدالة البيانات، معضلة الصندوق الأسود، والمسؤولية القانونية.",
+    "audio_narration_text": "وصلت للتحدي النهائي للدرس الرابع وختام الفصل الأول كاملاً! اجتيازك لهذا الاختبار يؤكد تمكنك من أخلاقيات وحوكمة الذكاء الاصطناعي، ويمنحك كأس الفصل الأول الذهبي!",
+    "en_audio_narration_text": "Welcome to the Lesson 1-4 Mastery Challenge! Conclude Chapter 1 by proving your knowledge of AI ethics, fairness, and global governance regulations!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch2-l1-c1",
+    "chapter_id": 2,
+    "lesson_id": "2-1",
+    "chunk_index": 1,
+    "chunk_title": "أهداف أمن المعلومات ومثلث CIA الثلاثي",
+    "en_chunk_title": "Information Security Goals & The CIA Triad",
+    "type": "chunk",
+    "icon_emoji": "🔐",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "الركائز الثلاث لأمن المعلومات: السرية (Confidentiality)، السلامة والنزاهة (Integrity)، والتوافر (Availability).",
+    "audio_narration_text": "مرحباً بك في الفصل الثاني: الأمن السيبراني! كل استراتيجية أمنية في العالم تقوم على مثلث شهير يُدعى ثالوث CIA: أولاً، السرية (Confidentiality) لضمان عدم اطلاع غير المصرح لهم على البيانات. ثانياً، السلامة والنزاهة (Integrity) للتأكد من أن البيانات لم يتم تعديلها أو العبث بها أثناء النقل. ثالثاً، التوافر (Availability) لضمان أن النظام والبيانات متاحة للمستخدمين الشرعيين في أي وقت دون انقطاع.",
+    "en_audio_narration_text": "Welcome to Chapter 2 on Cybersecurity! Information security stands upon three universal pillars known as the CIA Triad: Confidentiality ensures sensitive information is shielded from unauthorized access through encryption. Integrity guarantees that data has not been altered or tampered with in transit or storage. And Availability ensures that critical systems remain resilient and accessible whenever authorized users need them.",
+    "ai_tutor_prompt": "عاش يا بطل! استوعبت أركان مثلث CIA الثلاثة لأمن المعلومات؟ تحب نختبرك فيها؟",
+    "simplified_explanation": "تخيل أنك ترسل رسالة في صندوق مقفل: السرية أن القفل لا يفتحه إلا صديقك؛ السلامة أن محتوى الرسالة يصل دون شطب كلمة واحدة؛ والتوافر أن ساعي البريد يوصلها فوراً دون تأخير!",
+    "key_terms": [
+      {
+        "term": "مثلث CIA",
+        "en": "CIA Triad",
+        "definition": "النموذج الأمني العالمي المكون من ثلاث ركائز: السرية، سلامة البيانات، وتوافر الخدمة.",
+        "example": "تطبيق بنكي يضمن أن رصيدك سري، لم يُعدل فيه قرش واحد بالخطأ، والتطبيق يعمل 24 ساعة.",
+        "examTip": "سؤال متكرر: ما هي أركان مثلث أمن المعلومات الثلاثة؟ السرية، السلامة، والتوافر."
+      },
+      {
+        "term": "سلامة البيانات",
+        "en": "Data Integrity",
+        "definition": "حماية البيانات من أي تعديل غير مصرح به أو تشويه أثناء التخزين أو الانتقال عبر الشبكة.",
+        "example": "استخدام دوال التجزئة (Hash) للتحقق من عدم تلاعب أحد بالملف.",
+        "examTip": "تُقاس وتُضمن بواسطة دوال الهاش والتوقيعات الرقمية."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "أركان مثلث أمن المعلومات CIA الثلاثة:",
+        "points": [
+          "🔒 السرية (Confidentiality): التشفير ومنع الوصول غير المصرح به للبيانات الحساسة.",
+          "🛡️ السلامة (Integrity): التحقق من عدم التلاعب بالبيانات أو تغييرها بأي شكل.",
+          "⚡ التوافر (Availability): صمود الأنظمة ضد هجمات حجب الخدمة لتبقى جاهزة للعمل دائماً."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch2-l1-c2",
+    "chapter_id": 2,
+    "lesson_id": "2-1",
+    "chunk_index": 2,
+    "chunk_title": "التشفير المتماثل والتشفير غير المتماثل (Symmetric vs Asymmetric)",
+    "en_chunk_title": "Symmetric vs Asymmetric Encryption (Symmetric vs Asymmetric)",
+    "type": "chunk",
+    "icon_emoji": "🛡️",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "مقارنة التشفير بمفتاح واحد مشترك (Symmetric) والتشفير بزوج المفاتيح العام والخاص (Asymmetric / Public-Private Key).",
+    "audio_narration_text": "التشفير هو تحويل النص المفهوم إلى نص مشفر غير مفهوم لحمايته: وينقسم لنوعين رئيسيين: التشفير المتماثل، ويستخدم مفتاحاً واحداً سرياً مشتركاً لنفس عمليتي التشفير وفك التشفير؛ ويتميز بالسرعة العالية لكن عيبه صعوبة مشاركة المفتاح بأمان. والنوع الثاني هو التشفير غير المتماثل، ويعتمد على زوجين من المفاتيح: المفتاح العام المتاح للجميع لتشفير الرسائل، والمفتاح الخاص السري الذي يحتفظ به المستلم وحده لفك التشفير.",
+    "en_audio_narration_text": "Cryptographic encryption scrambles human-readable plaintext into unreadable ciphertext. In Symmetric Encryption (such as AES), the same secret key encrypts and decrypts the data—making it lightning fast for large files, but vulnerable to the key exchange problem. In Asymmetric Encryption (such as RSA), two mathematically linked keys are used: a Public Key that anyone can use to encrypt messages, and a secret Private Key held solely by the recipient to decrypt them.",
+    "ai_tutor_prompt": "عظيم يا بطل! عرفت الفرق بين التشفير بمفتاح واحد والتشفير بزوج المفاتيح العام والخاص؟ تحب نختبرك؟",
+    "simplified_explanation": "التشفير المتماثل مثل قفل له مفتاح واحد متطابق معك ومع صديقك. أما التشفير غير المتماثل فصديقك يوزع أقفالاً مفتوحة للجميع (المفتاح العام)، وأي شخص يقفل الصندوق بقفل صديقك، وصديقك فقط هو من يملك المفتاح السري (الخاص) لفتحه!",
+    "key_terms": [
+      {
+        "term": "التشفير المتماثل",
+        "en": "Symmetric Encryption",
+        "definition": "نظام تشفير يستخدم مفتاحاً سرياً واحداً مشتركاً لتشفير البيانات وفك تشفيرها.",
+        "example": "خوارزمية AES الشهيرة لتشفير الأقراص الصلبة.",
+        "examTip": "سريع جداً في معالجة البيانات الضخمة ولكن مشكلته كيفية تبادل المفتاح السري بأمان."
+      },
+      {
+        "term": "التشفير غير المتماثل",
+        "en": "Asymmetric Encryption",
+        "definition": "نظام تشفير يستخدم زوجين متكاملين رياضياً: مفتاح عام (Public Key) للتشفير، ومفتاح خاص (Private Key) لفك التشفير.",
+        "example": "خوارزمية RSA المستخدمة في بروتوكولات HTTPS وشهادات الأمان.",
+        "examTip": "يحل معضلة تبادل المفاتيح، ولكن عملياته الحسابية أبطأ من التشفير المتماثل."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "مقارنة حاسمة بين نوعي التشفير:",
+        "points": [
+          "🔑 التشفير المتماثل (Symmetric): مفتاح واحد مشترك • سريع جداً • عيبه نقل المفتاح السري.",
+          "🔐 التشفير غير المتماثل (Asymmetric): مفتاح عام ومفتاح خاص • آمن جداً في التبادل • أبطأ حسابياً.",
+          "🌐 الحل الهجين في الويب (HTTPS): استخدام غير المتماثل لتبادل مفتاح الجلسة، ثم إكمال الاتصال بالمتماثل للسرعة!"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch2-l1-exam",
+    "chapter_id": 2,
+    "lesson_id": "2-1",
+    "chunk_index": 3,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (2-1) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (2-1) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار امتحاني وزاري شامل مجمع يغطي مثلث CIA الأمني، والتشفير المتماثل وغير المتماثل وتقنيات المصادقة الرقمية.",
+    "audio_narration_text": "وصلت لاختبار إتقان الدرس الأول من الفصل الثاني! أثبت جدارتك في أساسيات الأمن السيبراني والتشفير لتنال النجوم الثلاثة وتفتح الدرس التالي!",
+    "en_audio_narration_text": "Welcome to the Lesson 2-1 Mastery Exam! Demonstrate your thorough knowledge of cryptographic algorithms, public-private keypairs, and the CIA Triad to claim your gold trophy!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch2-l2-c1",
+    "chapter_id": 2,
+    "lesson_id": "2-2",
+    "chunk_index": 1,
+    "chunk_title": "عناصر أمان الشبكة: جدار الحماية، VPN، والمنطقة المعزولة DMZ",
+    "en_chunk_title": "Network Security Elements: Firewalls, VPN & The DMZ",
+    "type": "chunk",
+    "icon_emoji": "🧱",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "مراقبة حركة المرور بجدار الحماية (Firewall)، وتأمين الاتصال عن بُعد عبر شبكة خاصة مشفرة (VPN)، وعزل الخوادم العامة في المنطقة المعزولة (DMZ).",
+    "audio_narration_text": "أهلاً بك في الدرس الثاني من الفصل الثاني في هذه المحطة التعليمية! كيف تصمم المؤسسة شبكة آمنة تصمد أمام الاختراقات؟ نستخدم ثلاثة عناصر أساسية: أولاً جدار الحماية Firewall الذي يراقب حركة البيانات ويسمح بها أو يمنعها استناداً لقواعد محددة. ثانياً، الشبكة الافتراضية الخاصة VPN التي تنشئ نفقاً مشفراً يتيح للموظف الاتصال الآمن بشبكة الشركة من المنزل أو عبر شبكات الواي فاي العامة. وثالثاً، المنطقة المعزولة DMZ، وهي شبكة فرعية منفصلة نضع فيها خوادم الويب العامة لعزلها عن الشبكة الداخلية الحساسة وقواعد البيانات.",
+    "en_audio_narration_text": "Network security safeguards data moving across digital conduits: A Firewall inspects incoming and outgoing network traffic, filtering packets based on IP addresses, port numbers, and connection states. To securely publish public-facing servers (such as web or email servers), organizations isolate them in a Demilitarized Zone (DMZ)—a neutral perimeter subnet situated between the untrusted internet and the trusted internal corporate network. Virtual Private Networks (VPN) create encrypted tunnels across public networks.",
+    "ai_tutor_prompt": "عاش يا بطل! استوعبت دور جدار الحماية و VPN ولماذا نعزل خادم الويب في DMZ؟ جاهز للأسئلة؟",
+    "simplified_explanation": "جدار الحماية هو الحارس على البوابة، والـ VPN هو سيارة مصفحة تنقلك في شارع عام، والـ DMZ هي غرفة استقبال معزولة للغرباء حتى لا يدخلوا غرف نوم البيت!",
+    "key_terms": [
+      {
+        "term": "جدار الحماية",
+        "en": "Firewall",
+        "definition": "نظام أو برنامج يراقب حركة مرور الشبكة ويسمح بها أو يمنعها عند نقطة دخول أو خروج الشبكة استناداً إلى قواعد أمنية محددة مسبقاً.",
+        "example": "السماح بالوصول لخادم الويب ومنع الوصول المباشر من الإنترنت لقاعدة البيانات.",
+        "examTip": "سؤال وزاري: يسمح بالاتصال أو يمنعه استناداً لقواعد محددة مسبقاً (ص 40)."
+      },
+      {
+        "term": "الشبكة الافتراضية الخاصة",
+        "en": "VPN",
+        "definition": "اتصال أو شبكة منطقية خاصة عبر شبكة عامة كالإنترنت، تستخدم التشفير وتقنيات النفق لنقل البيانات بأمان وحمايتها من التنصت.",
+        "example": "اتصال الموظف بشبكة المؤسسة من المنزل بأمان تام عبر Wi-Fi عام.",
+        "examTip": "يقلل مخاطر التنصت وسرقة البيانات، ولا يقوم بحذف الفيروسات (ص 43)."
+      },
+      {
+        "term": "المنطقة المعزولة",
+        "en": "DMZ (Demilitarized Zone)",
+        "definition": "شبكة فرعية توضع فيها الخوادم المعرضة للشبكة الخارجية (كالويب والبريد) معزولة عن الشبكة الداخلية وقواعد البيانات.",
+        "example": "خادم الويب يقع بين جداري حماية، فلو تم اختراقه تظل قواعد البيانات الداخلية محمية.",
+        "examTip": "الهدف: تقليل احتمال وصول الهجوم للشبكة الداخلية عند سقوط خادم عام."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "العناصر الثلاثة لتأمين الشبكة (كتاب الوزارة ص 40):",
+        "points": [
+          "🧱 جدار الحماية (Firewall): نقطة حراسة عند الحدود لمنع الاتصالات غير المصرح بها.",
+          "🔒 الشبكة الافتراضية (VPN): نفق مشفر لتأمين العمل عن بُعد وربط الفروع.",
+          "🛡️ المنطقة المعزولة (DMZ): عزل الخوادم المواجهة للجمهور لحماية القلب الداخلي."
+        ]
+      },
+      {
+        "type": "teacherTip",
+        "title": "💡 مفتاح الفهم الامتحاني:",
+        "text": "الـ DMZ مثل صالة الاستقبال في الفندق؛ الضيوف يدخلونها بحرية، لكنها معزولة بأبواب سرية عن خزائن وإدارة الفندق الداخلية!"
+      }
+    ]
+  },
+  {
+    "id": "ch2-l2-c2",
+    "chapter_id": 2,
+    "lesson_id": "2-2",
+    "chunk_index": 2,
+    "chunk_title": "الدفاع في العمق (Defense in Depth) ونهج انعدام الثقة (Zero Trust)",
+    "en_chunk_title": "Defense in Depth & The Zero Trust Architecture",
+    "type": "chunk",
+    "icon_emoji": "🏰",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "الحماية متعددة الطبقات المتتالية لامتصاص الهجمات، ونهج انعدام الثقة (Zero Trust) القائم على التحقق المستمر من كل عملية وصول.",
+    "audio_narration_text": "القاعدة الأمنية الذهبية في كتاب الوزارة تقول: لا تكفي وسيلة حماية واحدة أبداً في المؤسسات؛ فإذا فشلت أو تم اختراقها، تتعرض الشبكة بأكملها للخطر. لذلك يُصمم الأمان بمفهوم الدفاع في العمق لتتولى طبقات الحماية المتتالية امتصاص الهجوم؛ فلو اخترق مهاجم خادم الويب في DMZ، يمنعه جدار الحماية الداخلي والتشفير من الوصول لبيانات الرواتب! ومع انتشار الحوسبة السحابية والأجهزة المتنقلة، أصبح نهج انعدام الثقة Zero Trust أساسياً: لا تمنح الثقة تلقائياً لأي مستخدم أو جهاز حتى لو كان داخل مبنى الشركة، وافحص وتحقق من كل عملية وصول بدقة.",
+    "en_audio_narration_text": "Modern cybersecurity recognizes that single security perimeters can be breached. Therefore, organizations employ Defense in Depth: layering multiple defensive safeguards—firewalls, endpoint antivirus, multi-factor authentication, data encryption, and employee awareness training. Furthermore, the modern paradigm has evolved to Zero Trust: 'Never Trust, Always Verify.' Under Zero Trust, no user or device is trusted by default, even if they reside physically inside the internal corporate office.",
+    "ai_tutor_prompt": "ممتاز يا بطل! فهمت لماذا لا نعتمد على جدار الحماية وحده وما هو مبدأ Zero Trust؟",
+    "simplified_explanation": "مثل القلعة القديمة: لا تكتفي بباب خارجي واحد؛ بل تضع خندق ماء، ثم سوراً أول، ثم حراساً، ثم أبواباً حديدية مقفلة داخلية؛ حتى لو كسر اللص الباب الأول يجد نفسه محاصراً أمام جدران أخرى!",
+    "key_terms": [
+      {
+        "term": "الدفاع في العمق",
+        "en": "Defense in Depth",
+        "definition": "استراتيجية تطبيق طبقات دفاعية متتالية ومتنوعة لحماية الأصول؛ بحيث إذا فشلت طبقة تصد الطبقات التالية المهاجم وتمنع وصوله للبيانات الحساسة.",
+        "example": "جدار حماية + شبكة VPN + منطقة DMZ + مكافحة فيروسات + تشفير البيانات.",
+        "examTip": "سؤال وزاري: لماذا يحمي تكديس الإجراءات المؤسسة أفضل من جدار الحماية وحده؟ (كتاب ص 43)."
+      },
+      {
+        "term": "نهج انعدام الثقة",
+        "en": "Zero Trust",
+        "definition": "نموذج أمني يقوم على مبدأ 'لا تثق أبداً وتحقق دائماً'؛ حيث لا تُمنح الثقة تلقائياً لأي موقع أو جهاز أو مستخدم، وتُفحص كل عملية وصول.",
+        "example": "مطالبة الموظف بمصادقة ثنائية والتحقق من هوية جهازه عند كل محاولة دخول للملفات السحابية.",
+        "examTip": "سؤال اختر: الوصف الأدق لنهج Zero Trust هو فحص كل عملية وصول وعدم منح ثقة تلقائية (ص 44)."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "طبقات الدفاع الأربعة في المؤسسة (كتاب ص 43):",
+        "points": [
+          "🚪 مدخل الشبكة: جدار الحماية Firewall لفحص الحزم والتحكم بالمرور.",
+          "🛣️ مسار الاتصال: التشفير بنفق VPN لمنع التنصت الخارجي.",
+          "🏰 وضع الخوادم: عزل خوادم الويب في منطقة معزولة DMZ.",
+          "💻 الأجهزة الطرفية: برامج مكافحة الفيروسات والتحديثات والمصادقة الصارمة."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch2-l2-exam",
+    "chapter_id": 2,
+    "lesson_id": "2-2",
+    "chunk_index": 3,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (2-2) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (2-2) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار امتحاني وزاري شامل مجمع يغطي جدران الحماية، والـ VPN، والمنطقة المعزولة DMZ، والدفاع في العمق، ونهج Zero Trust.",
+    "audio_narration_text": "وصلت لاختبار إتقان الدرس الثاني من الفصل الثاني! أجب عن الأسئلة الامتحانية الوزارية بنجاح لتنال كأس التميز وتفتح الدرس الثالث!",
+    "en_audio_narration_text": "Welcome to the Lesson 2-2 Mastery Challenge! Test your deep understanding of network boundaries, firewall filtering, DMZ segmentation, and Zero Trust architectures to earn your gold trophy!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch2-l3-c1",
+    "chapter_id": 2,
+    "lesson_id": "2-3",
+    "chunk_index": 1,
+    "chunk_title": "ماهية الحادث الأمني والمراحل الست للاستجابة المنهجية",
+    "en_chunk_title": "Security Incidents & The 6-Stage NIST Incident Response Lifecycle",
+    "type": "chunk",
+    "icon_emoji": "🚨",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "مفهوم الحادث الأمني وانتهاك ثالوث CIA، والنموذج المنهجي للاستجابة عبر 6 مراحل: التحضير، الاكتشاف، الاحتواء، الاستئصال، الاستعادة، والدروس المستفادة.",
+    "audio_narration_text": "مرحباً يا بطل في الدرس الثالث من الفصل الثاني! الحادث الأمني هو أي حدث ينتهك سرية المعلومات أو سلامتها أو توافرها أو يخالف السياسة الأمنية، مثل تسرب البيانات أو التلاعب بها أو انقطاع الخدمة بهجمات حجب الخدمة. وعند وقوع الحادث، تتبع المؤسسة ست مراحل منهجية منظمة: نبدأ بالتحضير وتدريب الفرق ووضع خطط الطوارئ مسبقاً، ثم الاكتشاف وتأكيد وقوع الحادث وتحديد نطاقه، يليه الاحتواء الفوري لعزل الأجهزة المصابة ومنع تفشي الضرر، ثم الاستئصال بإزالة البرمجيات الخبيثة وسد الثغرات، ثم الاستعادة وإعادة تشغيل الأنظمة بأمان من نسخ احتياطية نظيفة، وأخيراً توثيق الدروس المستفادة وتحسين الضوابط لمنع تكرار الكارثة!",
+    "en_audio_narration_text": "A security incident occurs when an organization's confidentiality, integrity, or availability is compromised. Organizations follow the standardized 6-stage Incident Response Lifecycle defined by NIST: Phase 1 is Preparation (establishing policies and CSIRT teams). Phase 2 is Detection & Analysis (identifying suspicious activity). Phase 3 is Containment (isolating infected machines to stop spread). Phase 4 is Eradication (removing malware and closing vulnerabilities). Phase 5 is Recovery (restoring systems from clean backups). And Phase 6 is Lessons Learned (documenting findings to prevent recurrence).",
+    "ai_tutor_prompt": "عاش يا بطل! رتبت مراحل الاستجابة الست وعرفت الفرق بين عزل المشكلة (الاحتواء) وإزالتها (الاستئصال)؟",
+    "simplified_explanation": "لو اشتعلت نار في غرفة: أولاً نغلق باب الغرفة لعزل النار ومنع امتدادها للبيت (احتواء)، ثم نطفئ النار تماماً (استئصال)، ثم ننظف الغرفة ونفرشها من جديد (استعادة)، وأخيراً نركب جهاز إنذار حريق حتى لا يتكرر ذلك (دروس مستفادة)!",
+    "key_terms": [
+      {
+        "term": "الحادث الأمني",
+        "en": "Security Incident",
+        "definition": "حدث يؤثر في سرية المعلومات أو سلامتها أو توافرها (ثالوث CIA)، أو يهددها بجدية، أو يخالف سياسة أمنية معتمدة.",
+        "example": "تسرب بيانات العملاء، أو تعديل أرصدة البنوك، أو تعطيل موقع وزارة بهجوم DoS.",
+        "examTip": "سؤال وزاري: املأ الفراغ: يُسمى الحدث الذي يهدد سرية أو سلامة أو توافر البيانات بالحادث الأمني (ص 50)."
+      },
+      {
+        "term": "الاحتواء",
+        "en": "Containment",
+        "definition": "المرحلة الثالثة في الاستجابة؛ وتستهدف عزل الجزء المتأثر (مثل فصل الجهاز عن الشبكة) للحد من انتشار الضرر إلى باقي الأنظمة.",
+        "example": "سحب كابل الإنترنت فوراً عن الخادم المصاب ببرمجية فدية لمنع إصابة بقية الخوادم.",
+        "examTip": "يجب أن يسبق مرحلة الاستئصال والاستعادة لمنع تفشي التهديد (كتاب ص 47)."
+      },
+      {
+        "term": "الاستئصال",
+        "en": "Eradication",
+        "definition": "المرحلة الرابعة؛ وتتضمن إزالة التهديد ومسبباته جذرياً بحذف البرمجيات الخبيثة ومعالجة الثغرات الأمنية المستغلة.",
+        "example": "تنظيف الأقراص وتحديث البرمجيات وسد الثغرة البرمجية التي دخل منها المهاجم.",
+        "examTip": "الفرق بين الاحتواء والاستئصال: الاحتواء يعزل ويحاصر، والاستئصال يزيل ويطهر."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "المراحل الست للاستجابة للحوادث السيبرانية (كتاب ص 46–47):",
+        "points": [
+          "1️⃣ التحضير (Preparation): إعداد خطط الاستجابة وتدريب الفريق مسبقاً.",
+          "2️⃣ الاكتشاف (Detection): رصد التنبيهات وتأكيد الحادث وتحديد حجمه.",
+          "3️⃣ الاحتواء (Containment): عزل الأنظمة المصابة لمنع تفشي الهجوم.",
+          "4️⃣ الاستئصال (Eradication): حذف الملفات الخبيثة وسد الثغرات المستغلة.",
+          "5️⃣ الاستعادة (Recovery): إعادة التشغيل بأمان من نسخ احتياطية نظيفة.",
+          "6️⃣ الدروس والتحسين: توثيق النتائج وسد الثغرات لمنع التكرار مستقبلاً."
+        ]
+      },
+      {
+        "type": "teacherTip",
+        "title": "💡 تنبيه امتحاني هام الامتحاني:",
+        "text": "انتبه لسؤال الترتيب: الاحتواء يأتي دائماً قبل الاستئصال والاستعادة؛ لأنه لو بدأنا بالاستعادة والبرمجية لا تزال نشطة، ستدمر النسخ الاحتياطية فوراً!"
+      }
+    ]
+  },
+  {
+    "id": "ch2-l3-c2",
+    "chapter_id": 2,
+    "lesson_id": "2-3",
+    "chunk_index": 2,
+    "chunk_title": "إدارة وتقييم المخاطر السيبرانية ومصفوفة الأولويات",
+    "en_chunk_title": "Cyber Risk Assessment & Prioritization Matrix",
+    "type": "chunk",
+    "icon_emoji": "📈",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "معادلة تقييم الخطر (درجة الخطر = التأثير × الاحتمالية)، مصفوفة تحديد الأولويات (3×3)، وسيناريو برمجية الفدية Ransomware وخطة التعافي.",
+    "audio_narration_text": "الخطر السيبراني هو احتمال تسبب تهديد في إلحاق ضرر بالأصول الرقمية. ولكي تقرر المؤسسة أي التهديدات تعالج أولاً بمواردها المحدودة، تستخدم المعادلة المنهجية: درجة الخطر تساوي حجم التأثير مضروباً في احتمالية الحدوث! التأثير يقاس من 1 إلى 3 (منخفض، متوسط، مرتفع)، والاحتمالية من 1 إلى 3 (نادر، محتمل، شبه مؤكد). والتهديد ذو الناتج الأعلى (الأحمر الحرج) يأخذ الأولوية القصوى للمعالجة الفورية. ومن أخطر السيناريوهات هجوم برمجيات الفدية Ransomware؛ حيث لا يجب أبداً دفع الفدية للمجرمين، بل يتم فصل الأجهزة واستئصال الفيروس واستعادة البيانات من نسخ احتياطية منفصلة وآمنة.",
+    "en_audio_narration_text": "Cyber Risk Management is the process of identifying, evaluating, and mitigating digital threats. Risk is mathematically assessed as a function of three variables: Threat (the potential malicious agent or event), Vulnerability (a security flaw or weakness in the system), and Impact (the financial or operational damage if breached). Organizations map risks onto a Risk Matrix evaluating Likelihood vs Impact, and select from four treatment strategies: Mitigation, Transfer, Avoidance, or Acceptance.",
+    "ai_tutor_prompt": "ممتاز يا بطل! لو عندك تهديد A درجته 6 وتهديد B درجته 3، بأيهما تبدأ معالجة؟ جاهز لتطبيق المعادلة؟",
+    "simplified_explanation": "لو عندك سقف يسرب نقطة ماء خفيفة (تأثير ضعيف)، وأنبوبة غاز فيها شرخ خطير (تأثير كارثي واحتراق مؤكد)؛ تبدأ فوراً بإصلاح الغاز لأن ناتج خطره حرج جداً! هذا هو معنى التأثير × الاحتمالية!",
+    "key_terms": [
+      {
+        "term": "معادلة تقييم الخطر",
+        "en": "Risk Formula",
+        "definition": "معادلة كمية لتحديد مستوى الخطر: درجة الخطر (Risk Score) = حجم التأثير (Impact) × احتمالية الحدوث (Likelihood).",
+        "example": "تأثير مرتفع (3) × احتمالية متوسطة (2) = درجة خطر (6)، وهي أعلى أولوية من تأثير منخفض (1) × احتمالية مرتفعة (3) = (3).",
+        "examTip": "سؤال حسابي وزاري مكرر: احسب درجة الخطر وحدد الأولوية (كتاب ص 48)."
+      },
+      {
+        "term": "برمجية الفدية",
+        "en": "Ransomware",
+        "definition": "نوع خطير من البرمجيات الخبيثة يشفر ملفات المستخدم أو المؤسسة ويطلب فدية مالية مقابل فك التشفير.",
+        "example": "تشفير سجلات مستشفى والمطالبة بعملات رقمية لفتحها.",
+        "examTip": "الحل النموذجي: عدم دفع الفدية، عزل الشبكة، واستعادة الملفات من النسخ الاحتياطية النظيفة."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "مصفوفة تقييم المخاطر وتحديد أولويات المعالجة (كتاب ص 48):",
+        "points": [
+          "🔴 نطاق الخطر الحرج (6 – 9): يتطلب إجراءات فورية وسريعة دون تأخير.",
+          "🟠 نطاق الخطر المتوسط (3 – 4): معالجة مخططة ومتابعة منتظمة.",
+          "🟢 نطاق الخطر المنخفض (1 – 2): مراقبة وقبول المخاطرة مع المتابعة الدورية."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch2-l3-exam",
+    "chapter_id": 2,
+    "lesson_id": "2-3",
+    "chunk_index": 3,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (2-3) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (2-3) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار امتحاني وزاري شامل مجمع يغطي الحادث الأمني، والمراحل الست للاستجابة، وحسابات تقييم المخاطر وسيناريوهات الفدية.",
+    "audio_narration_text": "وصلت لاختبار إتقان الدرس الثالث وختام الفصل الثاني كاملاً! أجب عن الأسئلة الامتحانية بنجاح لتنال كأس التميز الذهبي للفصل الثاني!",
+    "en_audio_narration_text": "Welcome to the Lesson 2-3 Mastery Challenge! Conclude Chapter 2 by demonstrating your mastery of incident response lifecycles and cybersecurity risk matrices!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch3-l1-c1",
+    "chapter_id": 3,
+    "lesson_id": "3-1",
+    "chunk_index": 1,
+    "chunk_title": "بنية العميل والخادم والطبقات الثلاث (3-Tier Architecture)",
+    "en_chunk_title": "Client-Server Architecture & The 3-Tier Model",
+    "type": "chunk",
+    "icon_emoji": "🏢",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "نموذج Client-Server، والطبقات الثلاث الأساسية لأي موقع ويب: طبقة العرض (Presentation)، طبقة منطق التطبيق (Logic Tier)، وطبقة البيانات (Data Tier).",
+    "audio_narration_text": "أهلاً بك في الفصل الثالث: تطبيقات الويب! كيف تعمل المواقع الحديثة مثل فيسبوك أو أمازون؟ تعمل وفق بنية شهيرة تُدعى بنية الطبقات الثلاث: الطبقة الأولى هي طبقة العرض وتعمل في متصفح العميل بالـ HTML و CSS لعرض الواجهة والأزرار. والطبقة الثانية هي طبقة منطق العمل وتعمل على خادم الويب بمعالجة الأكواد والقرارات والحسابات. والطبقة الثالثة هي طبقة قاعدة البيانات لتخزين واسترجاع بيانات المستخدمين والمنتجات بأمان.",
+    "en_audio_narration_text": "Welcome to Chapter 3 on Web Applications! Modern web platforms rely on the Client-Server model, organized through a 3-Tier Architecture: Tier 1 is the Presentation Tier, running in the user's web browser using HTML, CSS, and JavaScript. Tier 2 is the Application/Logic Tier, running on backend servers using Python, Node.js, or PHP to process business rules. Tier 3 is the Data Tier, using relational or NoSQL database management systems for secure, persistent storage.",
+    "ai_tutor_prompt": "عاش يا بطل! استوعبت دور كل طبقة من الطبقات الثلاث لتطبيقات الويب؟ تحب نبدأ أسئلتها؟",
+    "simplified_explanation": "تخيل أنك في مطعم: قائمة الطعام والطاولة الأنيقة هي طبقة العرض؛ النادل والمطبخ الذي يطبخ الطعام هو طبقة المنطق؛ ومخزن وثلاجة المكونات هو طبقة قاعدة البيانات!",
+    "key_terms": [
+      {
+        "term": "بنية الطبقات الثلاث",
+        "en": "3-Tier Architecture",
+        "definition": "معمارية برمجية تفصل نظام الويب إلى ثلاث طبقات مستقلة: طبقة واجهة المستخدم، طبقة المعالجة ومنطق الأعمال، وطبقة قاعدة البيانات.",
+        "example": "المتصفح (واجهة) ← خادم Node.js/Python (منطق) ← قاعدة بيانات MySQL (بيانات).",
+        "examTip": "سؤال متكرر: ما هي الطبقات الثلاث؟ Presentation Tier, Application/Logic Tier, Data Tier."
+      },
+      {
+        "term": "نموذج العميل والخادم",
+        "en": "Client-Server Model",
+        "definition": "هيكل برمجي يقوم فيه العميل (المرسل) بطلب خدمة أو صفحة، ويقوم الخادم بمعالجة الطلب وإرجاع الاستجابة.",
+        "example": "متصفحك يطلب صفحة، وخادم الويب يرد بالملفات المطلوبة.",
+        "examTip": "أساس عمل بروتوكولات الإنترنت كـ HTTP."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "الطبقات الثلاث بالتفصيل:",
+        "points": [
+          "💻 1. طبقة العرض (Presentation Tier): المتصفح وأكواد HTML/CSS/JS والتفاعل البصري.",
+          "⚙️ 2. طبقة المنطق (Logic/Application Tier): الخادم ولغات الخادم (PHP/Python/Node) ومعالجة الحسابات.",
+          "🗄️ 3. طبقة البيانات (Data Tier): قواعد البيانات (SQL/NoSQL) للتخزين الدائم والآمن."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch3-l1-c2",
+    "chapter_id": 3,
+    "lesson_id": "3-1",
+    "chunk_index": 2,
+    "chunk_title": "تدفق تعاون الطبقات الثلاث والمواقع الثابتة والديناميكية",
+    "en_chunk_title": "3-Tier Collaboration Flow: Static vs Dynamic Websites",
+    "type": "chunk",
+    "icon_emoji": "🔄",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "الخطوات الست المرتبة لتعاون الطبقات عند طلب خدمة (مثل البحث عن منتج أو حجز قطار)، وماذا يحدث عند انقطاع قاعدة البيانات، وحدود الواجهة الأمامية.",
+    "audio_narration_text": "كيف تتعاون الطبقات الثلاث فعلياً عندما تبحث عن منتج أو تحجز تذكرة قطار؟ تبدأ الرحلة في الواجهة الأمامية باستقبال كلمات البحث، ثم ترسل الأمامية طلباً عبر بروتوكول HTTP للخادم الخلفي، الخادم الخلفي بدوره يستعلم من قاعدة البيانات ويطلب السجلات المطابقة، فتعيد قاعدة البيانات البيانات المطلوبة للخادم الخلفي، وهنا يقوم الخادم الخلفي بمعالجة النتائج وتجهيز الرد، وأخيراً تعرض الواجهة الأمامية النتائج المنمقة للمستخدم! وإذا انقطعت قاعدة البيانات مؤقتاً، تظل الصفحة الأمامية ظاهرة، لكن يعجز الخادم عن مطابقة كلمات المرور أو جلب البيانات ويرسل رمز خطأ مثل 500 للمتصفح.",
+    "en_audio_narration_text": "Web content is either Static or Dynamic: A Static website consists of pre-built HTML, CSS, and image files stored on a server; every visitor receives the exact same identical page. A Dynamic website, however, generates personalized content on the fly: when a user submits an action, the Presentation tier dispatches a request to the Logic tier, which queries the Data tier, constructs an individualized HTML response, and sends it back to the client.",
+    "ai_tutor_prompt": "عاش يا بطل! رتبت خطوات تدفق البيانات وعرفت لماذا لا يمكن للأمامية حفظ البيانات الدائمة بمفردها؟ جاهز للأسئلة؟",
+    "simplified_explanation": "لو طلبت وجبة في مطعم: أنت تعطي الطلب للنادل (أمامية)، النادل يذهب للمطبخ (خلفية)، الطباخ يأخذ اللحم من الثلاجة (قاعدة بيانات)، ثم يطبخ الوجبة (خلفية)، والنادل يقدمها لك ساخنة على الطاولة (أمامية)!",
+    "key_terms": [
+      {
+        "term": "تدفق تعاون الطبقات",
+        "en": "Three-Tier Data Flow",
+        "definition": "التسلسل المنظم للبيانات: المستخدم ← الواجهة الأمامية (مدخلات) ← الواجهة الخلفية (معالجة) ← قاعدة البيانات (استرجاع) ← الواجهة الخلفية (تجهيز) ← الواجهة الأمامية (عرض).",
+        "example": "حجز مقعد قطار: اختيار المقعد في الأمامية، فحص توفره في الخلفية، تسجيله في قاعدة البيانات، وإرسال رمز QR للمستخدم.",
+        "examTip": "سؤال ترتيب وزاري: احفظ الخطوات الست لتدفق تعاون الطبقات (كتاب ص 52)."
+      },
+      {
+        "term": "حدود الواجهة الأمامية",
+        "en": "Front-end Limitations",
+        "definition": "المهام التي تعجز الواجهة الأمامية عن القيام بها بمفردها مثل حفظ البيانات الدائمة أو معالجة المدفوعات البنكية لعدم امتلاكها صلاحيات سرية أو تخزين مشترك.",
+        "example": "تخزين سجلات الطلاب الدائمة أو معالجة الأرصدة البنكية يحتاج حصراً لخادم وقاعدة بيانات.",
+        "examTip": "سؤال وزاري مباشر: حدد مهمة لا يمكن للواجهة الأمامية القيام بها وحدها ولماذا (كتاب ص 55)."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "خطوات تدفق البيانات الست عند البحث عن منتج (كتاب ص 52):",
+        "points": [
+          "1️⃣ إدخال البيانات: استقبال كلمات البحث من المستخدم في الواجهة الأمامية.",
+          "2️⃣ إرسال الطلب: نقل كلمات البحث للخادم الخلفي عبر HTTP.",
+          "3️⃣ استعلام البيانات: طلب الخادم من قاعدة البيانات السجلات المطابقة.",
+          "4️⃣ إرجاع النتائج: إرسال قاعدة البيانات للسجلات المطلوبة للخلفية.",
+          "5️⃣ تجهيز الرد: معالجة النتائج وصياغتها كاستجابة جاهزة.",
+          "6️⃣ العرض للمستخدم: عرض النتائج المنسقة على الشاشة بالواجهة الأمامية."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch3-l1-exam",
+    "chapter_id": 3,
+    "lesson_id": "3-1",
+    "chunk_index": 2,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (3-1) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (3-1) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار امتحاني شامل يغطي نموذج العميل والخادم، وبنية الطبقات الثلاث، والمقارنة بين المواقع الثابتة والديناميكية.",
+    "audio_narration_text": "وصلت لاختبار إتقان الدرس الأول من الفصل الثالث! أجب عن الأسئلة الامتحانية بنجاح لتنال كأس التميز وتفتح الدرس التالي!",
+    "en_audio_narration_text": "Welcome to the Lesson 3-1 Mastery Exam! Demonstrate your thorough command of multi-tier web architecture and server-side processing to earn your gold trophy!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch3-l2-c1",
+    "chapter_id": 3,
+    "lesson_id": "3-2",
+    "chunk_index": 1,
+    "chunk_title": "نموذج العميل/الخادم وبروتوكول HTTP مقابل HTTPS وطرق الطلب",
+    "en_chunk_title": "HTTP vs HTTPS Protocols & Request Methods",
+    "type": "chunk",
+    "icon_emoji": "📡",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "تبادل الطلبات والاستجابات بين العميل والخادم، الفارق بين HTTP الصريح و HTTPS المشفر بنفق TLS، وطرق الطلب المنهجية (GET لجلب البيانات، POST لإرسال ومعالجة البيانات).",
+    "audio_narration_text": "مرحباً بك في الدرس الثاني من الفصل الثالث في هذه المحطة التعليمية! كيف تتواصل متصفحات الإنترنت مع الخوادم السحابية؟ عبر نموذج العميل والخادم وبروتوكول HTTP. يرسل العميل طلباً Request بطرق محددة: طريقة GET لجلب وقراءة البيانات دون تعديلها مثل فتح صفحة إخبارية وتظهر في رابط الصفحة URL، أما طريقة POST فتُستخدم لإرسال ومعالجة بيانات حساسة مثل تسجيل الدخول أو إدخال كلمة المرور وتكون مخفية داخل جسم الطلب. والأهم هو استخدام بروتوكول HTTPS المشفر بنفق TLS بدلاً من HTTP العادي؛ لأن HTTP ينقل النصوص صريحة ومكشوفة لأي متجسس على الشبكة، بينما HTTPS يحمي سرية البيانات ومصادقة الموقع بالكامل!",
+    "en_audio_narration_text": "Communication between web browsers and servers is governed by the HyperText Transfer Protocol (HTTP). Standard HTTP transmits data in unencrypted plaintext, leaving sensitive information vulnerable to eavesdropping. HTTPS solves this by adding an encryption layer via SSL/TLS. When communicating with web servers, clients use HTTP Request Methods: GET retrieves data from the server, while POST securely sends new data (such as login credentials or payment forms) to be processed.",
+    "ai_tutor_prompt": "عاش يا بطل! عرفت متى نستخدم GET ومتى نستخدم POST ولماذا HTTPS ضروري في تسجيل الدخول؟",
+    "simplified_explanation": "الـ GET مثل بطاقة بريدية مكشوفة يقرأ ساعي البريد ما عليها لجلب الكتاب المناسب لك. والـ POST مثل ظرف مغلق ومختوم لا يرى أحد محتواه لإرسال أوراقك الهامة بأمان!",
+    "key_terms": [
+      {
+        "term": "نموذج العميل والخادم",
+        "en": "Client-Server Model",
+        "definition": "بنية اتصالية يقوم فيها العميل (كالطالب أو المتصفح) بطلب خدمة أو صفحة، ويقوم الخادم باستقبال الطلب ومعالجته وإرجاع الاستجابة المناسبة.",
+        "example": "متصفحك يطلب صفحة جوجل، وخادم جوجل يعيد ملف HTML.",
+        "examTip": "سؤال متكرر: العميل هو الطرف الطالب للخدمة، والخادم هو الطرف المستجيب (كتاب ص 57)."
+      },
+      {
+        "term": "بروتوكول HTTPS",
+        "en": "HTTPS",
+        "definition": "بروتوكول نقل النص الفائق الآمن؛ وهو استخدام HTTP عبر نفق تشفير TLS يحمي سرية البيانات ويضمن مصادقة الخادم لمنع التنصت والتزوير.",
+        "example": "رمز القفل في شريط عنوان المتصفح عند الشراء بالبطاقة الائتمانية.",
+        "examTip": "سؤال تعليل وزاري: لماذا تستخدم صفحات تسجيل الدخول HTTPS؟ لمنع قراءة كلمات المرور كنص صريح (ص 58)."
+      },
+      {
+        "term": "طريقة GET مقابل POST",
+        "en": "GET vs POST Methods",
+        "definition": "أساليب طلب HTTP: GET لجلب الموارد وقراءتها فقط، و POST لإرسال بيانات جديدة لمعالجتها أو حفظها في قاعدة البيانات.",
+        "example": "تصفح المنتجات = GET | إرسال استمارة التسجيل أو كلمة المرور = POST.",
+        "examTip": "سؤال تطبيقي وزاري: تسجيل الدخول يستخدم POST، وعرض جدول الحصص يستخدم GET (ص 58)."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "مقارنة أساليب طلب HTTP (كتاب ص 58):",
+        "points": [
+          "🔍 GET: لجلب وقراءة الموارد فقط، تظهر بياناتها في الرابط URL، وتُستخدم لتصفح الصفحات وقوائم الأسعار.",
+          "✉️ POST: لإرسال بيانات جديدة لحفظها أو معالجتها، تكون مشفرة ومحمية في جسم الطلب، وتُستخدم لتسجيل الدخول والدفع.",
+          "✏️ PUT / DELETE: لتحديث بيانات موجودة (PUT) أو إزالة مورد (DELETE) في واجهات برمجة التطبيقات."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch3-l2-c2",
+    "chapter_id": 3,
+    "lesson_id": "3-2",
+    "chunk_index": 2,
+    "chunk_title": "رموز حالة HTTP وواجهات برمجة التطبيقات API وصيغة JSON",
+    "en_chunk_title": "HTTP Status Codes, REST APIs & The JSON Format",
+    "type": "chunk",
+    "icon_emoji": "📄",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "دلالات رموز الحالة (200 OK للنجاح، 400 خطأ صياغة، 404 المورد غير موجود كخطأ عميل، 500 خطأ خادم)، ودور واجهات API وصيغة JSON الخفيفة.",
+    "audio_narration_text": "عندما ينتهي الخادم من معالجة الطلب، يعيد رمز حالة HTTP لإخبار المتصفح بالنتيجة: الرمز الشهير 200 يعني نجاح العملية بالكامل وإعادة البيانات. والرمز 400 يعني خطأ في صياغة الطلب من جانب العميل. أما الرمز الشهير 404 فيعني أن الصفحة أو المورد غير موجود على الخادم، وهو خطأ من جانب العميل لأنه طلب رابطاً غير صحيح! بينما الرمز 500 يعني حدوث عطل داخلي بالخادم أثناء المعالجة. ولتبادل البيانات بين تطبيقات الموبايل والمواقع المختلفة، نستخدم واجهات برمجة التطبيقات API مع صيغة البيانات النصية الخفيفة JSON التي توفر طريقة قياسية وسريعة لتبادل المعلومات.",
+    "en_audio_narration_text": "When a web server responds to an HTTP request, it issues an HTTP Status Code: 200 OK signals successful retrieval. 404 Not Found indicates the requested URL does not exist. And 500 Internal Server Error reveals a crash in backend server code. Modern web applications exchange data between frontend and backend via REST APIs using JSON (JavaScript Object Notation)—a lightweight, human-readable key-value text format.",
+    "ai_tutor_prompt": "عاش يا بطل! لو ظهر لك 404 على الشاشة، تعرف الخطأ عند من وماذا يعني؟ جاهز للأسئلة؟",
+    "simplified_explanation": "رمز 200 يعني 'طلبك وصل وجاهز!'، رمز 404 يعني 'أنت طلبت غرفة رقم 999 وهي غير موجودة في الفندق أصلاً!'، ورمز 500 يعني 'المطبخ تعطل وسنصلحه قريباً!'",
+    "key_terms": [
+      {
+        "term": "رموز حالة HTTP",
+        "en": "HTTP Status Codes",
+        "definition": "أرقام ثلاثية معيارية تُرسل مع استجابة الخادم للإبلاغ عن نتيجة معالجة الطلب (200 نجاح، 404 غير موجود، 500 خطأ خادم).",
+        "example": "200 OK = نجاح | 404 Not Found = الصفحة غير موجودة (خطأ عميل) | 500 = عطل بالخادم.",
+        "examTip": "سؤال لغز وزاري: إذا استقبل المتصفح رمز 404، فأي جانب وقع فيه الخطأ؟ جانب العميل (كتاب ص 58)."
+      },
+      {
+        "term": "واجهة برمجة التطبيقات",
+        "en": "API",
+        "definition": "واجهة برمجية وقواعد محددة تتيح لأنظمة وتطبيقات مختلفة تبادل البيانات والوظائف بسلاسة وأمان.",
+        "example": "تطبيق حجز الطيران يطلب مواعيد الرحلات من خوادم شركات الطيران المختلفة عبر API.",
+        "examTip": "سؤال اختر: واجهة تتيح لبرنامج طلب بيانات ووظائف من برنامج آخر هي API (ص 59)."
+      },
+      {
+        "term": "صيغة JSON",
+        "en": "JSON",
+        "definition": "صيغة بيانات نصية قياسية خفيفة وسريعة تعتمد على أزواج المفتاح والقيمة (Key-Value) لتبادل البيانات بين الخوادم والتطبيقات.",
+        "example": "{\"name\": \"عمر\", \"grade\": 98}",
+        "examTip": "سؤال طابق: صيغة بيانات نصية خفيفة لتبادل البيانات بين النظم هي JSON (ص 59)."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "جدول رموز حالة HTTP المنهجية (كتاب ص 58–59):",
+        "points": [
+          "🟢 200 OK: تمت معالجة الطلب بنجاح والنتيجة متاحة.",
+          "🟡 400 Bad Request: خطأ في صياغة أو معاملات الطلب من جانب العميل.",
+          "🟠 404 Not Found: الصفحة أو المورد المطلوب غير موجود (خطأ عميل).",
+          "🔴 500 Server Error: حدث عطل أو خطأ داخلي في الخادم أثناء المعالجة."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch3-l2-exam",
+    "chapter_id": 3,
+    "lesson_id": "3-2",
+    "chunk_index": 3,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (3-2) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (3-2) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار امتحاني وزاري شامل مجمع يغطي نموذج العميل والخادم، وطرق طلب GET و POST، ورموز HTTP، وصيغة JSON وواجهات API.",
+    "audio_narration_text": "وصلت لاختبار إتقان الدرس الثاني من الفصل الثالث! أجب عن الأسئلة الامتحانية بنجاح لتنال كأس التميز وتفتح الدرس الثالث!",
+    "en_audio_narration_text": "Welcome to the Lesson 3-2 Mastery Challenge! Test your thorough knowledge of web protocols, HTTPS encryption, status codes, and API data payloads to claim your gold trophy!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch3-l3-c1",
+    "chapter_id": 3,
+    "lesson_id": "3-3",
+    "chunk_index": 1,
+    "chunk_title": "ثلاثية تطوير الواجهة الأمامية: HTML و CSS و JavaScript",
+    "en_chunk_title": "The Front-End Triad: HTML, CSS & JavaScript Roles",
+    "type": "chunk",
+    "icon_emoji": "💻",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "التشبيه المنهجي لهيكل المبنى: لغة HTML لبناء الهيكل والعناصر، ولغة CSS للتنسيق والمظهر، ولغة JavaScript للسلوك التفاعلي.",
+    "audio_narration_text": "مرحباً بك في الدرس الثالث من الفصل الثالث في هذه المحطة التعليمية! واجهات الويب التي تراها كل يوم مبنية على ثلاثية تقنية لا غنى عنها؛ يشبهها كتاب الوزارة ببناء مبنى معماري متكامل: لغة HTML تمثل الهيكل الخرساني والجدران الأساسية؛ حيث تبني العناوين والفقرات والأزرار والجداول واستمارات التسجيل. ولغة CSS تمثل التصميم والديكور والألوان؛ حيث تحدد المظهر والخطوط وتناسق التخطيط. ولغة JavaScript تمثل الكهرباء والمصاعد؛ حيث توفر السلوك التفاعلي واستجابة الأزرار والتحقق الفوري من صحة المدخلات. وعند بناء استمارة تسجيل متجاوبة، تتعاون التقنيات الثلاث: HTML تنشئ الحقول، CSS تمنحها التنسيق المتجاوب، و JS تفحص صحة البيانات فورياً!",
+    "en_audio_narration_text": "Every visual web page in the world is constructed using three core front-end languages: HTML (HyperText Markup Language) builds the structural skeleton using semantic tags like headings, paragraphs, and forms. CSS (Cascading Style Sheets) decorates the appearance, controlling color palettes, fonts, grid layouts, and animations. And JavaScript acts as the nervous system, adding dynamic interactivity, handling button clicks, validating forms, and fetching API data asynchronously without refreshing the page.",
+    "ai_tutor_prompt": "عاش يا بطل! استوعبت دور كل لغة من الثلاثية: HTML للهيكل، CSS للمظهر، و JS للتفاعل؟ جاهز للتحدي؟",
+    "simplified_explanation": "HTML هي عظام جسم الإنسان، CSS هي الملابس الأنيقة والملامح، و JavaScript هي العضلات والأعصاب التي تمكنه من الحركة والكلام والتفاعل!",
+    "key_terms": [
+      {
+        "term": "لغة HTML",
+        "en": "HTML",
+        "definition": "لغة ترميز النص الفائق المسؤولة عن بناء الهيكل العظمي لصفحة الويب وإدراج العناصر الأساسية كالعناوين والنصوص والصور والروابط.",
+        "example": "<h1>عنوان رئيسي</h1> و <p>فقرة</p> و <button>زر</button>.",
+        "examTip": "سؤال الفراغات: تتولى HTML بناء الهيكل (كتاب ص 67)."
+      },
+      {
+        "term": "لغة CSS",
+        "en": "CSS",
+        "definition": "لغة أوراق الأنماط المتتالية المسؤولة عن تنسيق المظهر البصري والجماليات: الألوان، الخطوط، وتخطيط الصفحة المتجاوب.",
+        "example": "تلوين الأزرار وتحديد المسافات وترتيب العناصر في شبكة أنيقة.",
+        "examTip": "سؤال صواب وخطأ: تتولى CSS تحديد مظهر الصفحة وتخطيطها وألوانها (صواب ص 66)."
+      },
+      {
+        "term": "لغة JavaScript",
+        "en": "JavaScript",
+        "definition": "لغة البرمجة التفاعلية المسؤولة عن إضافة الحركة والسلوك الديناميكي والاستجابة لضغطات المستخدم وفحص المدخلات.",
+        "example": "إظهار رسالة تحذيرية فورية عند كتابة بريد إلكتروني غير صحيح دون إعادة تحميل الصفحة.",
+        "examTip": "توفر السلوك التفاعلي وتعديل محتوى الصفحة لحظياً (ص 67)."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "ثلاثية تطوير الواجهة الأمامية (تشبيه هيكل المبنى ص 63):",
+        "points": [
+          "🏛️ 1. لغة HTML: 'الهيكل الخرساني' - إنشاء البنية والعناصر وحقول الاستمارة.",
+          "🎨 2. لغة CSS: 'التصميم والطلاء' - تحديد المظهر والألوان والتخطيط الجذاب.",
+          "⚡ 3. لغة JavaScript: 'الكهرباء والتفاعل' - السلوك الحركي وفحص صحة البيانات."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch3-l3-c2",
+    "chapter_id": 3,
+    "lesson_id": "3-3",
+    "chunk_index": 2,
+    "chunk_title": "HTML الدلالية، التصميم المتجاوب، وأطر العمل الحديثة",
+    "en_chunk_title": "Semantic HTML, Responsive Design & Modern Web Frameworks",
+    "type": "chunk",
+    "icon_emoji": "📱",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "الوسوم الدلالية (header, nav, main, footer) لإمكانية الوصول والـ SEO، ومبادئ التصميم المتجاوب (Responsive) لتكييف الشاشات، وأطر العمل الحديثة (React, Next.js).",
+    "audio_narration_text": "في تطوير الويب الاحترافي، نستخدم وسوماً دلالية Semantic HTML مثل header للترويسة، و nav لروابط التنقل، و main للمحتوى الجوهري، و footer للتذييل؛ بدلاً من استخدام صناديق div المبهمة. لماذا؟ لأنها تساعد قارئات الشاشة للمكفوفين على فهم محتوى الصفحة بكفاءة (إمكانية الوصول Accessibility)، وتساعد محركات البحث Google على فهرسة الأقسام بدقة. كما نطبق التصميم المتجاوب Responsive Web Design لجعل تخطيط الموقع يتكيف تلقائياً مع أحجام الشاشات المختلفة؛ فتعرض شاشة الكمبيوتر 4 أعمدة للمنتجات وتتحول تلقائياً لعمود واحد مريح على شاشة الهاتف. ولتطوير المواقع بكفاءة عالية، نستخدم أطر العمل مثل React لبناء المكونات، و Next.js لتوفير العرض من جهة الخادم.",
+    "en_audio_narration_text": "Professional web development emphasizes Semantic HTML: using descriptive tags like <header>, <nav>, <article>, and <footer> instead of generic <div> tags, which dramatically enhances accessibility (for screen readers) and Search Engine Optimization (SEO). Furthermore, Responsive Web Design uses CSS Media Queries and fluid layouts (Flexbox/Grid) to ensure pages adapt seamlessly whether viewed on a 4-inch smartphone or a 32-inch 4K monitor.",
+    "ai_tutor_prompt": "ممتاز يا بطل! عرفت لماذا نحرص على HTML الدلالية والتصميم المتجاوب على الهواتف؟ جاهز للتحدي؟",
+    "simplified_explanation": "HTML الدلالية مثل وضع لوحات إرشادية على الأبواب: 'باب خروج' و'صالة طعام'، فيعرف الضيف الأعمى مكانه فوراً. والتصميم المتجاوب مثل الماء يأخذ شكل الإناء: يتسع على الكمبيوتر وينكمش على الهاتف بأناقة!",
+    "key_terms": [
+      {
+        "term": "HTML الدلالية",
+        "en": "Semantic HTML",
+        "definition": "استخدام وسوم تصف معنى ودور العنصر بوضوح (مثل <header> و <nav> و <main> و <footer>) بدلاً من الصناديق العامة غير ذات الدلالة.",
+        "example": "قارئ الشاشة يخبر الكفيف: 'قائمة تنقل' عند قراءة وسوم <nav> فيستطيع تخطيها للمحتوى الأساسي.",
+        "examTip": "سؤال وزاري: العناصر الدلالية تصف معنى المحتوى صراحة لقارئات الشاشة ومحركات البحث (ص 64)."
+      },
+      {
+        "term": "التصميم المتجاوب",
+        "en": "Responsive Web Design",
+        "definition": "تصميم موقع الويب وتخطيطه بحيث يتكيف تلقائياً مع أحجام الشاشات المختلفة (حواسيب، أجهزة لوحية، هواتف ذكية) لتفادي التمرير الأفقي وتشوه النصوص.",
+        "example": "تحول القائمة الأفقية العريضة في الحاسوب إلى قائمة هامبرغر منسدلة أنيقة في الهاتف.",
+        "examTip": "سؤال اختر: الغرض الرئيسي للتصميم المتجاوب تكييف التخطيط تلقائياً مع أحجام الشاشات (ص 64)."
+      },
+      {
+        "term": "إمكانية الوصول للويب",
+        "en": "Web Accessibility",
+        "definition": "تصميم وتطوير المواقع بحيث يتمكن جميع الأشخاص، بما في ذلك ذوو الإعاقة وكبار السن، من فهم وتصفح والتفاعل مع الموقع بكفاءة متساوية.",
+        "example": "دعم قارئات الشاشة، والتباين العالي للألوان لضعاف البصر.",
+        "examTip": "سؤال وزاري مباشر: ما المقصود بإمكانية الوصول للويب؟ (كتاب ص 64)."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "الوسوم الدلالية المنهجية ووظائفها (كتاب ص 64):",
+        "points": [
+          "🔝 <header>: ترويسة أعلى الصفحة أو المقال وتضم الشعار والعنوان.",
+          "🧭 <nav>: قسم مخصص لروابط وقوائم التنقل الرئيسية.",
+          "📄 <main>: المحتوى الجوهري والأساسي لصفحة الويب دون تكرار.",
+          "🔚 <footer>: تذييل الصفحة ومعلومات الاتصال وحقوق الملكية."
+        ]
+      },
+      {
+        "type": "concept",
+        "title": "أطر العمل والمكتبات الحديثة (كتاب ص 65):",
+        "points": [
+          "⚛️ React: مكتبة لبناء واجهات المستخدم من مكونات برمجية قابلة لإعادة الاستخدام.",
+          "🚀 Next.js: إطار متكامل مبني على React يوفر التوجيه المباشر والعرض من جانب الخادم."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch3-l3-exam",
+    "chapter_id": 3,
+    "lesson_id": "3-3",
+    "chunk_index": 3,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (3-3) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (3-3) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار امتحاني وزاري شامل مجمع يغطي ثلاثية الواجهة (HTML, CSS, JS)، والوسوم الدلالية، والتصميم المتجاوب وإمكانية الوصول وأطر العمل.",
+    "audio_narration_text": "وصلت لاختبار إتقان الدرس الثالث وختام الفصل الثالث كاملاً! أجب عن الأسئلة الامتحانية بنجاح لتنال كأس التميز الذهبي للفصل الثالث!",
+    "en_audio_narration_text": "Welcome to the Lesson 3-3 Mastery Challenge! Conclude Chapter 3 by demonstrating your mastery of HTML structure, CSS styling, and JavaScript interactivity to claim your gold trophy!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch4-l1-c1",
+    "chapter_id": 4,
+    "lesson_id": "4-1",
+    "chunk_index": 1,
+    "chunk_title": "مقارنة خصائص الوسائط وأنماط الاتصال أحادي وثنائي الاتجاه",
+    "en_chunk_title": "Media Characteristics: One-Way vs Two-Way Communication",
+    "type": "chunk",
+    "icon_emoji": "📺",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "مقارنة الوسائط الإعلامية والرقمية (نصوص، صور، صوت، فيديو)، وأنماط الاتصال: اتجاه واحد (One-way) والتفاعلي ثنائي الاتجاه (Two-way).",
+    "audio_narration_text": "مرحباً بك في الفصل الرابع: تصميم الويب والوسائط! في هذا الدرس نتعلم كيف نختار الوسيلة الإعلامية المناسبة لنشر أي فكرة: قديماً كانت وسائل الإعلام كالتلفزيون والراديو والجريدة تعمل في اتجاه واحد من المرسل للمستقبل دون تفاعل فوري. أما في عصر الويب والشبكات، أصبح الاتصال ثنائي الاتجاه وتفاعلياً؛ حيث يستطيع المستخدم التعليق، والمشاركة، وإبداء الرأي فورياً. كما نقارن بين نقاط قوة النص والصورة والفيديو لاختيار الأنسب لجمهورنا.",
+    "en_audio_narration_text": "Welcome to Chapter 4 on Web Design and Media! Digital communication uses distinct media types: Text is lightweight and precise for official documentation. Images convey immediate emotional impact. Audio conveys tone without visual distraction. And Video is the richest and most engaging medium, combining imagery, motion, and sound. Unlike traditional One-Way broadcast media (like TV and print newspapers), modern web platforms deliver interactive Two-Way communication where visitors provide real-time feedback.",
+    "ai_tutor_prompt": "عاش يا بطل! عرفت الفارق بين الاتصال أحادي الاتجاه وثنائي الاتجاه، ومتى تفضل الفيديو على النص؟",
+    "simplified_explanation": "لو أستاذ يشرح من وراء شاشة تلفزيون مغلقة ولا يسمعك، فهذا اتجاه واحد. لو يتحدث معك وترفع يدك وتناقشه وتجيب، فهذا ثنائي الاتجاه تفاعلي!",
+    "key_terms": [
+      {
+        "term": "الاتصال أحادي الاتجاه",
+        "en": "One-way Communication",
+        "definition": "نمط اتصالي ينقل فيه المصدر المعلومات إلى الجمهور في اتجاه واحد فقط دون تفاعل فوري أو رد مباشر من المتلقي.",
+        "example": "البث التلفزيوني التقليدي، الراديو، والمجلات المطبوعة.",
+        "examTip": "سؤال متكرر: ما الفرق بين التلفزيون ومواقع الويب؟ التلفزيون أحادي الاتجاه غالباً، والموقع تفاعلي ثنائي الاتجاه."
+      },
+      {
+        "term": "الاتصال ثنائي الاتجاه",
+        "en": "Two-way Communication",
+        "definition": "نمط اتصالي تفاعلي يتبادل فيه المرسل والمستقبل الرسائل والتغذية الراجعة فورياً.",
+        "example": "مواقع التواصل الاجتماعي، محادثات الفيديو، والمنتديات التفاعلية.",
+        "examTip": "هو النمط الحاكم لشبكة الويب الحديثة وتطبيقات الجيل الثاني والثالث."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "مقارنة خصائص الوسائط الرقمية:",
+        "points": [
+          "📄 النص: دقيق، موثق، قليل الحجم، ومثالي للمعلومات الرسمية والتعليمات.",
+          "🖼️ الصورة: سريعة التأثير والفهم البصري (الصورة بألف كلمة)، تجذب الانتباه فوراً.",
+          "🎙️ الصوت: مناسب أثناء القيادة والعمل، ينقل المشاعر ونبرة الصوت دون تشتيت النظر.",
+          "🎬 الفيديو: الوسيط الأكثر ثراءً وجذباً وتأثيراً لأنه يجمع (الصورة + الحركة + الصوت)."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch4-l1-c2",
+    "chapter_id": 4,
+    "lesson_id": "4-1",
+    "chunk_index": 2,
+    "chunk_title": "الرسوم المتجهة (Vector) مقابل النقطية (Bitmap) وتقنيات ضغط البيانات",
+    "en_chunk_title": "Vector vs Bitmap Graphics & Data Compression Techniques",
+    "type": "chunk",
+    "icon_emoji": "📐",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "الصور المتجهة (SVG) القائمة على المعادلات الرياضية التي لا تبكسل عند التكبير مقابل الصور النقطية (JPG/PNG)، وضغط البيانات مع فقدان (Lossy) وبدون فقدان (Lossless).",
+    "audio_narration_text": "في هذا المحور من الدرس الأول بالفصل الرابع، نتعلم كيف نتعامل مع الصور في صفحات الويب باحترافية: لدينا نوعان رئيسيان من الصور؛ النوع الأول هو الصور المتجهة Vector مثل صيغة SVG، وهي مبنية على معادلات رياضية هندسية، وميزتها الخارقة أنها لا تفقد جودتها ولا تبكسل أبداً مهما قمت بتكبيرها، لذلك فهي مثالية للشعارات والأيقونات والخطوط. أما النوع الثاني فهو الصور النقطية Bitmap مثل JPG و PNG، وهي مصفوفة من البكسلات الملونة، تفقد حدتها وتبكسل عند التكبير المفرط، لكنها مثالية للصور الفوتوغرافية والطبيعية. ولكي نحمل الصور بسرعة عبر الإنترنت، نستخدم تقنيات ضغط البيانات: الضغط بدون فقدان Lossless مثل PNG يحتفظ بكل البيانات ويستخدم للرسوم ذات الشفافية، بينما الضغط مع الفقدان Lossy مثل JPEG يزيل التفاصيل غير المحسوسة لتقليص حجم الملف وتسريع الموقع!",
+    "en_audio_narration_text": "Web graphics fall into two fundamental categories: Bitmap (Raster) images, composed of a fixed grid of colored pixels—such as JPEG for photographs and PNG for transparent graphics. Scaling bitmaps causes pixelation. In contrast, Vector graphics (like SVG) use mathematical equations (points, curves, and vectors) to draw shapes, allowing infinite scaling without ever losing sharpness. To accelerate web page loading, developers use Lossless compression (like PNG/ZIP) to preserve every byte, or Lossy compression (like JPEG/MP3) to discard imperceptible data for massive file size reductions.",
+    "ai_tutor_prompt": "عاش يا بطل! متى تختار صورة Vector بصيغة SVG ومتى تختار صورة JPEG مضغوطة؟ جاهز للأسئلة؟",
+    "simplified_explanation": "الـ Vector مثل أمر كمبيوتر يرسم دائرة بفرجار: مهما كبرت الدائرة تظل ناعمة وملساء تماماً. والـ Bitmap مثل لوحة مرسومة بنقط ملونة: لو قربت منها بعدسة مكبرة سترى المربعات والبكسلات بوضوح!",
+    "key_terms": [
+      {
+        "term": "الصور المتجهة",
+        "en": "Vector Graphics (SVG)",
+        "definition": "صور تُنشأ باستخدام معادلات رياضية للأشكال والخطوط والمنحنيات؛ لا تفقد دقتها أو تبكسل عند تكبيرها، ومثالية للشعارات والأيقونات.",
+        "example": "شعار الموقع بصيغة SVG يظهر حاداً وواضحاً على كل الشاشات.",
+        "examTip": "سؤال وزاري مكرر: أي نوع صور لا يبكسل عند التكبير؟ الصور المتجهة Vector (كتاب ص 70)."
+      },
+      {
+        "term": "الصور النقطية",
+        "en": "Bitmap / Raster (JPG/PNG)",
+        "definition": "صور تتكون من شبكة من النقاط الملونة (Pixels)؛ تفقد حدتها وتبكسل عند التكبير المفرط، ومثالية للصور الفوتوغرافية الغنية بالألوان.",
+        "example": "الصور الملتقطة بكاميرا الهاتف المحمول.",
+        "examTip": "تفقد حدتها وتبكسل إذا تم تكبيرها أكبر من حجمها الأصلي (ص 70)."
+      },
+      {
+        "term": "ضغط البيانات",
+        "en": "Data Compression (Lossless vs Lossy)",
+        "definition": "تقنيات تقليص حجم الملفات؛ غير المفقود (Lossless) يستعيد البيانات 100% دون نقص، ومع الفقدان (Lossy) يحذف تفاصيل غير محسوسة لتسريع الويب.",
+        "example": "صيغة PNG تستخدم Lossless | صيغة JPEG تستخدم Lossy لتقليل الحجم.",
+        "examTip": "سؤال وزاري: صيغة JPEG تستخدم ضغطاً مع الفقدان Lossy لتقليل حجم صور الويب (ص 70)."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "مقارنة المتجهة والنقطية وتقنيات الضغط (كتاب ص 70):",
+        "points": [
+          "📐 الصور المتجهة (Vector/SVG): معادلات رياضية، دقة لانهائية، لا تبكسل، مثالية للشعارات.",
+          "🖼️ الصور النقطية (Bitmap/JPG): شبكة بكسلات، تبكسل عند التكبير، مثالية للصور الحقيقية.",
+          "📦 الضغط بدون فقدان (Lossless/PNG): استعادة كاملة 100% ودعم الشفافية للرسوم.",
+          "⚡ الضغط مع الفقدان (Lossy/JPEG): تقليص هائل للحجم لتسريع تحميل المواقع."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch4-l1-exam",
+    "chapter_id": 4,
+    "lesson_id": "4-1",
+    "chunk_index": 2,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (4-1) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (4-1) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار امتحاني شامل يغطي أنواع الوسائط ونقاط القوة لكل منها، وأنماط الاتصال أحادي وثنائي الاتجاه واختيار الوسيط المناسب.",
+    "audio_narration_text": "وصلت لاختبار إتقان الدرس الأول من الفصل الرابع! أجب عن الأسئلة الامتحانية بنجاح لتنال كأس التميز وتفتح الدرس التالي!",
+    "en_audio_narration_text": "Welcome to the Lesson 4-1 Mastery Challenge! Test your knowledge of media affordances, vector mathematics, and audio-video compression codecs to earn your gold trophy!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch4-l2-c1",
+    "chapter_id": 4,
+    "lesson_id": "4-2",
+    "chunk_index": 1,
+    "chunk_title": "شخصية المستخدم (Persona) وهندسة المعلومات ومبادئ CRAP",
+    "en_chunk_title": "User Persona, Information Architecture & CRAP Principles",
+    "type": "chunk",
+    "icon_emoji": "👤",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "كيف نفكر كمصمم واجهات محترف: بناء شخصية المستخدم (Persona)، تنظيم وهيكلة المعلومات، ومبادئ التصميم المرئي الأربعة المشهورة CRAP.",
+    "audio_narration_text": "قبل أن نرسم خطاً واحداً في تصميم الموقع، يجب أن نسأل: من هو المستخدم الحقيقي؟ هنا يأتي دور الـ Persona؛ وهي شخصية خيالية تمثل نمطاً حقيقياً من المستخدمين واحتياجاتهم مبنية على أبحاث ودراسات. ثم تأتي هندسة المعلومات لتنظيم المحتوى في خريطة موقع بديهية. وأخيراً نطبق مبادئ التصميم الأربعة الشهيرة CRAP: التباين (Contrast) لإبراز الأهم، التكرار (Repetition) للاتساق، المحاذاة (Alignment) للتنظيم، والتقارب (Proximity) لتجميع العناصر المترابطة.",
+    "en_audio_narration_text": "Great web design begins with empathy: Designers construct a User Persona—a research-backed semi-fictional archetype representing the target audience's demographics, professional motivations, and technical pain points. Next, designers organize Information Architecture: structuring navigation menus and hierarchical content so users locate answers effortlessly. Visual layout is governed by the four CRAP principles: Contrast, Repetition, Alignment, and Proximity.",
+    "ai_tutor_prompt": "ممتاز يا بطل! استوعبت مبادئ CRAP الأربعة ولماذا نبني شخصية المستخدم Persona قبل التصميم؟",
+    "simplified_explanation": "تصميم موقع بدون Persona مثل طبخ وجبة وأنت لا تعرف هل الضيوف يحبون السكر أم الملح! ومبادئ CRAP مثل ترتيب غرفتك: ملابسك معاً (تقارب)، على استقامة واحدة (محاذاة)، ألوان دولابك متناسقة (تكرار)، وإضاءة بارزة على مكتبك (تباين)!",
+    "key_terms": [
+      {
+        "term": "شخصية المستخدم (Persona)",
+        "en": "User Persona",
+        "definition": "شخصية خيالية مبنية على بيانات واقعية تمثل نموذجاً للمستخدمين المستهدفين بالموقع وسلوكياتهم وأهدافهم.",
+        "example": "تصميم شخصية 'أحمد الطالب المستعجل' لتسهيل الوصول المباشر للدروس دون خطوات زائدة.",
+        "examTip": "سؤال متكرر: الـ Persona تبنى على أبحاث واستبيانات حقيقية وليست تخمينات عشوائية من المصمم."
+      },
+      {
+        "term": "مبادئ التصميم الأربعة (CRAP)",
+        "en": "CRAP Principles",
+        "definition": "المبادئ العالمية الأربعة لتصميم واجهات مريحة: التباين Contrast، التكرار Repetition، المحاذاة Alignment، والتقارب Proximity.",
+        "example": "جعل زر 'الشراء الآن' بلون برتقالي مميز عن الخلفية البيضاء يطبق مبدأ التباين.",
+        "examTip": "احفظ حروف CRAP وما يمثله كل حرف باللغة العربية والإنجليزية."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "مبادئ التصميم الأربعة CRAP بالترتيب:",
+        "points": [
+          "🎨 C - التباين (Contrast): جعل العناصر المهمة مختلفة وبارزة بوضوح عن الخلفية لجذب العين.",
+          "🔁 R - التكرار (Repetition): استخدام نفس الألوان والخطوط والأزرار في كل الصفحات لتحقيق الاتساق.",
+          "📐 A - المحاذاة (Alignment): وضع العناصر على خطوط بصرية مستقيمة لإعطاء شعور بالتنظيم والراحة.",
+          "🧲 P - التقارب (Proximity): وضع العناصر المترابطة معاً في مجموعة واحدة، وفصل غير المترابطة بمساحات بيضاء."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch4-l2-c2",
+    "chapter_id": 4,
+    "lesson_id": "4-2",
+    "chunk_index": 2,
+    "chunk_title": "مبادئ تصميم PARC البصرية والتصميم المتمحور حول المستخدم (UCD)",
+    "en_chunk_title": "PARC Visual Principles & User-Centered Design (UCD)",
+    "type": "chunk",
+    "icon_emoji": "🎨",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "المبادئ الأربعة المعتمدة للتصميم البصري (التباين Contrast، التكرار Repetition، المحاذاة Alignment، التقارب Proximity)، وفلسفة التصميم المتمحور حول المستخدم (UCD).",
+    "audio_narration_text": "بعد الانتهاء من المخطط الهيكلي وتحديد أماكن العناصر، ننتقل للمبادئ الهندسية البصرية الأربعة الشهيرة مبادئ PARC في كتاب الوزارة: المبدأ الأول هو التباين Contrast؛ تكبير العناوين وإبراز الأزرار الهامة بألوان واضحة لجذب عين الزائر فورياً. المبدأ الثاني هو التكرار Repetition؛ توحيد نوع الخط والألوان وشكل الأزرار في كل الصفحات لتحقيق الاتساق والراحة. المبدأ الثالث هو المحاذاة Alignment؛ رص النصوص والعناصر على خطوط شبكية موحدة لتبدو الصفحة منظمة كالمبنى المعماري. والمبدأ الرابع هو التقارب Proximity؛ تجميع العناصر المترابطة معاً في بطاقة واحدة مثل صورة المنتج واسمه وسعره وزر شرائه! وكل هذا يخدم الفلسفة الكبرى: التصميم المتمحور حول المستخدم UCD الذي يجعل حاجة المستخدم وسياقه أساساً لكل قرار تصميمي!",
+    "en_audio_narration_text": "Visual clarity is achieved by mastering the four PARC / CRAP principles: Proximity groups related elements together to indicate relationships. Alignment ensures every visual element shares a clean invisible baseline with other elements on the canvas. Repetition establishes consistency through cohesive color palettes, button styles, and fonts. Contrast creates dynamic visual hierarchy by highlighting primary calls to action. These principles operationalize User-Centered Design (UCD), an iterative cycle of Research, Design, Prototyping, and Usability Testing.",
+    "ai_tutor_prompt": "عاش يا بطل! عرفت كيف تفرق بين التباين والتكرار والمحاذاة والتقارب في مبادئ PARC؟ جاهز للتحدي؟",
+    "simplified_explanation": "لو عندك جريدة: العنوان العريض الأسود تباين، نفس شكل الخط في كل صفحة تكرار، ترتيب الأعمدة بمسطرة مستقيمة محاذاة، ووضع صورة الخبر ملتصقة بنص الخبر تقارب!",
+    "key_terms": [
+      {
+        "term": "مبادئ PARC البصرية",
+        "en": "PARC Principles",
+        "definition": "المبادئ الأربعة المعتمدة بكتاب الوزارة لتنظيم الشكل البصري: التباين (Contrast)، التكرار (Repetition)، المحاذاة (Alignment)، والتقارب (Proximity).",
+        "example": "التباين يبرز، التكرار يوحّد، المحاذاة تنظم، والتقارب يجمع.",
+        "examTip": "سؤال وزاري طابق: العناوين الغامقة = تباين | توحيد الخط = تكرار | النص من اليمين = محاذاة | بطاقة المنتج = تقارب (ص 77)."
+      },
+      {
+        "term": "التصميم المتمحور حول المستخدم",
+        "en": "User-Centered Design (UCD)",
+        "definition": "نهج تصميمي يجعل فهم المستخدمين واحتياجاتهم وسياق استخدامهم ومهامهم أساساً لجميع قرارات التصميم والتطوير.",
+        "example": "تصميم صفحة استعلام نتائج تضع حقل رقم الجلوس وزر البحث في أعلى الشاشة بوضوح لراحة ولي الأمر المشغول.",
+        "examTip": "سؤال اختر: المفهوم الأنسب لـ UCD هو بدء التصميم انطلاقاً مما يحتاجه المستخدم وسياقه (ص 79)."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "جدول مبادئ PARC البصرية الأربعة (كتاب الوزارة ص 76):",
+        "points": [
+          "🌟 1. التباين (Contrast): جعل أولوية المعلومات واضحة وإبراز أهم العناصر (تكبير العناوين وألوان الأزرار).",
+          "🔄 2. التكرار (Repetition): تكرار خصائص محددة لتحقيق الاتساق البصري وتفادي التشتت (توحيد الخطوط والقوائم).",
+          "📏 3. المحاذاة (Alignment): محاذاة العناصر إلى خط أساس مشترك وفق شبكة التصميم لإضفاء النظام والتماسك.",
+          "🧲 4. التقارب (Proximity): وضع المعلومات المرتبطة قريبة من بعضها لتُدرك كمجموعة واحدة مع مسافات بيضاء تفصل المجموعات."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch4-l2-exam",
+    "chapter_id": 4,
+    "lesson_id": "4-2",
+    "chunk_index": 2,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (4-2) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (4-2) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار امتحاني شامل يغطي شخصية المستخدم Persona، هندسة وتصميم المعلومات، ومبادئ CRAP الأربعة وتجربة المستخدم UX.",
+    "audio_narration_text": "وصلت لاختبار إتقان الدرس الثاني من الفصل الرابع! أجب عن الأسئلة الامتحانية لتثبت احترافك في تصميم تجربة المستخدم وتنال النجوم الثلاثة!",
+    "en_audio_narration_text": "Welcome to the Lesson 4-2 Mastery Challenge! Test your deep understanding of User Personas, Information Architecture, and the CRAP visual principles to claim your gold trophy!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch4-l3-c1",
+    "chapter_id": 4,
+    "lesson_id": "4-3",
+    "chunk_index": 1,
+    "chunk_title": "التقييم النوعي والتقييم الكمي واختبار أ/ب (A/B Testing)",
+    "en_chunk_title": "Qualitative vs Quantitative Website Evaluation & A/B Testing",
+    "type": "chunk",
+    "icon_emoji": "📊",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "كيف نختبر نجاح الموقع: التقييم النوعي (اختبار قابلية الاستخدام Usability Testing والمقابلات) والتقييم الكمي (معدل الارتداد ووقت البقاء)، والخرائط الحرارية واختبار A/B.",
+    "audio_narration_text": "كيف نعرف هل موقعنا ناجح ومريح للمستخدمين أم معقد ويحتاج تعديلاً؟ نستخدم أداتين تكامليتين: الأولى هي التقييم النوعي (Qualitative) بمراقبة مستخدمين حقيقيين أثناء تجربة الموقع وسؤالهم عن الصعوبات التي واجهوها لمعرفة السبب 'لماذا تعثر المستخدم؟'. والثانية هي التقييم الكمي (Quantitative) بالأرقام والمؤشرات الرقمية مثل معدل الارتداد، والخرائط الحرارية للنقرات، واختبار أ/ب لمقارنة نسختين من الصفحة ورؤية أيتهما تحقق مبيعات وتسجيلات أعلى.",
+    "en_audio_narration_text": "How do we know if a website's design is truly successful? Web professionals combine two evaluation approaches: Qualitative Evaluation uncovers the 'Why' behind user behavior through recorded usability testing sessions, interviews, and cognitive walkthroughs. Quantitative Evaluation measures the 'What' and 'How many' through analytics metrics like bounce rates, time on page, and A/B Testing—where two versions of a webpage (Version A vs Version B) are compared to measure which achieves higher conversion rates.",
+    "ai_tutor_prompt": "عاش يا بطل! عرفت الفارق بين أن تسأل المستخدم عن رأيه (نوعي) وأن تقيس أرقام الزيارات (كمي)؟ تحب نبدأ التحدي؟",
+    "simplified_explanation": "لو عندك مطعم: التقييم النوعي أن تسأل الزبون: 'كيف كان طعم الشوربة؟' فيخبرك أنها باردة. التقييم الكمي أن تعد كم زبوناً أكل كل الطبق وكم شخصاً تركه دون لمسه! كلاهما مهم لتفهم الحقيقة!",
+    "key_terms": [
+      {
+        "term": "التقييم النوعي والكمي",
+        "en": "Qualitative vs Quantitative",
+        "definition": "النوعي يركز على المشاعر والملاحظات والأسباب المعمقة (لماذا؟)؛ بينما الكمي يركز على الأرقام والإحصائيات والنسب المئوية (كم؟).",
+        "example": "النوعي: مقابلة 5 مستخدمين؛ الكمي: قياس نسبة نقرات 100 ألف زائر.",
+        "examTip": "سؤال امتحان: التقييم الأفضل يجمع بين الطريقتين معاً (الأرقام والملاحظات المباشرة)."
+      },
+      {
+        "term": "اختبار أ/ب",
+        "en": "A/B Testing",
+        "definition": "تجربة علمية يتم فيها إطلاق نسختين مختلفتين من الصفحة (نسخة أ ونسخة ب) على عينة من الزوار لمعرفة أيتهما تحقق أداءً وتفاعلاً أفضل.",
+        "example": "اختبار هل الزر الأخضر يجلب اشتراكات أكثر أم الزر الأزرق؟",
+        "examTip": "يقلل التخمينات الشخصية ويبني القرارات على سلوك المستخدمين الفعلي."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "أدوات تقييم المواقع الإلكترونية المعتمدة بالمنهج:",
+        "points": [
+          "👁️ اختبار قابلية الاستخدام (Usability Testing): مراقبة المستخدم وتدوين أخطائه وصعوباته.",
+          "📊 تحليلات الويب (Analytics): قياس معدل الارتداد (Bounce Rate) ومتوسط زمن الزيارة.",
+          "🔥 الخرائط الحرارية (Heatmaps): تمثيل بصري بالألوان لمواضع نقرات وحركة فأرة الزوار.",
+          "⚖️ اختبار أ/ب (A/B Testing): المقارنة الإحصائية بين نسختين من التصميم لاتخاذ القرار الأفضل."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch4-l3-c2",
+    "chapter_id": 4,
+    "lesson_id": "4-3",
+    "chunk_index": 2,
+    "chunk_title": "التقييم الإرشادي (Heuristic Evaluation) وتكامل الأدلة لتقييم المواقع",
+    "en_chunk_title": "Heuristic Evaluation & Triangulation of Evidence",
+    "type": "chunk",
+    "icon_emoji": "🔍",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "مراجعة الخبراء لواجهة المستخدم استناداً للقواعد الإرشادية (الاتساق، منع الأخطاء، وضوح حالة النظام)، وتكامل الأدلة النوعية (لماذا؟) مع الأرقام الكمية (كم؟).",
+    "audio_narration_text": "بجانب اختبارات المستخدمين والتحليلات الرقمية، لدينا أسلوب نوعي فائق الأهمية يُسمى التقييم الإرشادي Heuristic Evaluation؛ وهو مراجعة متخصصة يجريها خبراء لواجهة المستخدم استناداً لقواعد ومبادئ إرشادية عملية قبل إطلاق الموقع. وأبرز هذه القواعد ثلاث: أولاً الاتساق Consistency بتوحيد الأزرار والرموز في كل الصفحات، ثانياً منع الأخطاء Error Prevention بجعل ارتكاب الخطأ صعباً مثل رسائل تأكيد الحذف وتوضيح الحقول الإلزامية، وثالثاً وضوح حالة النظام System Status بإظهار مؤشرات التحميل ورسائل تأكيد الإرسال فورياً! وتذكر دائماً الحقيقة المنهجية الكبرى من كتاب الوزارة: الأرقام الكمية تكشف ماذا يحدث، لكن الخبراء والمستخدمين بالطرق النوعية يفسرون لماذا يتصرف المستخدمون هكذا؛ والجمع بينهما هو سر النجاح!",
+    "en_audio_narration_text": "Beyond testing with users, design teams employ Heuristic Evaluation: usability experts review an interface against Jakob Nielsen's 10 recognized Usability Heuristics—such as Visibility of System Status (giving immediate feedback), Match between System and Real World, User Control & Freedom (providing an Undo button), and Consistency. To avoid bias, organizations practice Triangulation of Evidence: combining heuristic audits, usability testing, and web analytics to validate improvements with certainty.",
+    "ai_tutor_prompt": "عظيم يا بطل! استوعبت دور التقييم الإرشادي والقواعد الثلاث (الاتساق، منع الأخطاء، حالة النظام)؟ جاهز للتحدي؟",
+    "simplified_explanation": "التقييم الإرشادي مثل استدعاء مهندس فحص مبانٍ خبير: يفحص بنفسه الأبواب والأسلاك والمخارج ويتأكد أنها مطابقة للمواصفات القياسية قبل أن يسكن الناس فيها!",
+    "key_terms": [
+      {
+        "term": "التقييم الإرشادي",
+        "en": "Heuristic Evaluation",
+        "definition": "شكل من أشكال التقييم النوعي يتمثل في مراجعة يقوم بها خبراء لواجهة المستخدم (UI) استناداً إلى قواعد ومبادئ إرشادية عملية لبحث المشكلات وعلاجها.",
+        "example": "فحص خبير للموقع للتأكد من وجود رسائل خطأ واضحة ومؤشرات تحميل عند الدفع.",
+        "examTip": "سؤال وزاري مباشر: ما هو التقييم الإرشادي وما القواعد الثلاث المعتمدة له؟ (كتاب ص 83)."
+      },
+      {
+        "term": "قواعد التقييم الإرشادي الثلاث",
+        "en": "Heuristic Rules",
+        "definition": "المعايير الثلاثة المعتمدة بالمنهج: 1. الاتساق (Consistency) • 2. منع الأخطاء (Error Prevention) • 3. وضوح حالة النظام (System Status).",
+        "example": "تأكيد الحذف (منع خطأ)، شريط التحميل (حالة النظام)، وأزرار موحدة (اتساق).",
+        "examTip": "سؤال اختر: من القواعد الإرشادية المعتمدة: الاتساق، منع الأخطاء، ووضوح حالة النظام (ص 85)."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "القواعد الإرشادية الثلاث المعتمدة في التقييم الإرشادي (كتاب ص 83):",
+        "points": [
+          "🔄 1. الاتساق (Consistency): توحيد التصميم ومسميات الأزرار والعمليات لتفادي التشتت.",
+          "🛡️ 2. منع الأخطاء (Error Prevention): جعل ارتكاب الخطأ صعباً (تأكيد الحذف، وإبراز الحقول الإلزامية).",
+          "⏱️ 3. وضوح حالة النظام (System Status): إخبار المستخدم بما يفعله النظام لحظياً (أشرطة التحميل ونجاح الإرسال)."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch4-l3-exam",
+    "chapter_id": 4,
+    "lesson_id": "4-3",
+    "chunk_index": 2,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (4-3) الشامل",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (4-3) Mastery Exam",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 100,
+    "stars_reward": 3,
+    "summary": "اختبار امتحاني شامل يغطي طرق التقييم النوعي والكمي، والخرائط الحرارية واختبار A/B ومؤشرات أداء المواقع الإلكترونية.",
+    "audio_narration_text": "وصلت لاختبار إتقان الدرس الثالث من الفصل الرابع! أجب عن الأسئلة الامتحانية بدقة لتنال كأس التميز وتفتح الدرس الأخير!",
+    "en_audio_narration_text": "Welcome to the Lesson 4-3 Mastery Challenge! Demonstrate your mastery of usability testing, statistical A/B experimentation, and heuristic auditing to earn your gold trophy!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  },
+  {
+    "id": "ch4-l4-c1",
+    "chapter_id": 4,
+    "lesson_id": "4-4",
+    "chunk_index": 1,
+    "chunk_title": "دورة حلقة التحسين المستمر PDCA وحلقات التغذية الراجعة",
+    "en_chunk_title": "The PDCA Continuous Improvement Cycle & Feedback Loops",
+    "type": "chunk",
+    "icon_emoji": "🔁",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "الموقع عملية مستمرة لا تنتهي: نموذج PDCA العالمي (خطط Plan - نفّذ Do - تحقق Check - طوّر Act)، وحلقات التغذية الراجعة وصيانة الويب.",
+    "audio_narration_text": "الموقع الإلكتروني لا ينتهي بمجرد برمجته وإطلاقه أول مرة؛ بل هو كائن رقمي حي يحتاج إلى تحسين مستمر! هنا نتعلم النموذج العالمي لإدارة الجودة والتحسين التكراري PDCA المكون من 4 خطوات دائرية لا تنتهي: خطط (Plan) بتحديد أهداف التطوير، نفّذ (Do) بتطبيق التعديلات البرمجية، تحقق (Check) بقياس أثر التعديل على الزوار، وطوّر (Act) باعتماد التعديل الناجح وبدء دورة جديدة. مع الاستماع المستمر لآراء وشكاوى المستخدمين عبر حلقات التغذية الراجعة.",
+    "en_audio_narration_text": "A website is never 'finished' upon launch; it is a living system requiring continuous refinement through the PDCA Cycle (Plan-Do-Check-Act): In the Plan phase, teams identify performance gaps and formulate testable improvement hypotheses. In the Do phase, developers execute the change (such as launching an A/B test). In the Check phase, analytics measure whether key metrics improved. In the Act phase, successful changes are standardized across the site, and the cycle begins anew.",
+    "ai_tutor_prompt": "عظيم يا بطل! عرفت خطوات دورة PDCA الأربعة ولماذا تطوير المواقع عملية دائرية لا تتوقف؟",
+    "simplified_explanation": "الموقع الناجح مثل السيارة في رحلة طويلة: تخطط للمسار (Plan)، تقود للأمام (Do)، تفحص مؤشر البنزين والحرارة (Check)، وتصلح أي خلل وتواصل الرحلة (Act)!",
+    "key_terms": [
+      {
+        "term": "دورة PDCA",
+        "en": "PDCA Cycle",
+        "definition": "نموذج إدارة الجودة الرباعي للتحسين المستمر المكون من: Plan (خطط)، Do (نفّذ)، Check (تحقق)، Act (طوّر/تصرّف).",
+        "example": "التخطيط لتغيير صفحة الدفع ← برمجتها وتجربتها ← قياس زيادة المبيعات ← تثبيتها والانتقال لصفحة أخرى.",
+        "examTip": "سؤال متكرر: ما هي خطوات دورة PDCA بالترتيب؟ خطط، نفّذ، تحقق، طوّر."
+      },
+      {
+        "term": "حلقة التغذية الراجعة",
+        "en": "Feedback Loop",
+        "definition": "آلية مستمرة لجمع تعليقات وشكاوى واقتراحات المستخدمين وتحليلها وتحويلها إلى خطط تطوير للموقع.",
+        "example": "نموذج تقييم الخدمة أو زر 'أبلغ عن خطأ في الصفحة'.",
+        "examTip": "المحرك الأساسي لنجاح دورة التحسين التكراري."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "خطوات دورة PDCA الأربعة بالتفصيل:",
+        "points": [
+          "📋 1. خطط (Plan): دراسة المشاكل الحالية، ووضع أهداف واضحة وخطة للتحسين.",
+          "🛠️ 2. نفّذ (Do): تطبيق التعديلات عملياً على نطاق تجريبي محدد.",
+          "📊 3. تحقق (Check): قياس نتائج التعديل بالأرقام ومقارنتها بالأهداف السابقة.",
+          "🚀 4. طوّر وتصرّف (Act): اعتماد التحسين الناجح رسمياً، وتحديد نقطة التحسين التالية."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch4-l4-c2",
+    "chapter_id": 4,
+    "lesson_id": "4-4",
+    "chunk_index": 2,
+    "chunk_title": "اختبار A/B وقواعد عزل المتغير الواحد وثقافة التحسين المستمر",
+    "en_chunk_title": "A/B Testing Single Variable Rules & Improvement Culture",
+    "type": "chunk",
+    "icon_emoji": "🧪",
+    "xp_reward": 35,
+    "stars_reward": 1,
+    "summary": "المقارنة المنهجية ببيانات فعلية عبر اختبار A/B (النسخة A الأصلية vs النسخة B المعدلة)، وأهمية عزل المتغير الواحد لتفادي مصيدة الحزمة المتعددة.",
+    "audio_narration_text": "كيف تحسم فرق التطوير المحترفة الخلافات حول شكل الزر أو موضع العرض؟ عبر اختبار A/B المنهجي! اختبار A/B هو تجربة علمية منظمة تقارن بين نسختين: النسخة A الأصلية، والنسخة B التي تحوي تعديلاً مقصوداً، ويتم توزيع الزوار بينهما عشوائياً بنسب متساوية لقياس أي النسختين تحقق معدل تحويل ونقرات أعلى. والقاعدة الذهبية في كتاب الوزارة هي: عزل المتغير الواحد! إذا أردت معرفة أثر تغيير لون الزر، فلا تغير النص واللون والصور ومكان الزر دفعة واحدة؛ لأن تغيير حزمة عناصر يقيس أثر الحزمة الإجمالي فقط ويعجز عن معرفة أي عنصر كان مفيداً وأي عنصر كان ضاراً! فالمواقع الناجحة لا تولد مثالية دفعة واحدة، بل تتطور وتتحسن تكرارياً خطوة بخطوة!",
+    "en_audio_narration_text": "To execute the PDCA cycle with scientific rigor, organizations enforce the Single-Variable Rule in A/B Testing: when testing a page, only one specific element (such as button color, headline copy, or form length) is varied between Version A and Version B. If multiple elements are altered simultaneously, it becomes impossible to determine which specific change caused the performance variance. Embracing an iterative culture ensures web applications continuously evolve based on empirical data rather than personal opinions.",
+    "ai_tutor_prompt": "ممتاز يا بطل! عرفت لماذا نغير عنصراً واحداً فقط في اختبار A/B وما هي مخاطر تغيير كل شيء معاً؟",
+    "simplified_explanation": "لو طبيب أعطى مريضاً 5 أدوية مختلفة معاً فتحسن المريض؛ الطبيب لن يعرف أي دواء هو الذي شفاه وأي دواء سبب له ألماً في المعدة! لذلك يجب اختبار كل دواء على حدة، وهذا هو عزل المتغير في اختبار A/B!",
+    "key_terms": [
+      {
+        "term": "اختبار A/B",
+        "en": "A/B Testing",
+        "definition": "تجربة منظمة تقارن نسختين (A الأصلية و B المعدلة) وفق مقياس محدد مسبقاً عبر توزيع الزوار عشوائياً لحسم القرارات بالأدلة الرقمية.",
+        "example": "مقارنة زر شراء أحمر بالنسخة A بزر أزرق بالنسخة B لمعرفة أيهما يحصل على نقرات ومشتريات أعلى.",
+        "examTip": "سؤال مصطلح علمي: تجربة منظمة يُعد فيها نمطان A وB ويُقارنان بالبيانات لمعرفة الأفضل (كتاب ص 90)."
+      },
+      {
+        "term": "عزل المتغير الواحد",
+        "en": "Single Variable Isolation",
+        "definition": "مبدأ علمي يقضي بتعديل عنصر واحد محدد في النسخة B (كاللون أو النص) وتثبيت باقي العناصر، لعزل أثر هذا التغيير بدقة وتفادي 'أثر الحزمة المضلل'.",
+        "example": "تغيير لون الزر فقط دون تغيير نصه أو مكانه أو صور الصفحة.",
+        "examTip": "سؤال لغز وزاري: لماذا يُعد تعديل عدة عناصر معاً في النسخة B عيباً منهجياً؟ لأنه يقيس أثر الحزمة ولا يعزل أثر كل عنصر (ص 91)."
+      }
+    ],
+    "content_cards": [
+      {
+        "type": "concept",
+        "title": "القواعد الأساسية لإجراء اختبار A/B السليم (كتاب ص 91):",
+        "points": [
+          "🎯 1. عزل المتغير الواحد: تغيير عنصر واحد فقط لمعرفة أثره المباشر والمحدد.",
+          "📊 2. تحديد المقياس مسبقاً: الاتفاق على معيار النجاح (معدل النقرات أو إتمام الشراء) قبل بدء التجربة.",
+          "👥 3. حجم العينة الكافي: جمع بيانات كافية إحصائياً وتوزيع الزوار عشوائياً قبل إصدار الحكم النهائي."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ch4-l4-exam",
+    "chapter_id": 4,
+    "lesson_id": "4-4",
+    "chunk_index": 2,
+    "chunk_title": "🏆 التحدي الختامي: اختبار إتقان الدرس (4-4) الشامل وختام الترم الأول",
+    "en_chunk_title": "🏆 Final Challenge: Lesson (4-4) Mastery Exam & First Term Grand Finale",
+    "type": "lesson_exam",
+    "icon_emoji": "⏳",
+    "xp_reward": 150,
+    "stars_reward": 5,
+    "summary": "اختبار ختامي وزاري يجمع دورة التحسين التكراري PDCA وتتويج إتقان منهج البرمجة والذكاء الاصطناعي كاملاً!",
+    "audio_narration_text": "مبروك يا بطل وصولك للقمة! هذا هو التحدي الختامي للفصل الرابع والترم الأول كاملاً! اجتيازك لهذا الاختبار يمنحك وسام التميز الأكبر وكأس تفوق المنهج كاملاً من إعداد وإشراف م/ محمد راشد!",
+    "en_audio_narration_text": "Welcome to the Grand Finale Challenge of Lesson 4-4 and the entire First Term curriculum! Demonstrate your comprehensive mastery of continuous improvement, PDCA cycles, and empirical web optimization to earn your crowning gold trophy!",
+    "ai_tutor_prompt": "",
+    "simplified_explanation": "",
+    "key_terms": [],
+    "content_cards": []
+  }
+]

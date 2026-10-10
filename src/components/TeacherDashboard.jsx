@@ -49,8 +49,7 @@ import {
   Zap
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { CHAPTERS_METADATA, CURRICULUM_DATA } from '../data/curriculumData';
-import { CURRICULUM_ENGLISH } from '../data/curriculumEnglish';
+import { CHAPTERS_METADATA, PATH_NODES as CURRICULUM_DATA } from '../data/curriculumMeta.js';
 import { playSound } from '../utils/audioEngine';
 
 export default function TeacherDashboard() {
@@ -1754,7 +1753,7 @@ export default function TeacherDashboard() {
                   <div className="topics-scroll-viewport max-h-[58vh] overflow-y-auto p-2 pb-16 flex flex-col gap-2.5">
                     {lessonChunks.map((chunk) => {
                       const isUnlocked = unlockedList.includes(chunk.id);
-                      const engTitle = CURRICULUM_ENGLISH[chunk.id]?.title;
+                      const engTitle = chunk.enChunkTitle;
                       const displayChunkTitle = (lang === 'en' && engTitle) ? engTitle : chunk.chunkTitle;
 
                       return (
@@ -2377,7 +2376,7 @@ export default function TeacherDashboard() {
                   <div className="topics-scroll-viewport max-h-[58vh] overflow-y-auto p-2 pb-16 flex flex-col gap-2.5">
                     {lessonChunks.map((chunk) => {
                       const isAllowed = allowedChunks.includes(chunk.id);
-                      const engTitle = CURRICULUM_ENGLISH[chunk.id]?.title;
+                      const engTitle = chunk.enChunkTitle;
                       const displayChunkTitle = (lang === 'en' && engTitle) ? engTitle : chunk.chunkTitle;
 
                       return (

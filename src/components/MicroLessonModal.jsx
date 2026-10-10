@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { CHAPTERS_METADATA } from '../data/curriculumData';
-import { CURRICULUM_ENGLISH } from '../data/curriculumEnglish';
+import { CHAPTERS_METADATA } from '../data/curriculumMeta.js';
 import { X, Volume2, Square, Pause, Play, Sparkles, BookOpen, Lightbulb, HelpCircle, ArrowLeft, ArrowRight, CheckCircle2, RotateCw } from 'lucide-react';
 import { narrator, speakEnglish, playSound } from '../utils/audioEngine';
 

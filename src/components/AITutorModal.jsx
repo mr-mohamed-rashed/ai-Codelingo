@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { CHAPTERS_METADATA } from '../data/curriculumData';
-import { CURRICULUM_ENGLISH } from '../data/curriculumEnglish';
+import { CHAPTERS_METADATA } from '../data/curriculumMeta.js';
 import { Bot, RefreshCw, Zap, CheckCircle2, ArrowRight, ArrowLeft, Sparkles, MessageSquare } from 'lucide-react';
 import { playSound } from '../utils/audioEngine';
 

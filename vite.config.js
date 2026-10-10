@@ -12,7 +12,10 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           const nid = id.replace(/\\/g, '/');
-          if (nid.includes('/src/data/curriculum')) {
+          if (nid.includes('/src/data/curriculumMeta')) {
+            return 'curriculum-meta';
+          }
+          if (nid.includes('/src/data/curriculumData') || nid.includes('/src/data/curriculumEnglish')) {
             return 'curriculum-data';
           }
           if (nid.includes('/node_modules/')) {

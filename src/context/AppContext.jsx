@@ -1,7 +1,16 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { CURRICULUM_DATA, CHAPTERS_METADATA } from '../data/curriculumData';
+import { CHAPTERS_METADATA, ALL_CHUNK_IDS, PATH_NODES, getChapterIdFromChunkId, getLessonIdFromChunkId } from '../data/curriculumMeta.js';
 import { TRANSLATIONS } from '../data/translations';
-import { CURRICULUM_ENGLISH, getLocalizedChunk } from '../data/curriculumEnglish';
+// دالة مواءمة لغة المحطة عند الطلب دون سحب حزم ضخمة
+const getLocalizedChunk = (baseChunk, currentLang = 'ar') => {
+  if (!baseChunk || currentLang === 'ar') return baseChunk;
+  return {
+    ...baseChunk,
+    chunkTitle: baseChunk.enChunkTitle || baseChunk.chunkTitle,
+    lessonTitle: baseChunk.enLessonTitle || baseChunk.lessonTitle,
+    audioNarrationText: baseChunk.enAudioNarrationText || baseChunk.audioNarrationText
+  };
+};
 import { playSound } from '../utils/audioEngine';
 
 const AppContext = createContext();
@@ -83,7 +92,7 @@ export const INITIAL_STUDENTS = [
     allowedCurriculum: {
       chapters: [1, 2, 3, 4],
       lessons: ["1-1", "1-2", "1-3", "1-4", "2-1", "2-2", "2-3", "3-1", "3-2", "3-3", "4-1", "4-2", "4-3", "4-4"],
-      chunks: CURRICULUM_DATA.map(c => c.id)
+      chunks: ALL_CHUNK_IDS
     }
   }
 ];
@@ -211,7 +220,7 @@ export const AppProvider = ({ children }) => {
                 allowedCurriculum: {
                   chapters: [1, 2, 3, 4],
                   lessons: ["1-1", "1-2", "1-3", "1-4", "2-1", "2-2", "2-3", "3-1", "3-2", "3-3", "4-1", "4-2", "4-3", "4-4"],
-                  chunks: CURRICULUM_DATA.map(c => c.id)
+                  chunks: ALL_CHUNK_IDS
                 }
               };
             }
@@ -565,8 +574,7 @@ export const AppProvider = ({ children }) => {
    * فتح جميع فقرات فصل كامل لمجموعة دفعة واحدة
    */
   const unlockEntireChapterForGroup = (groupId, chapterId, asHomework = false) => {
-    const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapterId);
-    const chunkIds = chapterChunks.map(c => c.id);
+    const chunkIds = ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${chapterId}-`));
 
     setGroups(prev => prev.map(g => {
       if (g.id !== groupId) return g;
@@ -588,8 +596,7 @@ export const AppProvider = ({ children }) => {
    * قفل جميع فقرات فصل كامل لمجموعة دفعة واحدة
    */
   const lockEntireChapterForGroup = (groupId, chapterId) => {
-    const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapterId);
-    const chunkIds = new Set(chapterChunks.map(c => c.id));
+    const chunkIds = new Set(ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${chapterId}-`)));
 
     setGroups(prev => prev.map(g => {
       if (g.id !== groupId) return g;
@@ -606,8 +613,8 @@ export const AppProvider = ({ children }) => {
    * فتح جميع فقرات درس معين لمجموعة دفعة واحدة
    */
   const unlockEntireLessonForGroup = (groupId, lessonId) => {
-    const lessonChunks = CURRICULUM_DATA.filter(c => c.lessonId === lessonId);
-    const chunkIds = lessonChunks.map(c => c.id);
+    const [ch, l] = lessonId.split('-');
+    const chunkIds = ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${ch}-l${l}-`));
 
     setGroups(prev => prev.map(g => {
       if (g.id !== groupId) return g;
@@ -624,8 +631,8 @@ export const AppProvider = ({ children }) => {
    * قفل جميع فقرات درس معين لمجموعة دفعة واحدة
    */
   const lockEntireLessonForGroup = (groupId, lessonId) => {
-    const lessonChunks = CURRICULUM_DATA.filter(c => c.lessonId === lessonId);
-    const chunkIds = new Set(lessonChunks.map(c => c.id));
+    const [ch, l] = lessonId.split('-');
+    const chunkIds = new Set(ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${ch}-l${l}-`)));
 
     setGroups(prev => prev.map(g => {
       if (g.id !== groupId) return g;
@@ -683,7 +690,7 @@ export const AppProvider = ({ children }) => {
       allowedCurriculum: isMasterTeacher ? {
         chapters: [1, 2, 3, 4],
         lessons: ["1-1", "1-2", "1-3", "1-4", "2-1", "2-2", "2-3", "3-1", "3-2", "3-3", "4-1", "4-2", "4-3", "4-4"],
-        chunks: CURRICULUM_DATA.map(c => c.id)
+        chunks: ALL_CHUNK_IDS
       } : {
         chapters: [1],
         lessons: ["1-1"],
@@ -945,10 +952,12 @@ export const AppProvider = ({ children }) => {
       return lang === 'en' ? 'Lesson 1-1 • Chunk 1: The 5 Computing Eras' : 'الدرس 1-1 • فقرة: المراحل الخمس لتطور الحوسبة';
     }
     const lastChunkId = completed[completed.length - 1];
-    const chunkIndex = CURRICULUM_DATA.findIndex(c => c.id === lastChunkId);
-    if (chunkIndex !== -1 && chunkIndex + 1 < CURRICULUM_DATA.length) {
-      const nextChunk = CURRICULUM_DATA[chunkIndex + 1];
-      return `${nextChunk.lessonTitle} • ${nextChunk.chunkTitle}`;
+    const chunkIndex = ALL_CHUNK_IDS.indexOf(lastChunkId);
+    if (chunkIndex !== -1 && chunkIndex + 1 < PATH_NODES.length) {
+      const nextChunk = PATH_NODES[chunkIndex + 1];
+      const title = lang === 'en' ? nextChunk.enChunkTitle : nextChunk.chunkTitle;
+      const lTitle = lang === 'en' ? nextChunk.enLessonTitle : nextChunk.lessonTitle;
+      return `${lTitle} • ${title}`;
     }
     return lang === 'en' ? 'All Lessons Mastered 🏆' : 'أتم إتقان جميع محطات المنهج 🏆';
   };
@@ -981,9 +990,8 @@ export const AppProvider = ({ children }) => {
    * فتح جميع دروس فصل معين لطالب بضغطة زر واحدة من لوحة الأستاذ
    */
   const unlockEntireChapter = (studentId, chapterId) => {
-    const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapterId);
-    const chunkIds = chapterChunks.map(c => c.id);
-    const lessonIds = [...new Set(chapterChunks.map(c => c.lessonId))];
+    const chunkIds = ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${chapterId}-`));
+    const lessonIds = [...new Set(chunkIds.map(id => getLessonIdFromChunkId(id)).filter(Boolean))];
 
     setStudents(prev => prev.map(s => {
       if (s.id !== studentId) return s;
@@ -1002,9 +1010,9 @@ export const AppProvider = ({ children }) => {
    * فتح جميع فقرات درس معين لطالب بضغطة زر واحدة
    */
   const unlockEntireLesson = (studentId, lessonId) => {
-    const lessonChunks = CURRICULUM_DATA.filter(c => c.lessonId === lessonId);
-    const chunkIds = lessonChunks.map(c => c.id);
-    const chapterId = lessonChunks[0]?.chapterId;
+    const [ch, l] = lessonId.split('-');
+    const chunkIds = ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${ch}-l${l}-`));
+    const chapterId = parseInt(ch, 10);
 
     setStudents(prev => prev.map(s => {
       if (s.id !== studentId) return s;
@@ -1025,14 +1033,14 @@ export const AppProvider = ({ children }) => {
    * قفل جميع فقرات درس معين لطالب
    */
   const lockEntireLesson = (studentId, lessonId) => {
-    const lessonChunks = CURRICULUM_DATA.filter(c => c.lessonId === lessonId);
-    const chunkIds = lessonChunks.map(c => c.id);
+    const [ch, l] = lessonId.split('-');
+    const chunkIds = ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${ch}-l${l}-`));
 
     setStudents(prev => prev.map(s => {
       if (s.id !== studentId) return s;
 
       const allowed = { ...s.allowedCurriculum };
-      allowed.lessons = (allowed.lessons || []).filter(l => l !== lessonId);
+      allowed.lessons = (allowed.lessons || []).filter(lId => lId !== lessonId);
       allowed.chunks = (allowed.chunks || []).filter(c => !chunkIds.includes(c));
 
       return { ...s, allowedCurriculum: allowed };
@@ -1044,13 +1052,12 @@ export const AppProvider = ({ children }) => {
    * فتح المنهج تتابعياً حتى محطة معينة (Sequential unlock up to chunk)
    */
   const unlockUpToChunk = (studentId, targetChunkId) => {
-    const targetIndex = CURRICULUM_DATA.findIndex(c => c.id === targetChunkId);
+    const targetIndex = ALL_CHUNK_IDS.indexOf(targetChunkId);
     if (targetIndex < 0) return;
 
-    const chunksToUnlock = CURRICULUM_DATA.slice(0, targetIndex + 1);
-    const chunkIds = chunksToUnlock.map(c => c.id);
-    const chapterIds = [...new Set(chunksToUnlock.map(c => c.chapterId))];
-    const lessonIds = [...new Set(chunksToUnlock.map(c => c.lessonId))];
+    const chunkIds = ALL_CHUNK_IDS.slice(0, targetIndex + 1);
+    const chapterIds = [...new Set(chunkIds.map(id => getChapterIdFromChunkId(id)).filter(Boolean))];
+    const lessonIds = [...new Set(chunkIds.map(id => getLessonIdFromChunkId(id)).filter(Boolean))];
 
     setStudents(prev => prev.map(s => {
       if (s.id !== studentId) return s;
@@ -1090,14 +1097,15 @@ export const AppProvider = ({ children }) => {
     // 1. أي فقرة مكتملة تظل مفتوحة دائماً للمراجعة
     if (currentStudent.completedChunks?.includes(chunkId)) return true;
 
-    const chunk = CURRICULUM_DATA.find(c => c.id === chunkId);
-    if (!chunk) return false;
+    const chapterId = getChapterIdFromChunkId(chunkId);
+    const lessonId = getLessonIdFromChunkId(chunkId);
+    if (!chapterId || !lessonId) return false;
 
     // 2. فحص الصلاحيات الفردية المباشرة الممنوحة للطالب من الأستاذ (الأولوية العليا)
     const allowed = currentStudent.allowedCurriculum;
     if (allowed) {
       if (allowed.chunks && allowed.chunks.includes(chunkId)) return true;
-      if (allowed.chapters && allowed.chapters.includes(chunk.chapterId) && allowed.lessons && allowed.lessons.includes(chunk.lessonId)) {
+      if (allowed.chapters && allowed.chapters.includes(chapterId) && allowed.lessons && allowed.lessons.includes(lessonId)) {
         if (!allowed.chunks || allowed.chunks.includes(chunkId)) return true;
       }
     }
@@ -1111,10 +1119,10 @@ export const AppProvider = ({ children }) => {
         if (currentStudentGroup.homeworkChunks?.includes(chunkId)) return true;
 
         // تسلسل المراحل العادي
-        const currentIndex = CURRICULUM_DATA.findIndex(c => c.id === chunkId);
+        const currentIndex = ALL_CHUNK_IDS.indexOf(chunkId);
         if (currentIndex <= 0) return true;
-        const prevNode = CURRICULUM_DATA[currentIndex - 1];
-        return currentStudent.completedChunks?.includes(prevNode.id);
+        const prevNodeId = ALL_CHUNK_IDS[currentIndex - 1];
+        return currentStudent.completedChunks?.includes(prevNodeId);
       }
     }
 

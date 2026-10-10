@@ -4,56 +4,6 @@
  * 4 فصول رئيسية • 14 درساً تفصيلياً • 31 فقرة تعليمية مستقلة (8 أسئلة لكل فقرة) • 14 اختبار إتقان ختامي
  */
 
-export const CHAPTERS_METADATA = [
-  {
-    "id": 1,
-    "title": "تكنولوجيا المعلومات والمجتمع",
-    "enTitle": "IT & Society",
-    "color": "#4f46e5",
-    "gradient": "linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4f46e5 100%)",
-    "lightBg": "#eef2ff",
-    "borderColor": "#a5b4fc",
-    "icon": "Cpu",
-    "lessonsCount": 4,
-    "description": "تطور أجيال الحواسيب، قانون مور، الشبكات العصبية، والذكاء الاصطناعي والأخلاقيات والحوكمة."
-  },
-  {
-    "id": 2,
-    "title": "الأمن السيبراني",
-    "enTitle": "Cybersecurity",
-    "color": "#0891b2",
-    "gradient": "linear-gradient(135deg, #164e63 0%, #0e7490 50%, #0891b2 100%)",
-    "lightBg": "#ecfeff",
-    "borderColor": "#67e8f9",
-    "icon": "ShieldCheck",
-    "lessonsCount": 3,
-    "description": "التشفير المتماثل وغير المتماثل، جدران الحماية والـ DMZ، ودورة الاستجابة للحوادث وإدارة المخاطر."
-  },
-  {
-    "id": 3,
-    "title": "تطبيقات الويب",
-    "enTitle": "Web Applications",
-    "color": "#059669",
-    "gradient": "linear-gradient(135deg, #064e3b 0%, #065f46 50%, #059669 100%)",
-    "lightBg": "#ecfdf5",
-    "borderColor": "#6ee7b7",
-    "icon": "Globe",
-    "lessonsCount": 3,
-    "description": "بنية الطبقات الثلاث (3-Tier)، بروتوكولات الاتصال HTTP/HTTPS، وأدوار HTML و CSS و JavaScript."
-  },
-  {
-    "id": 4,
-    "title": "تصميم الويب والوسائط",
-    "enTitle": "Web Design & Media",
-    "color": "#d97706",
-    "gradient": "linear-gradient(135deg, #78350f 0%, #b45309 50%, #d97706 100%)",
-    "lightBg": "#fffbeb",
-    "borderColor": "#fde68a",
-    "icon": "Palette",
-    "lessonsCount": 4,
-    "description": "خصائص الوسائط، شخصية المستخدم Persona، مبادئ تصميم CRAP، تقييم المواقع ودورة PDCA."
-  }
-];
 
 export const CURRICULUM_DATA = [
   {

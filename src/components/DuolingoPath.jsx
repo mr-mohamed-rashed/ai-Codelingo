@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import confetti from 'canvas-confetti';
 import { useApp } from '../context/AppContext';
-import { CHAPTERS_METADATA, CURRICULUM_DATA } from '../data/curriculumData';
-import { CURRICULUM_ENGLISH, getLocalizedChunk } from '../data/curriculumEnglish';
+import { CHAPTERS_METADATA, PATH_NODES } from '../data/curriculumMeta.js';
+import { fetchChunkById } from '../services/curriculumService.js';
 import { Star, Lock, Check, Play, BookOpen, AlertCircle, Sparkles, Award, Trophy, Crown, Flame, School, BookOpenCheck } from 'lucide-react';
 import { playSound } from '../utils/audioEngine';
 import { RobotMascotGuide, RobotSVG } from './RobotMascot';
@@ -33,10 +33,10 @@ export const DuolingoPath = () => {
 
   // تحديد المحطة النشطة التي عليها الدور (أول محطة مفتوحة وغير مكتملة)
   const activeStationId = useMemo(() => {
-    const uncompletedUnlocked = CURRICULUM_DATA.find(c => 
+    const uncompletedUnlocked = PATH_NODES.find(c => 
       isChunkUnlocked(c.id) && !currentStudent?.completedChunks?.includes(c.id)
     );
-    return uncompletedUnlocked ? uncompletedUnlocked.id : CURRICULUM_DATA[0].id;
+    return uncompletedUnlocked ? uncompletedUnlocked.id : PATH_NODES[0].id;
   }, [currentStudent?.completedChunks, isChunkUnlocked]);
 
   // حالة الروبوت الطائر عند الانتقال بين المحطات
@@ -121,7 +121,7 @@ export const DuolingoPath = () => {
     return () => clearTimeout(timer);
   }, [robotMovingState?.isMoving, robotMovingState?.fromChunkId, robotMovingState?.toChunkId]);
 
-  const handleNodeClick = (chunk, isUnlocked, isCompleted) => {
+  const handleNodeClick = async (chunk, isUnlocked, isCompleted) => {
     playSound.click();
     if (!isUnlocked) {
       playSound.wrong();
@@ -137,6 +137,15 @@ export const DuolingoPath = () => {
       setActiveModal('quiz');
     } else {
       setActiveModal('lesson');
+    }
+    // Fetch full chunk details (cards, questions, audio) on-demand
+    try {
+      const fullChunk = await fetchChunkById(chunk.id);
+      if (fullChunk) {
+        setActiveChunk(fullChunk);
+      }
+    } catch (e) {
+      console.warn('On-demand chunk fetch note:', e);
     }
   };
 
@@ -182,7 +191,7 @@ export const DuolingoPath = () => {
 
       {/* Chapters & Progression Nodes */}
       {CHAPTERS_METADATA.map((chapter) => {
-        const chapterChunks = CURRICULUM_DATA.filter(c => c.chapterId === chapter.id);
+        const chapterChunks = PATH_NODES.filter(c => c.chapterId === chapter.id);
         
         // استخراج قائمة الدروس الفريدة داخل هذا الفصل
         const lessonIds = [...new Set(chapterChunks.map(c => c.lessonId))];
@@ -221,8 +230,7 @@ export const DuolingoPath = () => {
                 const regularChunks = lessonChunks.filter(c => c.type === 'chunk');
                 const examChunk = lessonChunks.find(c => c.type === 'lesson_exam');
 
-                const localizedFirst = getLocalizedChunk(firstChunk, lang);
-                const lessonTitle = localizedFirst?.lessonTitle || firstChunk?.lessonTitle;
+                const lessonTitle = lang === 'en' ? (firstChunk?.enLessonTitle || firstChunk?.lessonTitle) : firstChunk?.lessonTitle;
 
                 const isExamCompleted = examChunk && (
                   currentStudent?.trophies?.includes(examChunk.id) || 
@@ -259,8 +267,7 @@ export const DuolingoPath = () => {
                         const alignClass = alignmentPatterns[index % alignmentPatterns.length];
                         const isExam = chunk.type === 'lesson_exam';
 
-                        const localizedNode = getLocalizedChunk(chunk, lang);
-                        const chunkTitle = localizedNode?.chunkTitle || chunk.chunkTitle;
+                        const chunkTitle = lang === 'en' ? (chunk?.enChunkTitle || chunk.chunkTitle) : chunk.chunkTitle;
 
                         // النجوم المكتسبة لهذه المحطة
                         const chunkStars = currentStudent?.chunkRatings?.[chunk.id]?.stars || (isCompleted ? 3 : 0);
