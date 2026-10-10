@@ -34,26 +34,19 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           const nid = id.replace(/\\/g, '/');
-          if (nid.includes('/src/data/curriculumMeta')) {
-            return 'curriculum-meta';
-          }
+          // عزل بيانات المنهج الكاملة الكبيرة (300 كيلوبايت) لتُحمل بالطلب فقط
           if (nid.includes('/src/data/curriculumData') || nid.includes('/src/data/curriculumEnglish')) {
             return 'curriculum-data';
           }
           if (nid.includes('/node_modules/')) {
-            if (nid.includes('/preact/')) {
-              return 'vendor-framework';
-            }
+            // عزل مكتبة سوبابيز الثقيلة (208 كيلوبايت) لتُحمل بالطلب فقط
             if (nid.includes('/@supabase/')) {
               return 'vendor-supabase';
             }
-            if (nid.includes('/lucide-react/')) {
-              return 'vendor-icons';
-            }
+            // عزل أدوات المؤثرات (كونفيتي وباركود) لتُحمل بالطلب فقط
             if (nid.includes('/canvas-confetti/') || nid.includes('/qrcode/')) {
               return 'vendor-utils';
             }
-            return 'vendor-misc';
           }
         }
       }
