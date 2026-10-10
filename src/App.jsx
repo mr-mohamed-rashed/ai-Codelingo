@@ -4,19 +4,12 @@ import { Navbar } from './components/Navbar';
 import { LeaderboardPodium } from './components/LeaderboardPodium';
 import { Footer } from './components/Footer';
 import { 
-  ShieldCheck, 
-  Clock, 
-  GraduationCap,
-  Trophy,
-  Map,
-  Sparkles,
-  School,
-  Lock,
-  Phone,
-  BookOpen,
-  LogIn,
-  Settings,
-  ShieldAlert
+  Trophy, 
+  Sparkles, 
+  BookOpen, 
+  LogIn, 
+  Settings, 
+  ShieldAlert 
 } from 'lucide-react';
 import { playSound } from './utils/audioEngine';
 

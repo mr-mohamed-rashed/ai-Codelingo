@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './InstallGuideModal.css';
 import { useApp } from '../context/AppContext';
 import { X, Smartphone, Share2, MoreVertical, PlusSquare, CheckCircle, DownloadCloud } from 'lucide-react';
 import { playSound } from '../utils/audioEngine';

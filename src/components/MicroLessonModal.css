@@ -1,0 +1,490 @@
+/* =========================================================
+   AI FEMALE NARRATOR AUDIO PLAYER STYLES
+   ========================================================= */
+.ai-female-narrator-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(99, 102, 241, 0.4);
+  border-radius: 18px;
+  padding: 14px 20px;
+  margin: 18px 0;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  transition: all 0.25s ease;
+  flex-wrap: wrap;
+}
+
+body.theme-light .ai-female-narrator-bar {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-color: #c7d2fe;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.1);
+}
+
+.ai-female-narrator-bar.is-playing {
+  border-color: #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+}
+
+.audio-left-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 240px;
+}
+
+.audio-narrator-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.audio-narrator-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+body.theme-light .audio-narrator-title {
+  color: #1e1b4b;
+}
+
+.audio-narrator-hint {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+body.theme-light .audio-narrator-hint {
+  color: #64748b;
+}
+
+.btn-stop-pulse {
+  background: #ef4444 !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.6) !important;
+  animation: pulseStop 1.8s infinite ease-in-out;
+}
+
+@keyframes pulseStop {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+.audio-right-utilities {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.audio-speed-chips {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(15, 23, 42, 0.4);
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.theme-light .audio-speed-chips {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.speed-chip {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.speed-chip.active {
+  background: #4f46e5;
+  color: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .home-hero-main-title {
+    font-size: 1.6rem;
+  }
+  .home-hero-presentation {
+    padding: 24px 18px;
+  }
+  .content-page-topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .back-to-home-btn, .content-page-title-badge {
+    justify-content: center;
+  }
+  .auth-methods-nav {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ai-female-narrator-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .audio-right-utilities {
+    justify-content: space-between;
+  }
+}
+
+.duolingo-path-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+
+/* =========================================================
+   DUAL TERMINOLOGY SECTIONS: ARABIC + ENGLISH MASTERY FLASHCARDS
+   ========================================================= */
+.terms-dual-container {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 10px;
+}
+
+.terms-group-block {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.terms-group-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.terms-group-header h4 {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.exam-priority-pill {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+/* Arabic Concept Cards */
+.terms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.arabic-term-card {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.arabic-term-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.arabic-term-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.arabic-term-en-pill {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+  direction: ltr;
+}
+
+.arabic-term-def {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.term-note-box {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.example-box {
+  background: rgba(8, 145, 178, 0.12);
+  border: 1px solid rgba(8, 145, 178, 0.3);
+  color: #a5f3fc;
+}
+
+.exam-box {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fef08a;
+}
+
+/* English Flashcards Mastery */
+.english-mastery-block {
+  border-color: rgba(245, 158, 11, 0.35);
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(245, 158, 11, 0.05));
+}
+
+.english-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.en-mastery-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 2px solid rgba(245, 158, 11, 0.3);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.en-mastery-card:hover {
+  transform: translateY(-3px);
+  border-color: #f59e0b;
+  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.2);
+}
+
+.en-mastery-card.card-is-flipped {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.25), rgba(15, 23, 42, 0.85));
+  border-color: #6366f1;
+}
+
+.en-card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.en-badge-memorize {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.btn-pronounce-en {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fef08a;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-pronounce-en:hover {
+  background: #f59e0b;
+  color: #000;
+}
+
+.en-term-large {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #ffffff;
+  direction: ltr;
+  text-align: left;
+  margin-bottom: 6px;
+  font-family: var(--font-display);
+}
+
+.en-term-ar-translation {
+  font-size: 0.86rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  min-height: 40px;
+}
+
+.flip-hint-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: #64748b;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+
+/* =========================================================
+   LIGHT THEME: TERMINOLOGY & FLASHCARD BOXES (ط¹ط§ظ„ظٹ ط§ظ„طھط¨ط§ظٹظ† ظˆط¯ط§ظƒظ†)
+   ========================================================= */
+
+html[data-theme='light'] .terms-group-block,
+body.theme-light .terms-group-block {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+}
+
+html[data-theme='light'] .terms-group-header h4,
+body.theme-light .terms-group-header h4 {
+  color: #0f172a;
+  font-weight: 900;
+}
+
+html[data-theme='light'] .exam-priority-pill,
+body.theme-light .exam-priority-pill {
+  background: #fef3c7;
+  color: #78350f;
+  border: 1px solid #f59e0b;
+  font-weight: 800;
+}
+
+html[data-theme='light'] .arabic-term-card,
+body.theme-light .arabic-term-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+html[data-theme='light'] .arabic-term-name,
+body.theme-light .arabic-term-name {
+  color: #0369a1;
+  font-weight: 900;
+}
+
+html[data-theme='light'] .arabic-term-en-pill,
+body.theme-light .arabic-term-en-pill {
+  color: #0f172a !important;
+  background: #e2e8f0 !important;
+  border: 1px solid #cbd5e1 !important;
+  font-weight: 800 !important;
+}
+
+html[data-theme='light'] .arabic-term-def,
+body.theme-light .arabic-term-def {
+  color: #1e293b !important;
+  font-weight: 600 !important;
+  line-height: 1.6;
+}
+
+/* طµظ†ط¯ظˆظ‚ ط§ظ„ظ…ط«ط§ظ„ ط§ظ„طھظˆط¶ظٹط­ظٹ ط¨ط§ظ„ظ„ظˆظ† ط§ظ„ط¯ط§ظƒظ† ط¹ط§ظ„ظٹ ط§ظ„طھط¨ط§ظٹظ† ظپظٹ ظˆط¶ط¹ ط§ظ„ظ„ط§ظٹطھ */
+html[data-theme='light'] .example-box,
+body.theme-light .example-box {
+  background: #e0f2fe !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #075985 !important;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+}
+
+html[data-theme='light'] .example-box strong,
+body.theme-light .example-box strong {
+  color: #0c4a6e !important;
+  font-weight: 900 !important;
+}
+
+/* طµظ†ط¯ظˆظ‚ ط§ظ„ظ†طµظٹط­ط© ط§ظ„ط§ظ…طھط­ط§ظ†ظٹط© ط¨ط§ظ„ظ„ظˆظ† ط§ظ„ط¯ط§ظƒظ† ط¹ط§ظ„ظٹ ط§ظ„طھط¨ط§ظٹظ† ظپظٹ ظˆط¶ط¹ ط§ظ„ظ„ط§ظٹطھ */
+html[data-theme='light'] .exam-box,
+body.theme-light .exam-box {
+  background: #fef3c7 !important;
+  border: 1.5px solid #d97706 !important;
+  color: #78350f !important;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.08);
+}
+
+html[data-theme='light'] .exam-box strong,
+body.theme-light .exam-box strong {
+  color: #451a03 !important;
+  font-weight: 900 !important;
+}
+
+/* ظƒط±ظˆطھ ط§ظ„ظ…ظپط±ط¯ط§طھ ط§ظ„ط¥ظ†ط¬ظ„ظٹط²ظٹط© ظپظٹ ظˆط¶ط¹ ط§ظ„ظ„ط§ظٹطھ */
+html[data-theme='light'] .english-mastery-block,
+body.theme-light .english-mastery-block {
+  background: #fffbeb !important;
+  border: 1.5px solid #f59e0b !important;
+}
+
+html[data-theme='light'] .en-mastery-card,
+body.theme-light .en-mastery-card {
+  background: #ffffff !important;
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.12) !important;
+}
+
+html[data-theme='light'] .en-badge-memorize,
+body.theme-light .en-badge-memorize {
+  color: #78350f !important;
+  background: #fef3c7 !important;
+  border: 1px solid #f59e0b !important;
+  font-weight: 800 !important;
+  padding: 3px 8px !important;
+  border-radius: 999px !important;
+}
+
+html[data-theme='light'] .btn-pronounce-en,
+body.theme-light .btn-pronounce-en {
+  background: #e0f2fe !important;
+  border: 1.5px solid #0284c7 !important;
+  color: #0369a1 !important;
+  font-weight: 800 !important;
+}
+
+html[data-theme='light'] .btn-pronounce-en:hover,
+body.theme-light .btn-pronounce-en:hover {
+  background: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+html[data-theme='light'] .en-term-large,
+body.theme-light .en-term-large {
+  color: #0f172a !important;
+  font-weight: 900 !important;
+}
+
+html[data-theme='light'] .en-term-ar-translation,
+body.theme-light .en-term-ar-translation {
+  color: #1e293b !important;
+  font-weight: 700 !important;
+}
+
+html[data-theme='light'] .flip-hint-strip,
+body.theme-light .flip-hint-strip {
+  color: #475569 !important;
+  background: #f1f5f9 !important;
+  border-top: 1px solid #e2e8f0 !important;
+  font-weight: 700 !important;
+}

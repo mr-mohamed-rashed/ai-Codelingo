@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import './QuizEngine.css';
 import confetti from 'canvas-confetti';
 import { 
   CheckCircle2, 

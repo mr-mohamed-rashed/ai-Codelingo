@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
+import './DuolingoPath.css';
 import confetti from 'canvas-confetti';
 import { useApp } from '../context/AppContext';
 import { CHAPTERS_METADATA, PATH_NODES } from '../data/curriculumMeta.js';

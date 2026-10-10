@@ -1,4 +1,5 @@
 import React from 'react';
+import './LegalModals.css';
 import { useApp } from '../context/AppContext';
 import { 
   FileCheck2, 

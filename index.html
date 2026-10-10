@@ -138,8 +138,8 @@
 
     <!-- Resource Preconnects for High Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://api.dicebear.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+    <link rel="preconnect" href="https://api.dicebear.com" crossorigin="anonymous">
 
     <!-- Preload Critical LCP Avatar Image -->
     <link rel="preload" as="image" href="./teacher-avatar.svg" type="image/svg+xml">
@@ -150,6 +150,96 @@
     <noscript>
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&display=swap">
     </noscript>
+
+    <!-- Critical Above-The-Fold Styles for Instant First Paint (Zero Render-Blocking) -->
+    <style id="critical-above-the-fold">
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      :root {
+        --bg-primary: #0b0f19;
+        --text-primary: #f8fafc;
+        --primary: #6366f1;
+        --font-main: 'Alexandria', system-ui, -apple-system, sans-serif;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background: #0b0f19;
+        color: #f8fafc;
+        font-family: var(--font-main);
+        direction: rtl;
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+      }
+      #root, .app-layout {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .app-navbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 1.25rem;
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        position: sticky;
+        top: 0;
+        z-index: 50;
+      }
+      .home-standalone-page {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem 1rem 3rem;
+        max-width: 1100px;
+        margin: 0 auto;
+        width: 100%;
+      }
+      .home-hero-presentation {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .home-hero-main-title {
+        font-size: clamp(1.8rem, 4vw, 2.75rem);
+        font-weight: 800;
+        color: #f8fafc;
+        margin: 1rem 0;
+        line-height: 1.25;
+      }
+      .brand-highlight {
+        color: #818cf8;
+      }
+      .home-hero-subtitle {
+        color: #94a3b8;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        max-width: 680px;
+        margin: 0 auto 1.75rem;
+      }
+      .duo-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        font-weight: 700;
+        border-radius: 0.85rem;
+        border: none;
+        cursor: pointer;
+        padding: 0.9rem 1.6rem;
+        font-size: 1.05rem;
+      }
+      .duo-btn-success {
+        background: #10b981;
+        color: #ffffff;
+        box-shadow: 0 4px 0 #047857;
+      }
+      .duo-btn-secondary {
+        background: #334155;
+        color: #f8fafc;
+        box-shadow: 0 4px 0 #1e293b;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

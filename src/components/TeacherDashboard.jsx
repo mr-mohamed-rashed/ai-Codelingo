@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './TeacherDashboard.css';
 import { 
   Users, 
   CheckCircle, 

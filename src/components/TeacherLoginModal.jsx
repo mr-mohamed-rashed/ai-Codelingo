@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './AuthModal.css';
 import { useApp } from '../context/AppContext';
 import { 
   ShieldCheck, 
