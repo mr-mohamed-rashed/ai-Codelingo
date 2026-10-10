@@ -1,16 +1,25 @@
 import { createClient } from '@supabase/supabase-js';
 
-// قراءة بيانات الاتصال بسوبا بيز من متغيرات البيئة (Environment Variables)
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+// قراءة بيانات الاتصال بسوبا بيز من متغيرات البيئة أو التخزين المحلي كبديل فوري
+const getEnvOrStorage = (envKey, storageKey) => {
+  if (typeof import.meta !== 'undefined' && import.meta.env?.[envKey]) {
+    return import.meta.env[envKey];
+  }
+  if (typeof window !== 'undefined' && window.localStorage) {
+    return window.localStorage.getItem(storageKey) || '';
+  }
+  return '';
+};
+
+const supabaseUrl = getEnvOrStorage('VITE_SUPABASE_URL', 'codelingo_supabase_url');
+const supabaseAnonKey = getEnvOrStorage('VITE_SUPABASE_ANON_KEY', 'codelingo_supabase_anon_key');
 
 // التحقق من توافر المفاتيح لتنبيه المطور في الكونسول
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
 if (!isSupabaseConfigured) {
-  console.warn(
-    '⚠️ [Supabase] لم يتم ضبط VITE_SUPABASE_URL و VITE_SUPABASE_ANON_KEY في ملف .env بعد.\n' +
-    'يرجى إنشاء ملف .env ووضع مفاتيح مشروع Supabase لتفعيل تسجيل الدخول بالفون وقاعدة البيانات السحابية.'
+  console.info(
+    'ℹ️ [Supabase] بانتظار إدخال VITE_SUPABASE_URL و VITE_SUPABASE_ANON_KEY في ملف .env أو إعدادات المنصة السحابية.'
   );
 }
 

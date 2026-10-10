@@ -704,7 +704,8 @@ export const AppProvider = ({ children }) => {
 
   // فحص توفر مفاتيح Supabase دون حظر التحميل المبدئي
   const isSupabaseConfigured = Boolean(
-    import.meta.env?.VITE_SUPABASE_URL && import.meta.env?.VITE_SUPABASE_ANON_KEY
+    (import.meta.env?.VITE_SUPABASE_URL && import.meta.env?.VITE_SUPABASE_ANON_KEY) ||
+    (typeof window !== 'undefined' && window.localStorage?.getItem('codelingo_supabase_url') && window.localStorage?.getItem('codelingo_supabase_anon_key'))
   );
 
   // المزامنة التلقائية مع جلسة تسجيل الدخول السحابي (Google / Facebook / Phone عبر Supabase)
