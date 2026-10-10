@@ -697,43 +697,52 @@ export const AppProvider = ({ children }) => {
     return newStudent;
   };
 
+  // فحص توفر مفاتيح Supabase دون حظر التحميل المبدئي
+  const isSupabaseConfigured = Boolean(
+    import.meta.env?.VITE_SUPABASE_URL && import.meta.env?.VITE_SUPABASE_ANON_KEY
+  );
+
   // المزامنة التلقائية مع جلسة تسجيل الدخول السحابي (Google / Facebook / Phone عبر Supabase)
   useEffect(() => {
     if (!isSupabaseConfigured) return;
 
-    const handleOAuthUser = (user) => {
-      if (!user || !user.email) return;
-      const userEmail = user.email.toLowerCase();
-      const existing = students.find(s => s.email && s.email.toLowerCase() === userEmail);
-      if (existing) {
-        if (currentStudentId !== existing.id) {
-          setCurrentStudentId(existing.id);
+    let subscription = null;
+    import('../utils/supabaseClient').then(({ supabase }) => {
+      const handleOAuthUser = (user) => {
+        if (!user || !user.email) return;
+        const userEmail = user.email.toLowerCase();
+        const existing = students.find(s => s.email && s.email.toLowerCase() === userEmail);
+        if (existing) {
+          if (currentStudentId !== existing.id) {
+            setCurrentStudentId(existing.id);
+          }
+        } else {
+          const userName = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
+          const userAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+          const provider = user.app_metadata?.provider || 'google';
+          registerNewStudent({
+            name: userName,
+            email: user.email,
+            avatar: userAvatar,
+            provider
+          });
         }
-      } else {
-        const userName = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
-        const userAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
-        const provider = user.app_metadata?.provider || 'google';
-        registerNewStudent({
-          name: userName,
-          email: user.email,
-          avatar: userAvatar,
-          provider
-        });
-      }
-    };
+      };
 
-    // فحص الجلسة عند تحميل الصفحة (إذا عاد الطالب من صفحة Google / Facebook)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        handleOAuthUser(session.user);
-      }
-    });
+      // فحص الجلسة عند تحميل الصفحة (إذا عاد الطالب من صفحة Google / Facebook)
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          handleOAuthUser(session.user);
+        }
+      });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session?.user && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
-        handleOAuthUser(session.user);
-      }
-    });
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        if (session?.user && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
+          handleOAuthUser(session.user);
+        }
+      });
+      subscription = data?.subscription;
+    }).catch(err => console.warn('Supabase dynamic load note:', err));
 
     return () => {
       subscription?.unsubscribe();
