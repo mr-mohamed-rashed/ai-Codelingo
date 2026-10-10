@@ -152,44 +152,10 @@ body {
   flex-direction: column;
 }
 
-.platform-watermark-bg {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(760px, 92vw);
-  height: min(760px, 92vw);
-  pointer-events: none;
-  z-index: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-  overflow: hidden;
-}
-
-.platform-watermark-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  opacity: 0.16;
-  mix-blend-mode: screen;
-  filter: drop-shadow(0 0 50px rgba(56, 189, 248, 0.35));
-  -webkit-mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 1) 45%, rgba(0, 0, 0, 0) 80%);
-  mask-image: radial-gradient(circle at center, rgba(0, 0, 0, 1) 45%, rgba(0, 0, 0, 0) 80%);
-  pointer-events: none;
-}
-
-body.theme-light .platform-watermark-img,
-html[data-theme='light'] .platform-watermark-img {
-  opacity: 0.28;
-  mix-blend-mode: multiply;
-  filter: contrast(1.22) brightness(0.96);
-}
-
 .student-main-content {
   position: relative;
   z-index: 1;
+  contain: layout;
 }
 
 /* =========================================================
@@ -7479,8 +7445,8 @@ html[dir='ltr'] .active-station-robot-anchor {
   100% { transform: rotate(0deg) scale(1); }
 }
 
-/* ط¸ظ„ ظ…ظ‚ط§ظˆظ…ط© ط§ظ„ط¬ط§ط°ط¨ظٹط© طھط­طھ ط§ظ„ط±ظˆط¨ظˆطھ */
-.robot-antigravity-shadow {
+/* ظل عائم تحت الروبوت */
+.robot-floating-shadow {
   width: 38px;
   height: 9px;
   background: radial-gradient(ellipse at center, rgba(14, 165, 233, 0.6) 0%, rgba(2, 132, 199, 0) 70%);
@@ -9041,12 +9007,6 @@ body.theme-light .student-station-tracker-banner {
    COMPREHENSIVE MOBILE RESPONSIVE DESIGN (موبايل متجاوب 100%)
    ========================================================= */
 @media (max-width: 768px) {
-  /* خلفية اللوجو المائية على الهواتف */
-  .platform-watermark-bg {
-    width: min(340px, 85vw);
-    height: min(340px, 85vw);
-    opacity: 0.08;
-  }
 
   /* الشريط العلوي على الموبايل */
   .app-navbar {

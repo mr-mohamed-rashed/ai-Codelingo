@@ -119,20 +119,6 @@ function MainAppContent() {
 
   return (
     <div className="app-layout">
-      {/* بصمة اللوجو المائية الكبيرة الثابتة خلف المحتوى */}
-      <div className="platform-watermark-bg" aria-hidden="true">
-        <img 
-          src={`${import.meta.env.BASE_URL}icon-512.png`} 
-          alt="" 
-          width="512"
-          height="512"
-          loading="lazy"
-          decoding="async"
-          fetchPriority="low"
-          className="platform-watermark-img" 
-        />
-      </div>
-
       {/* الشريط العلوي المشترك HUD */}
       <Navbar />
 
@@ -277,8 +263,8 @@ function MainAppContent() {
                   <span>{lang === 'ar' ? 'بنك أسئلة واختبارات شاملة' : 'Question Bank & Exams'}</span>
                 </div>
                 <div className="home-feature-pill">
-                  <span className="feature-pill-icon">🤖</span>
-                  <span>{lang === 'ar' ? 'معلم ذكاء اصطناعي فوري' : 'Instant AI Tutor'}</span>
+                  <span className="feature-pill-icon">💡</span>
+                  <span>{lang === 'ar' ? 'مرشد تعليمي تفاعلي ذكي' : 'Smart Interactive Tutor'}</span>
                 </div>
               </div>
             </div>
@@ -369,7 +355,18 @@ function MainAppContent() {
         <aside className="mobile-pwa-bottom-bar" aria-label="تثبيت التطبيق">
           <div className="mobile-pwa-content">
             <div className="mobile-pwa-badge">
-              <img src={`${import.meta.env.BASE_URL}icon-192.png`} alt="App Icon" className="mobile-pwa-img" />
+              <picture>
+                <source srcSet={`${import.meta.env.BASE_URL}icon-192.webp`} type="image/webp" />
+                <img 
+                  src={`${import.meta.env.BASE_URL}icon-192.png`} 
+                  alt="App Icon" 
+                  width="48"
+                  height="48"
+                  className="mobile-pwa-img" 
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
             </div>
             <div className="mobile-pwa-text">
               <strong className="mobile-pwa-title">تطبيق كودلينجو الرسمي 📲</strong>

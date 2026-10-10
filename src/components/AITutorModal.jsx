@@ -61,7 +61,7 @@ export const AITutorModal = () => {
 
         {/* Mascot Avatar */}
         <div className="tutor-mascot-avatar">
-          🤖
+          💡
         </div>
 
         {/* Header */}

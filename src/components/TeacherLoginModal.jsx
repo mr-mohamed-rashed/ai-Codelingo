@@ -67,15 +67,15 @@ export default function TeacherLoginModal() {
   } = useApp();
 
   const [rememberMe, setRememberMe] = useState(() => {
-    return localStorage.getItem('agy_admin_remember_me') !== 'false';
+    return (localStorage.getItem('codelingo_admin_remember_me') || localStorage.getItem('agy_admin_remember_me')) !== 'false';
   });
 
   const [email, setEmail] = useState(() => {
-    return localStorage.getItem('agy_remembered_admin_email') || '';
+    return localStorage.getItem('codelingo_remembered_admin_email') || localStorage.getItem('agy_remembered_admin_email') || '';
   });
 
   const [password, setPassword] = useState(() => {
-    const savedCipher = localStorage.getItem('agy_remembered_admin_pass');
+    const savedCipher = localStorage.getItem('codelingo_remembered_admin_pass') || localStorage.getItem('agy_remembered_admin_pass');
     if (savedCipher) {
       return decryptSecret(savedCipher);
     }
@@ -105,11 +105,13 @@ export default function TeacherLoginModal() {
     }
 
     if (rememberMe) {
-      localStorage.setItem('agy_admin_remember_me', 'true');
-      localStorage.setItem('agy_remembered_admin_email', email.trim());
-      localStorage.setItem('agy_remembered_admin_pass', encryptSecret(password.trim()));
+      localStorage.setItem('codelingo_admin_remember_me', 'true');
+      localStorage.setItem('codelingo_remembered_admin_email', email.trim());
+      localStorage.setItem('codelingo_remembered_admin_pass', encryptSecret(password.trim()));
     } else {
-      localStorage.setItem('agy_admin_remember_me', 'false');
+      localStorage.setItem('codelingo_admin_remember_me', 'false');
+      localStorage.removeItem('codelingo_remembered_admin_email');
+      localStorage.removeItem('codelingo_remembered_admin_pass');
       localStorage.removeItem('agy_remembered_admin_email');
       localStorage.removeItem('agy_remembered_admin_pass');
     }

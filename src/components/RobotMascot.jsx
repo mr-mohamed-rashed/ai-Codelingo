@@ -195,8 +195,8 @@ export const RobotMascotGuide = ({
       {/* مجسم الروبوت المتحرك */}
       <div className="robot-character-body">
         <RobotSVG isWiggling={isWiggling} size={62} />
-        {/* Anti-gravity shadow disc */}
-        <div className="robot-antigravity-shadow" />
+        {/* Floating shadow disc */}
+        <div className="robot-floating-shadow" />
       </div>
     </div>
   );

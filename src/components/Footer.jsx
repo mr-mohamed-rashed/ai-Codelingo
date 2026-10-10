@@ -45,11 +45,18 @@ export const Footer = () => {
 
           <div className="footer-brand-title-wrap">
             <div className="footer-avatar-badge" title="منصة البرمجة والذكاء الاصطناعي">
-              <img 
-                src={`${import.meta.env.BASE_URL}app-logo.jpg`} 
-                alt="Logo" 
-                className="footer-avatar-logo-img" 
-              />
+              <picture>
+                <source srcSet={`${import.meta.env.BASE_URL}app-logo.webp`} type="image/webp" />
+                <img 
+                  src={`${import.meta.env.BASE_URL}app-logo.jpg`} 
+                  alt="شعار منصة كودلينجو" 
+                  width="84"
+                  height="84"
+                  className="footer-avatar-logo-img" 
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
             </div>
             <div className="footer-brand-text">
               <h3 className="footer-platform-name">

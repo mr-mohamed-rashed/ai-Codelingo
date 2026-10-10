@@ -47,15 +47,19 @@ export const Navbar = () => {
         title="الانتقال للصفحة الرئيسية ومدرج الأوائل"
       >
         <div className="brand-logo-badge">
-          <img 
-            src={`${import.meta.env.BASE_URL}icon-192.png`} 
-            width="44" 
-            height="44" 
-            alt="شعار منصة كودلينجو" 
-            className="brand-logo-img" 
-            loading="eager"
-            decoding="async"
-          />
+          <picture>
+            <source srcSet={`${import.meta.env.BASE_URL}icon-192.webp`} type="image/webp" />
+            <img 
+              src={`${import.meta.env.BASE_URL}icon-192.png`} 
+              width="44" 
+              height="44" 
+              alt="شعار منصة كودلينجو" 
+              className="brand-logo-img" 
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+            />
+          </picture>
         </div>
         <div className="brand-title-wrap">
           <h1>{t('appTitle')}</h1>

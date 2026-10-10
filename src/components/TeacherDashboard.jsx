@@ -109,23 +109,25 @@ export default function TeacherDashboard() {
 
   // إعدادات وتصريح مفاتيح Google Cloud و Meta (Facebook) OAuth
   const [googleClientIdInput, setGoogleClientIdInput] = useState(() => {
-    return localStorage.getItem('agy_google_client_id') || import.meta.env?.VITE_GOOGLE_CLIENT_ID || '';
+    return localStorage.getItem('codelingo_google_client_id') || localStorage.getItem('agy_google_client_id') || import.meta.env?.VITE_GOOGLE_CLIENT_ID || '';
   });
   const [fbAppIdInput, setFbAppIdInput] = useState(() => {
-    return localStorage.getItem('agy_fb_app_id') || import.meta.env?.VITE_FACEBOOK_APP_ID || '';
+    return localStorage.getItem('codelingo_fb_app_id') || localStorage.getItem('agy_fb_app_id') || import.meta.env?.VITE_FACEBOOK_APP_ID || '';
   });
   const [oauthSaveSuccess, setOauthSaveSuccess] = useState(false);
 
   const handleSaveOAuthKeys = (e) => {
     e.preventDefault();
     if (googleClientIdInput.trim()) {
-      localStorage.setItem('agy_google_client_id', googleClientIdInput.trim());
+      localStorage.setItem('codelingo_google_client_id', googleClientIdInput.trim());
     } else {
+      localStorage.removeItem('codelingo_google_client_id');
       localStorage.removeItem('agy_google_client_id');
     }
     if (fbAppIdInput.trim()) {
-      localStorage.setItem('agy_fb_app_id', fbAppIdInput.trim());
+      localStorage.setItem('codelingo_fb_app_id', fbAppIdInput.trim());
     } else {
+      localStorage.removeItem('codelingo_fb_app_id');
       localStorage.removeItem('agy_fb_app_id');
     }
     setOauthSaveSuccess(true);

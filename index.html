@@ -136,20 +136,13 @@
     }
     </script>
 
-    <!-- Google Fonts Optimized Asynchronous Loading (Non-Render-Blocking) -->
+    <!-- Resource Preconnects for High Performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&family=Fira+Code:wght@500;600&family=Inter:wght@400;600;700&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&family=Fira+Code:wght@500;600&family=Inter:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
-    <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&family=Fira+Code:wght@500;600&family=Inter:wght@400;600;700&display=swap" />
-    </noscript>
+    <link rel="preconnect" href="https://api.dicebear.com" crossorigin />
 
-    <!-- Google Identity Services (GIS) for Google Sign-In -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-    <!-- Meta / Facebook JavaScript SDK -->
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/ar_AR/sdk.js"></script>
+    <!-- Google Fonts Optimized Loading with font-display: swap (Zero CLS) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&display=swap" />
   </head>
   <body>
     <div id="root"></div>

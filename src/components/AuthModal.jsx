@@ -149,12 +149,24 @@ export default function AuthModal({ initialMode = 'register' }) {
     setAuthStep('profile_setup');
   };
 
-  // تسجيل الدخول بحساب Google (جيميل)
+  // تحميل سكربتات SDK الخارجية عند الطلب فقط (Lazy On-Demand Script Loader)
+  const loadScriptAsync = (src) => {
+    return new Promise((resolve) => {
+      if (document.querySelector(`script[src="${src}"]`)) return resolve(true);
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.head.appendChild(script);
+    });
+  };
+
+  // تسجيل الدخول بحساب Google (OAuth 2.0 مباشر أو سحابي)
   const handleGoogleAuth = async () => {
     playSound.click();
     setErrorMessage('');
 
-    // 1. مزود Supabase
     if (isSupabaseConfigured) {
       try {
         const { error } = await supabase.auth.signInWithOAuth({
@@ -168,37 +180,42 @@ export default function AuthModal({ initialMode = 'register' }) {
       }
     }
 
-    // 2. استخدام Google Client ID المباشر
-    const googleClientId = import.meta.env?.VITE_GOOGLE_CLIENT_ID || localStorage.getItem('agy_google_client_id');
-    if (googleClientId && window.google?.accounts?.oauth2) {
-      try {
-        const tokenClient = window.google.accounts.oauth2.initTokenClient({
-          client_id: googleClientId,
-          scope: 'email profile openid',
-          callback: async (tokenResponse) => {
-            if (tokenResponse && tokenResponse.access_token) {
-              try {
-                const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
-                });
-                const profile = await res.json();
-                handleOAuthProfileSuccess({
-                  name: profile.name || '',
-                  email: profile.email || '',
-                  avatar: profile.picture || '',
-                  provider: 'google'
-                });
-                return;
-              } catch (fetchErr) {
-                console.error('Error fetching Google profile:', fetchErr);
+    // 2. استخدام Google Client ID المباشر مع تحميل سكربت Google GIS عند الطلب فقط
+    const googleClientId = import.meta.env?.VITE_GOOGLE_CLIENT_ID || localStorage.getItem('codelingo_google_client_id') || localStorage.getItem('agy_google_client_id');
+    if (googleClientId) {
+      if (!window.google?.accounts?.oauth2) {
+        await loadScriptAsync('https://accounts.google.com/gsi/client');
+      }
+      if (window.google?.accounts?.oauth2) {
+        try {
+          const tokenClient = window.google.accounts.oauth2.initTokenClient({
+            client_id: googleClientId,
+            scope: 'email profile openid',
+            callback: async (tokenResponse) => {
+              if (tokenResponse && tokenResponse.access_token) {
+                try {
+                  const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                  });
+                  const profile = await res.json();
+                  handleOAuthProfileSuccess({
+                    name: profile.name || '',
+                    email: profile.email || '',
+                    avatar: profile.picture || '',
+                    provider: 'google'
+                  });
+                  return;
+                } catch (fetchErr) {
+                  console.error('Error fetching Google profile:', fetchErr);
+                }
               }
             }
-          }
-        });
-        tokenClient.requestAccessToken({ prompt: 'select_account' });
-        return;
-      } catch (err) {
-        console.warn('Google direct OAuth error:', err);
+          });
+          tokenClient.requestAccessToken({ prompt: 'select_account' });
+          return;
+        } catch (err) {
+          console.warn('Google direct OAuth error:', err);
+        }
       }
     }
 
@@ -233,25 +250,30 @@ export default function AuthModal({ initialMode = 'register' }) {
       }
     }
 
-    const fbAppId = import.meta.env?.VITE_FACEBOOK_APP_ID || localStorage.getItem('agy_fb_app_id');
-    if (fbAppId && window.FB) {
-      try {
-        window.FB.init({ appId: fbAppId, cookie: true, xfbml: true, version: 'v19.0' });
-        window.FB.login((response) => {
-          if (response.authResponse) {
-            window.FB.api('/me', { fields: 'name,email,picture.width(400).height(400)' }, (profile) => {
-              handleOAuthProfileSuccess({
-                name: profile.name || '',
-                email: profile.email || `fb.user.${profile.id}@facebook.com`,
-                avatar: profile.picture?.data?.url || '',
-                provider: 'facebook'
+    const fbAppId = import.meta.env?.VITE_FACEBOOK_APP_ID || localStorage.getItem('codelingo_fb_app_id') || localStorage.getItem('agy_fb_app_id');
+    if (fbAppId) {
+      if (!window.FB) {
+        await loadScriptAsync('https://connect.facebook.net/ar_AR/sdk.js');
+      }
+      if (window.FB) {
+        try {
+          window.FB.init({ appId: fbAppId, cookie: true, xfbml: true, version: 'v19.0' });
+          window.FB.login((response) => {
+            if (response.authResponse) {
+              window.FB.api('/me', { fields: 'name,email,picture.width(400).height(400)' }, (profile) => {
+                handleOAuthProfileSuccess({
+                  name: profile.name || '',
+                  email: profile.email || `fb.user.${profile.id}@facebook.com`,
+                  avatar: profile.picture?.data?.url || '',
+                  provider: 'facebook'
+                });
               });
-            });
-          }
-        }, { scope: 'public_profile,email' });
-        return;
-      } catch (err) {
-        console.warn('Facebook direct OAuth error:', err);
+            }
+          }, { scope: 'public_profile,email' });
+          return;
+        } catch (err) {
+          console.warn('Facebook direct OAuth error:', err);
+        }
       }
     }
 
