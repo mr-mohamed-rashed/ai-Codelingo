@@ -25,9 +25,25 @@ export const MicroLessonModal = () => {
     };
   }, []);
 
-  if (!activeChunk) return null;
-
   const chunk = localizedActiveChunk || activeChunk;
+
+  // نص القراءة الصوتية الكامل والمتقن للمحطة
+  const fullNarrationScript = React.useMemo(() => {
+    if (!chunk) return '';
+    const chunkTitle = chunk.chunkTitle || '';
+    const summary = chunk.summary || '';
+    let script = `${chunkTitle}. ${summary}. `;
+    if (chunk.contentCards && chunk.contentCards.length > 0) {
+      script += "المفاهيم التعليمية: " + chunk.contentCards.map(c => `${c.title}: ${c.points ? c.points.join('، ') : (c.text || '')}`).join('. ') + ". ";
+    }
+    if (chunk.audioNarrationText) {
+      script += chunk.audioNarrationText;
+    }
+    return script;
+  }, [chunk]);
+
+  if (!activeChunk || !chunk) return null;
+
   const isChunkCompleted = currentStudent?.completedChunks?.includes(chunk.id);
   const currentStars = currentStudent?.chunkRatings?.[chunk.id]?.stars || (isChunkCompleted ? 3 : 0);
 
@@ -38,18 +54,6 @@ export const MicroLessonModal = () => {
   const chunkTitle = chunk.chunkTitle;
   const lessonTitle = chunk.lessonTitle;
   const summary = chunk.summary;
-
-  // نص القراءة الصوتية الكامل والمتقن للمحطة
-  const fullNarrationScript = React.useMemo(() => {
-    let script = `${chunkTitle}. ${summary}. `;
-    if (chunk.contentCards && chunk.contentCards.length > 0) {
-      script += "المفاهيم التعليمية: " + chunk.contentCards.map(c => `${c.title}: ${c.points ? c.points.join('، ') : (c.text || '')}`).join('. ') + ". ";
-    }
-    if (chunk.audioNarrationText) {
-      script += chunk.audioNarrationText;
-    }
-    return script;
-  }, [chunkTitle, summary, chunk]);
 
   const handleToggleAudio = () => {
     playSound.click();

@@ -18,6 +18,13 @@ function nonBlockingCssPlugin() {
 export default defineConfig({
   plugins: [react(), nonBlockingCssPlugin()],
   base: './',
+  resolve: {
+    alias: {
+      react: 'preact/compat',
+      'react-dom': 'preact/compat',
+      'react/jsx-runtime': 'preact/jsx-runtime'
+    }
+  },
   build: {
     target: 'esnext',
     chunkSizeWarningLimit: 600,
@@ -34,8 +41,8 @@ export default defineConfig({
             return 'curriculum-data';
           }
           if (nid.includes('/node_modules/')) {
-            if (nid.includes('/react/') || nid.includes('/react-dom/')) {
-              return 'vendor-react';
+            if (nid.includes('/preact/')) {
+              return 'vendor-framework';
             }
             if (nid.includes('/@supabase/')) {
               return 'vendor-supabase';
