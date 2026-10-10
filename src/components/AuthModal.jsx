@@ -170,11 +170,8 @@ export default function AuthModal({ initialMode = 'register' }) {
 
     if (isSupabaseConfigured) {
       try {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: { redirectTo: window.location.origin + window.location.pathname }
-        });
-        if (error) throw error;
+        const { signInWithGoogleOAuth } = await import('../services/studentService');
+        await signInWithGoogleOAuth();
         return;
       } catch (err) {
         console.warn('Supabase Google OAuth error:', err);
@@ -240,11 +237,8 @@ export default function AuthModal({ initialMode = 'register' }) {
 
     if (isSupabaseConfigured) {
       try {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: 'facebook',
-          options: { redirectTo: window.location.origin + window.location.pathname }
-        });
-        if (error) throw error;
+        const { signInWithFacebookOAuth } = await import('../services/studentService');
+        await signInWithFacebookOAuth();
         return;
       } catch (err) {
         console.warn('Supabase Facebook OAuth error:', err);

@@ -655,6 +655,7 @@ export const AppProvider = ({ children }) => {
    * تسجيل طالب جديد لأول مرة بجوجل / فيسبوك / الهاتف / الإيميل
    */
   const registerNewStudent = ({ name, phone, guardianPhone, email, avatar, provider = 'google' }) => {
+    const cleanName = (name || '').trim() || 'طالب جديد';
     const cleanEmail = (email || '').trim().toLowerCase();
     const isMasterTeacher = isMasterTeacherEmail(cleanEmail);
 
@@ -663,7 +664,7 @@ export const AppProvider = ({ children }) => {
       name: cleanName,
       phone: (phone || '').trim(),
       guardianPhone: (guardianPhone || '').trim(),
-      email: (email || '').trim(),
+      email: cleanEmail,
       avatar: avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanName || 'Student')}`,
       provider,
       status: isMasterTeacher ? "approved" : "pending",
@@ -692,6 +693,12 @@ export const AppProvider = ({ children }) => {
     setStudents(prev => [newStudent, ...prev]);
     setCurrentStudentId(newStudent.id);
     playSound.correct();
+
+    // حفظ فوري في قاعدة بيانات Supabase السحابية (جدول students)
+    import('../services/studentService').then(({ syncStudentWithSupabase }) => {
+      syncStudentWithSupabase(newStudent).catch(err => console.warn('Supabase auto sync note:', err));
+    }).catch(() => {});
+
     return newStudent;
   };
 
@@ -706,28 +713,52 @@ export const AppProvider = ({ children }) => {
 
     let subscription = null;
     import('../utils/supabaseClient').then(({ supabase }) => {
-      const handleOAuthUser = (user) => {
+      const handleOAuthUser = async (user) => {
         if (!user || !user.email) return;
-        const userEmail = user.email.toLowerCase();
-        const existing = students.find(s => s.email && s.email.toLowerCase() === userEmail);
-        if (existing) {
-          if (currentStudentId !== existing.id) {
-            setCurrentStudentId(existing.id);
+        const userEmail = user.email.toLowerCase().trim();
+        const userName = user.user_metadata?.full_name || user.user_metadata?.name || user.user_metadata?.user_name || user.email.split('@')[0];
+        const userAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+        const provider = user.app_metadata?.provider || 'google';
+
+        try {
+          const { fetchStudentByEmail, syncStudentWithSupabase } = await import('../services/studentService');
+          
+          // فحص هل الطالب مسجل في قاعدة بيانات Supabase السحابية
+          const remoteStudent = await fetchStudentByEmail(userEmail);
+          if (remoteStudent) {
+            setStudents(prev => {
+              const idx = prev.findIndex(s => s.id === remoteStudent.id || (s.email && s.email.toLowerCase() === userEmail));
+              if (idx >= 0) {
+                const updated = [...prev];
+                updated[idx] = { ...updated[idx], ...remoteStudent, avatar: userAvatar || remoteStudent.avatar };
+                return updated;
+              }
+              return [remoteStudent, ...prev];
+            });
+            setCurrentStudentId(remoteStudent.id);
+            return;
+          }
+        } catch (err) {
+          console.warn('OAuth cloud fetch note:', err);
+        }
+
+        // إذا لم يكن موجوداً، نسجله كطالب جديد ونحفظه سحابياً ومحلياً
+        const existingLocal = students.find(s => s.email && s.email.toLowerCase() === userEmail);
+        if (existingLocal) {
+          if (currentStudentId !== existingLocal.id) {
+            setCurrentStudentId(existingLocal.id);
           }
         } else {
-          const userName = user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0];
-          const userAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
-          const provider = user.app_metadata?.provider || 'google';
           registerNewStudent({
             name: userName,
-            email: user.email,
+            email: userEmail,
             avatar: userAvatar,
             provider
           });
         }
       };
 
-      // فحص الجلسة عند تحميل الصفحة (إذا عاد الطالب من صفحة Google / Facebook)
+      // فحص الجلسة عند تحميل الصفحة (إذا عاد الطالب من شاشة Google أو Facebook)
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session?.user) {
           handleOAuthUser(session.user);
@@ -740,6 +771,22 @@ export const AppProvider = ({ children }) => {
         }
       });
       subscription = data?.subscription;
+
+      // مزامنة قائمة الطلاب مع جدول Supabase السحابي لمدرج الشرف
+      import('../services/studentService').then(({ fetchAllStudentsFromSupabase }) => {
+        fetchAllStudentsFromSupabase().then(remoteStudents => {
+          if (remoteStudents && remoteStudents.length > 0) {
+            setStudents(prev => {
+              const map = new Map(prev.map(s => [s.email ? s.email.toLowerCase() : s.id, s]));
+              remoteStudents.forEach(rs => {
+                const key = rs.email ? rs.email.toLowerCase() : rs.id;
+                map.set(key, { ...(map.get(key) || {}), ...rs });
+              });
+              return Array.from(map.values());
+            });
+          }
+        }).catch(err => console.warn('Supabase fetch students note:', err));
+      }).catch(() => {});
     }).catch(err => console.warn('Supabase dynamic load note:', err));
 
     return () => {
