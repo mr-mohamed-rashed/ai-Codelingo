@@ -102,13 +102,7 @@ function MainAppContent() {
   // حساب المتصدر الحالي لعرض شريط تحفيزي
   const topChampion = students.filter(s => s.status === 'approved').sort((a, b) => (b.xp || 0) - (a.xp || 0))[0];
 
-  // شرط أساسي: لا يمكن التواجد في صفحة المحتوى دون تسجيل دخول
-  React.useEffect(() => {
-    if (currentPage === 'content' && !isStudentLoggedIn) {
-      setCurrentPage('home');
-      setActiveModal('auth');
-    }
-  }, [currentPage, isStudentLoggedIn, setCurrentPage, setActiveModal]);
+
 
   return (
     <div className="app-layout">

@@ -4,7 +4,20 @@
 .auth-modal-card {
   max-width: 480px;
   padding: 32px 28px;
+  background: #1e293b;
+  border-radius: 20px;
+  border: 1.5px solid rgba(99, 102, 241, 0.3);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  position: relative;
 }
+
+body.theme-light .auth-modal-card,
+html[data-theme='light'] .auth-modal-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
 .auth-step-container {
   display: flex;
   flex-direction: column;
@@ -13,6 +26,7 @@
   gap: 14px;
   width: 100%;
 }
+
 .auth-icon-badge {
   width: 64px;
   height: 64px;
@@ -23,15 +37,27 @@
   align-items: center;
   justify-content: center;
 }
+
 .auth-title {
   font-size: 1.35rem;
   font-weight: 900;
   color: #ffffff;
 }
+
+body.theme-light .auth-title,
+html[data-theme='light'] .auth-title {
+  color: #0f172a;
+}
+
 .auth-subtitle {
   color: #94a3b8;
   font-size: 0.85rem;
   line-height: 1.5;
+}
+
+body.theme-light .auth-subtitle,
+html[data-theme='light'] .auth-subtitle {
+  color: #64748b;
 }
 
 /* التبديل بين إنشاء حساب جديد وتسجيل الدخول */
@@ -233,6 +259,12 @@
   font-weight: 700;
   color: #cbd5e1;
 }
+
+body.theme-light .field-label,
+html[data-theme='light'] .field-label {
+  color: #334155;
+}
+
 .input-with-icon {
   position: relative;
   display: flex;
@@ -253,13 +285,34 @@
   font-family: var(--font-arabic);
   font-size: 0.88rem;
 }
+
+body.theme-light .input-with-icon input,
+html[data-theme='light'] .input-with-icon input {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
 .input-with-icon input:focus {
   outline: none;
   border-color: #6366f1;
 }
+
+body.theme-light .input-with-icon input:focus,
+html[data-theme='light'] .input-with-icon input:focus {
+  background: #ffffff;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
 .field-hint {
   font-size: 0.72rem;
   color: #94a3b8;
+}
+
+body.theme-light .field-hint,
+html[data-theme='light'] .field-hint {
+  color: #64748b;
 }
 
 .auth-error-banner {

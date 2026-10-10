@@ -18,13 +18,7 @@ function nonBlockingCssPlugin() {
 export default defineConfig({
   plugins: [react(), nonBlockingCssPlugin()],
   base: './',
-  resolve: {
-    alias: {
-      react: 'preact/compat',
-      'react-dom': 'preact/compat',
-      'react/jsx-runtime': 'preact/jsx-runtime'
-    }
-  },
+
   build: {
     target: 'esnext',
     chunkSizeWarningLimit: 600,

@@ -86,11 +86,7 @@ export const Navbar = () => {
             className={`nav-page-tab-btn ${currentPage === 'content' ? 'active' : ''}`}
             onClick={() => {
               playSound.click();
-              if (!isStudentLoggedIn) {
-                setActiveModal('auth');
-              } else {
-                setCurrentPage('content');
-              }
+              setCurrentPage('content');
             }}
             title={lang === 'ar' ? 'صفحة المحتوى ومسار الدروس' : 'Curriculum & Content Page'}
           >
