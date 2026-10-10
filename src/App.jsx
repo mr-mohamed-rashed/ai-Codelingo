@@ -375,6 +375,7 @@ function MainAppContent() {
               type="button" 
               className="duo-btn duo-btn-success mobile-pwa-btn"
               onClick={installApp}
+              id="btn-install-pwa-banner"
             >
               تثبيت
             </button>
@@ -383,6 +384,8 @@ function MainAppContent() {
               className="mobile-pwa-close-btn"
               onClick={() => setDismissPwaBanner(true)}
               title="إغلاق"
+              aria-label="إغلاق شريط تثبيت التطبيق"
+              id="btn-close-pwa-banner"
             >
               ✕
             </button>
