@@ -194,6 +194,24 @@ export async function updateStudentProgressInSupabase(studentId, updates) {
 }
 
 /**
+ * تنسيق وتوحيد رقم الهاتف بالصيغة الدولية (+20 لمصر إذا بدأ بـ 01)
+ */
+export function formatInternationalPhone(phone) {
+  if (!phone) return '';
+  let cleaned = String(phone).trim().replace(/[\s-]/g, '');
+  if (!cleaned.startsWith('+')) {
+    if (cleaned.startsWith('01') && cleaned.length >= 11) {
+      cleaned = '+2' + cleaned;
+    } else if (cleaned.startsWith('1') && cleaned.length >= 10) {
+      cleaned = '+20' + cleaned;
+    } else {
+      cleaned = '+' + cleaned;
+    }
+  }
+  return cleaned;
+}
+
+/**
  * 5. بدء تسجيل الدخول بحساب Google (OAuth) مع فرض شاشة اختيار الجيميل
  * prompt: 'select_account' يتيح للمستخدم اختيار الحساب الذي يفضله
  */
@@ -237,4 +255,192 @@ export async function signInWithFacebookOAuth() {
 
   if (error) throw error;
   return data;
+}
+
+/**
+ * 7. تسجيل الدخول بالبريد الإلكتروني وكلمة المرور عبر Supabase
+ */
+export async function signInWithEmailPassword(email, password) {
+  if (!isSupabaseConfigured) {
+    throw new Error('يرجى ضبط مفاتيح Supabase في ملف .env أولاً');
+  }
+
+  const supabase = await getSupabaseClient();
+  const cleanEmail = String(email).trim().toLowerCase();
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: cleanEmail,
+    password: String(password).trim()
+  });
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * 8. إنشاء حساب جديد بالبريد الإلكتروني مع حفظ الميتاداتا
+ */
+export async function signUpWithEmailPassword(email, password, metadata = {}) {
+  if (!isSupabaseConfigured) {
+    throw new Error('يرجى ضبط مفاتيح Supabase في ملف .env أولاً');
+  }
+
+  const supabase = await getSupabaseClient();
+  const cleanEmail = String(email).trim().toLowerCase();
+  const { data, error } = await supabase.auth.signUp({
+    email: cleanEmail,
+    password: String(password).trim(),
+    options: {
+      data: {
+        full_name: metadata.name || '',
+        name: metadata.name || '',
+        phone: metadata.phone || '',
+        guardian_phone: metadata.guardianPhone || '',
+        avatar_url: metadata.avatar || '',
+        role: 'student'
+      }
+    }
+  });
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * 9. تسجيل الدخول برقم الهاتف وكلمة المرور عبر Supabase
+ */
+export async function signInWithPhonePassword(phone, password) {
+  if (!isSupabaseConfigured) {
+    throw new Error('يرجى ضبط مفاتيح Supabase في ملف .env أولاً');
+  }
+
+  const supabase = await getSupabaseClient();
+  const formattedPhone = formatInternationalPhone(phone);
+  const { data, error } = await supabase.auth.signInWithPassword({
+    phone: formattedPhone,
+    password: String(password).trim()
+  });
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * 10. إنشاء حساب جديد برقم الهاتف وكلمة المرور عبر Supabase
+ */
+export async function signUpWithPhonePassword(phone, password, metadata = {}) {
+  if (!isSupabaseConfigured) {
+    throw new Error('يرجى ضبط مفاتيح Supabase في ملف .env أولاً');
+  }
+
+  const supabase = await getSupabaseClient();
+  const formattedPhone = formatInternationalPhone(phone);
+  const { data, error } = await supabase.auth.signUp({
+    phone: formattedPhone,
+    password: String(password).trim(),
+    options: {
+      data: {
+        full_name: metadata.name || '',
+        name: metadata.name || '',
+        guardian_phone: metadata.guardianPhone || '',
+        avatar_url: metadata.avatar || '',
+        role: 'student'
+      }
+    }
+  });
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * 11. إرسال رمز التحقق OTP لرقم الهاتف (SMS)
+ */
+export async function sendPhoneOtp(phone) {
+  if (!isSupabaseConfigured) {
+    throw new Error('يرجى ضبط مفاتيح Supabase في ملف .env أولاً');
+  }
+
+  const supabase = await getSupabaseClient();
+  const formattedPhone = formatInternationalPhone(phone);
+  const { data, error } = await supabase.auth.signInWithOtp({
+    phone: formattedPhone
+  });
+
+  if (error) throw error;
+  return { success: true, formattedPhone, data };
+}
+
+/**
+ * 12. التحقق من كود الـ OTP
+ */
+export async function verifyPhoneOtp(phone, token) {
+  if (!isSupabaseConfigured) {
+    throw new Error('يرجى ضبط مفاتيح Supabase في ملف .env أولاً');
+  }
+
+  const supabase = await getSupabaseClient();
+  const formattedPhone = formatInternationalPhone(phone);
+  const { data, error } = await supabase.auth.verifyOtp({
+    phone: formattedPhone,
+    token: String(token).trim(),
+    type: 'sms'
+  });
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * 13. استخراج الميتاداتا وتحديث جدول students في Supabase (Upsert تلقائي وفوري)
+ * يسترجع: الاسم الكامل، الصورة، البريد، والهاتف، ويدمجهم مع جدول الطلاب
+ */
+export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
+  if (!authUser) return null;
+
+  const metadata = authUser.user_metadata || {};
+  const extractedName = (
+    metadata.full_name || 
+    metadata.name || 
+    metadata.display_name || 
+    extraData.name || 
+    authUser.email?.split('@')[0] || 
+    'طالب كودلينجو'
+  ).trim();
+
+  const extractedAvatar = (
+    metadata.avatar_url || 
+    metadata.picture || 
+    extraData.avatar || 
+    `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(extractedName)}`
+  );
+
+  const cleanEmail = (authUser.email || extraData.email || '').trim().toLowerCase();
+  const cleanPhone = (authUser.phone || extraData.phone || '').trim();
+  const guardianPhone = (metadata.guardian_phone || extraData.guardianPhone || '').trim();
+  const provider = authUser.app_metadata?.provider || extraData.provider || 'supabase';
+
+  // كائن الطالب المطلوب حفظه
+  const studentPayload = {
+    id: `std-${authUser.id ? authUser.id.substring(0, 8) : Date.now().toString().slice(-6)}`,
+    authUserId: authUser.id,
+    name: extractedName,
+    email: cleanEmail || null,
+    phone: cleanPhone || null,
+    guardianPhone: guardianPhone || null,
+    avatar: extractedAvatar,
+    provider: provider,
+    status: 'approved'
+  };
+
+  // عمل Upsert سحابي في جدول students
+  if (isSupabaseConfigured) {
+    try {
+      const synced = await syncStudentWithSupabase(studentPayload);
+      if (synced) return synced;
+    } catch (err) {
+      console.warn('⚠️ syncUserMetadataToStudentTable error:', err);
+    }
+  }
+
+  return studentPayload;
 }

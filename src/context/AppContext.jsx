@@ -716,47 +716,28 @@ export const AppProvider = ({ children }) => {
     let subscription = null;
     import('../utils/supabaseClient').then(({ supabase }) => {
       const handleOAuthUser = async (user) => {
-        if (!user || !user.email) return;
-        const userEmail = user.email.toLowerCase().trim();
-        const userName = user.user_metadata?.full_name || user.user_metadata?.name || user.user_metadata?.user_name || user.email.split('@')[0];
-        const userAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
-        const provider = user.app_metadata?.provider || 'google';
-
+        if (!user) return;
         try {
-          const { fetchStudentByEmail, syncStudentWithSupabase } = await import('../services/studentService');
-          
-          // فحص هل الطالب مسجل في قاعدة بيانات Supabase السحابية
-          const remoteStudent = await fetchStudentByEmail(userEmail);
-          if (remoteStudent) {
+          const { syncUserMetadataToStudentTable } = await import('../services/studentService');
+          const syncedStudent = await syncUserMetadataToStudentTable(user);
+          if (syncedStudent) {
             setStudents(prev => {
-              const idx = prev.findIndex(s => s.id === remoteStudent.id || (s.email && s.email.toLowerCase() === userEmail));
+              const idx = prev.findIndex(s => 
+                (syncedStudent.email && s.email && s.email.toLowerCase() === syncedStudent.email.toLowerCase()) ||
+                (syncedStudent.id && s.id === syncedStudent.id) ||
+                (syncedStudent.authUserId && s.authUserId === syncedStudent.authUserId)
+              );
               if (idx >= 0) {
                 const updated = [...prev];
-                updated[idx] = { ...updated[idx], ...remoteStudent, avatar: userAvatar || remoteStudent.avatar };
+                updated[idx] = { ...updated[idx], ...syncedStudent };
                 return updated;
               }
-              return [remoteStudent, ...prev];
+              return [syncedStudent, ...prev];
             });
-            setCurrentStudentId(remoteStudent.id);
-            return;
+            setCurrentStudentId(syncedStudent.id);
           }
         } catch (err) {
-          console.warn('OAuth cloud fetch note:', err);
-        }
-
-        // إذا لم يكن موجوداً، نسجله كطالب جديد ونحفظه سحابياً ومحلياً
-        const existingLocal = students.find(s => s.email && s.email.toLowerCase() === userEmail);
-        if (existingLocal) {
-          if (currentStudentId !== existingLocal.id) {
-            setCurrentStudentId(existingLocal.id);
-          }
-        } else {
-          registerNewStudent({
-            name: userName,
-            email: userEmail,
-            avatar: userAvatar,
-            provider
-          });
+          console.warn('OAuth cloud sync note:', err);
         }
       };
 
