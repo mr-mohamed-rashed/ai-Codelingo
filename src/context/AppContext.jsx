@@ -70,7 +70,7 @@ export const isMasterTeacherEmail = (email) => {
 export const INITIAL_STUDENTS = [
   {
     id: "std-master-teacher",
-    name: "الأستاذ / محمد راشد (حساب المعاينة والاختبار)",
+    name: "الأستاذ / محمد راشد",
     phone: "01000000777",
     guardianPhone: "01000000778",
     email: "mrrashed0777@gmailc.om",
@@ -209,9 +209,10 @@ export const AppProvider = ({ children }) => {
             return [...INITIAL_STUDENTS, ...filtered];
           }
           return filtered.map(s => {
-            if (isMasterTeacherEmail(s.email)) {
+            if (isMasterTeacherEmail(s.email) || s.id === 'std-master-teacher') {
               return {
                 ...s,
+                name: "الأستاذ / محمد راشد",
                 status: 'approved',
                 isMasterTeacher: true,
                 allowedCurriculum: {

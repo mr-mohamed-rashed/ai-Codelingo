@@ -38,8 +38,11 @@ export const LeaderboardPodium = () => {
         const totalCompositeScore = (std.xp || 0) + ((std.stars || 0) * 15) + (completedCount * 25);
         const group = groups.find(g => g.id === std.groupId);
 
+        const cleanName = std.name ? std.name.replace(/\s*\([^)]*\)/g, '').trim() : (lang === 'en' ? 'Hero Student' : 'طالب متميز');
         return {
           ...std,
+          name: cleanName,
+          rawName: std.name,
           totalScore: totalCompositeScore,
           groupName: group ? group.name : (lang === 'en' ? 'General' : 'عام'),
           groupColor: group?.color || '#6366f1',

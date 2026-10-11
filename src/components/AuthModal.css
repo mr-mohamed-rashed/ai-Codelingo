@@ -181,6 +181,81 @@ html[data-theme='light'] .auth-subtitle {
   box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
+.facebook-signin-btn {
+  background: #1877f2;
+  color: #ffffff;
+  border: none;
+  font-family: var(--font-arabic);
+  font-weight: 800;
+  font-size: 0.92rem;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(24, 119, 242, 0.3);
+  transition: all 0.15s ease;
+}
+.facebook-signin-btn:hover {
+  background: #166fe5;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(24, 119, 242, 0.4);
+}
+
+/* مكدس الأزرار الاجتماعية في الشاشة الرئيسية */
+.auth-social-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin: 8px 0;
+}
+
+/* مكدس نماذج الإدخال */
+.auth-form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* صف أزرار الإجراء (متابعة + رجوع) - فصل تام ومسافة واضحة 14px */
+.auth-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  gap: 14px;
+  width: 100%;
+  margin-top: 14px;
+}
+
+.auth-actions-row .auth-btn-main {
+  flex: 1;
+  padding: 13px 18px;
+  font-size: 0.94rem;
+  font-weight: 800;
+}
+
+.auth-actions-row .auth-btn-back {
+  flex-shrink: 0;
+  min-width: 95px;
+  padding: 13px 18px;
+  font-size: 0.94rem;
+  font-weight: 800;
+}
+
+.auth-submit-btn {
+  width: 100%;
+  padding: 13px 20px;
+  font-size: 0.96rem;
+  font-weight: 800;
+  margin-top: 8px;
+}
+
 .auth-divider {
   display: flex;
   align-items: center;

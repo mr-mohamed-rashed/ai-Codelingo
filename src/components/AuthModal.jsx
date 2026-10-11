@@ -359,7 +359,7 @@ export default function AuthModal({ initialMode = 'register' }) {
             )}
 
             {/* الأزرار المباشرة الاجتماعية الأساسية */}
-            <div className="w-full flex flex-col gap-2.5 my-1">
+            <div className="auth-social-buttons">
               {/* زر Google المعتمد */}
               <button 
                 type="button" 
@@ -407,7 +407,7 @@ export default function AuthModal({ initialMode = 'register' }) {
             </div>
 
             {/* النموذج المباشر السريع */}
-            <form onSubmit={handleManualLogin} className="w-full flex flex-col gap-3">
+            <form onSubmit={handleManualLogin} className="auth-form-stack">
               <div className="form-field text-right">
                 <label className="field-label">رقم الهاتف أو البريد الإلكتروني *</label>
                 <div className="input-with-icon">
@@ -471,7 +471,7 @@ export default function AuthModal({ initialMode = 'register' }) {
 
               <button 
                 type="submit" 
-                className={`duo-btn ${authMode === 'login' ? 'duo-btn-primary' : 'duo-btn-success'} w-full py-3 font-bold mt-1`}
+                className={`duo-btn ${authMode === 'login' ? 'duo-btn-primary' : 'duo-btn-success'} auth-submit-btn`}
               >
                 {authMode === 'login' ? 'متابعة ودخول فوري للمنصة 🔑' : 'متابعة لإنشاء الحساب 🚀'}
               </button>
@@ -519,7 +519,7 @@ export default function AuthModal({ initialMode = 'register' }) {
                   provider: 'google'
                 });
               }}
-              className="w-full flex flex-col gap-3"
+              className="auth-form-stack"
             >
               <div className="form-field text-right">
                 <label className="field-label">اسمك في حساب Google *</label>
@@ -549,16 +549,16 @@ export default function AuthModal({ initialMode = 'register' }) {
                 </div>
               </div>
 
-              <div className="flex gap-2 mt-2">
+              <div className="auth-actions-row">
                 <button 
                   type="submit" 
-                  className="duo-btn duo-btn-success flex-1 py-3 font-bold"
+                  className="duo-btn duo-btn-success auth-btn-main"
                 >
                   {authMode === 'login' ? 'متابعة ودخول فوري ⚡' : 'متابعة وسحب البيانات 🚀'}
                 </button>
                 <button 
                   type="button" 
-                  className="duo-btn duo-btn-secondary py-3 px-4"
+                  className="duo-btn duo-btn-secondary auth-btn-back"
                   onClick={() => setAuthStep('main')}
                 >
                   رجوع
@@ -601,7 +601,7 @@ export default function AuthModal({ initialMode = 'register' }) {
               </div>
             )}
 
-            <div className="w-full flex flex-col gap-3">
+            <div className="auth-form-stack">
               {/* رقم هاتف الطالب */}
               <div className="form-field text-right">
                 <label className="field-label">رقم هاتف الطالب / واتساب *</label>
@@ -638,7 +638,7 @@ export default function AuthModal({ initialMode = 'register' }) {
 
               <button 
                 type="submit" 
-                className="duo-btn duo-btn-success w-full py-3.5 font-bold text-base mt-2 shadow-lg"
+                className="duo-btn duo-btn-success auth-submit-btn"
                 disabled={isLoading}
               >
                 {isLoading ? 'جارٍ حفظ بياناتك... ⏳' : 'إتمام التسجيل والبدء في المذاكرة فوراً 🚀'}
