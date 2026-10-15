@@ -39,7 +39,7 @@ export function getFacebookAppId() {
   if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_FACEBOOK_APP_ID) {
     return import.meta.env.VITE_FACEBOOK_APP_ID.trim();
   }
-  return '';
+  return '2287502738483185';
 }
 
 /**
