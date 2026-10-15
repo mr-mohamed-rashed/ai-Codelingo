@@ -33,6 +33,13 @@ import {
   verifyPhoneOtp,
   syncUserMetadataToStudentTable
 } from '../services/studentService';
+import { 
+  getGoogleClientId, 
+  getFacebookAppId, 
+  signInWithGoogleIdentity, 
+  signInWithFacebookSDK, 
+  saveSocialKeys 
+} from '../services/socialAuthService';
 
 export default function AuthModal({ initialMode = 'register' }) {
   const { 
@@ -77,6 +84,13 @@ export default function AuthModal({ initialMode = 'register' }) {
     password: '',
     avatar: isActualStudent ? (currentStudent.avatar || '') : '',
   });
+
+  // نوافذ إعداد وربط المفاتيح إذا لم تكن مدخلة
+  const [showGoogleKeyModal, setShowGoogleKeyModal] = useState(false);
+  const [inputGoogleClientId, setInputGoogleClientId] = useState(() => getGoogleClientId());
+
+  const [showFacebookKeyModal, setShowFacebookKeyModal] = useState(false);
+  const [inputFbAppId, setInputFbAppId] = useState(() => getFacebookAppId());
 
   // نموذج محلي سريع في حالة عدم ضبط Supabase محلياً
   const [showQuickLocalPicker, setShowQuickLocalPicker] = useState(false);
@@ -148,13 +162,34 @@ export default function AuthModal({ initialMode = 'register' }) {
   };
 
   /**
-   * 1. خيار Google OAuth
+   * 1. خيار Google OAuth الرسمي (Google Identity Services أو Supabase)
    */
   const handleGoogleSubmit = async () => {
     playSound.click();
     setErrorMessage('');
     setIsLoading(true);
 
+    const googleClientId = getGoogleClientId();
+
+    // أ) إذا كان Google Client ID متوفراً: نفتح نافذة جوجل المنبثقة الرسمية مباشرة
+    if (googleClientId) {
+      try {
+        const { user, profile } = await signInWithGoogleIdentity(googleClientId);
+        await handleAuthCompletion(user, profile);
+        return;
+      } catch (err) {
+        console.warn('Google Identity error:', err);
+        setIsLoading(false);
+        if (err.message?.includes('access_denied') || err.message?.includes('إلغاء')) {
+          setErrorMessage('تم إلغاء المتابعة بحساب Google.');
+        } else {
+          setErrorMessage(err.message || 'تعذر استكمال تسجيل الدخول عبر Google.');
+        }
+        return;
+      }
+    }
+
+    // ب) إذا كانت سوبا بيز مضبوطة ومفعلة لمزود Google OAuth
     if (isSupabaseConfigured) {
       try {
         await signInWithGoogleOAuth();
@@ -162,23 +197,40 @@ export default function AuthModal({ initialMode = 'register' }) {
       } catch (err) {
         console.warn('Supabase Google OAuth error:', err);
         setIsLoading(false);
-        setErrorMessage(err.message || 'تعذر الاتصال بـ Google. يمكنك تجربة الإدخال المباشر أدناه.');
+        setErrorMessage(err.message || 'تعذر الاتصال بـ Supabase Google OAuth.');
       }
     }
 
-    // بديل محلي سريع لتجربة فورية إذا لم تكن مفاتيح OAuth متصلة محلياً
+    // ج) إذا لم تكن المفاتيح مدخلة بعد، نفتح نافذة ربط Google Client ID
     setIsLoading(false);
-    setShowQuickLocalPicker(true);
+    setShowGoogleKeyModal(true);
   };
 
   /**
-   * 2. خيار Facebook OAuth
+   * 2. خيار Facebook OAuth الرسمي (Facebook SDK أو Supabase)
    */
   const handleFacebookSubmit = async () => {
     playSound.click();
     setErrorMessage('');
     setIsLoading(true);
 
+    const fbAppId = getFacebookAppId();
+
+    // أ) إذا كان Facebook App ID متوفراً: نفتح نافذة فيسبوك الرسمية مباشرة
+    if (fbAppId) {
+      try {
+        const { user, profile } = await signInWithFacebookSDK(fbAppId);
+        await handleAuthCompletion(user, profile);
+        return;
+      } catch (err) {
+        console.warn('Facebook SDK error:', err);
+        setIsLoading(false);
+        setErrorMessage(err.message || 'تعذر تسجيل الدخول عبر Facebook.');
+        return;
+      }
+    }
+
+    // ب) إذا كانت سوبا بيز مضبوطة لمزود Facebook OAuth
     if (isSupabaseConfigured) {
       try {
         await signInWithFacebookOAuth();
@@ -186,22 +238,13 @@ export default function AuthModal({ initialMode = 'register' }) {
       } catch (err) {
         console.warn('Supabase Facebook OAuth error:', err);
         setIsLoading(false);
-        setErrorMessage(err.message || 'تعذر الاتصال بـ Facebook.');
+        setErrorMessage(err.message || 'تعذر الاتصال بـ Supabase Facebook OAuth.');
       }
     }
 
-    // محاكاة فورية لحساب Facebook محلياً
+    // ج) إذا لم تكن المفاتيح مدخلة بعد، نفتح نافذة ربط Facebook App ID
     setIsLoading(false);
-    const mockFbUser = {
-      id: `fb-${Date.now().toString().slice(-6)}`,
-      email: formData.email.trim() || `student.fb.${Math.floor(1000 + Math.random() * 9000)}@facebook.com`,
-      user_metadata: {
-        full_name: formData.name.trim() || 'طالب متميز (Facebook)',
-        avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=FBStudent`
-      },
-      app_metadata: { provider: 'facebook' }
-    };
-    handleAuthCompletion(mockFbUser, { provider: 'facebook' });
+    setShowFacebookKeyModal(true);
   };
 
   /**
@@ -394,9 +437,9 @@ export default function AuthModal({ initialMode = 'register' }) {
         </button>
 
         {/* =========================================================================
-            نافذة الاختيار المحلي السريع لحساب Google (إذا لم تكن مفاتيح OAuth مفعلة)
+            نافذة إدخال وتفعيل Google Client ID لفتح شاشة جوجل الرسمية
             ========================================================================= */}
-        {showQuickLocalPicker ? (
+        {showGoogleKeyModal ? (
           <div className="auth-step-container">
             <div className="auth-icon-badge">
               <svg width="34" height="34" viewBox="0 0 24 24">
@@ -407,68 +450,230 @@ export default function AuthModal({ initialMode = 'register' }) {
               </svg>
             </div>
 
-            <h2 className="auth-title">المتابعة السريعة بحساب Google</h2>
+            <h2 className="auth-title">المتابعة المباشرة بحساب Google</h2>
             <p className="auth-subtitle">
-              أدخل اسمك وبريدك الإلكتروني لسحب الاسم والصورة الشخصية فوراً
+              لسحب بريدك المسجل في Gmail واسمك وصورتك الشخصية تلقائياً دون كتابة، أدخل معرّف العميل (Google Client ID):
             </p>
 
+            {errorMessage && (
+              <div className="auth-error-banner w-full mb-3">
+                {errorMessage}
+              </div>
+            )}
+
+            <form 
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const cid = inputGoogleClientId.trim();
+                if (!cid) {
+                  setErrorMessage('يرجى لصق Google Client ID المصرح به');
+                  return;
+                }
+                saveSocialKeys({ googleClientId: cid });
+                setShowGoogleKeyModal(false);
+                setIsLoading(true);
+                setErrorMessage('');
+                try {
+                  const { user, profile } = await signInWithGoogleIdentity(cid);
+                  await handleAuthCompletion(user, profile);
+                } catch (err) {
+                  console.warn('Google Auth Error:', err);
+                  setIsLoading(false);
+                  setShowGoogleKeyModal(true);
+                  setErrorMessage(err.message || 'تعذر إتمام المصادقة بحساب Google');
+                }
+              }}
+              className="auth-form-stack"
+            >
+              <div className="form-field text-right">
+                <label className="field-label">معرّف عميل جوجل (Google Client ID) *</label>
+                <div className="input-with-icon">
+                  <KeyRound size={18} className="field-icon" />
+                  <input 
+                    type="text" 
+                    placeholder="xxxxxxxxxxxx-xxxxxxxxxxxx.apps.googleusercontent.com"
+                    value={inputGoogleClientId}
+                    onChange={(e) => setInputGoogleClientId(e.target.value)}
+                    dir="ltr"
+                    className="font-mono text-xs"
+                    required
+                  />
+                </div>
+                <span className="text-[11px] text-slate-500 block mt-1">
+                  💡 يتم حفظه في متصفحك مرة واحدة فقط، وسيفتح فوراً نافذة Google لاختيار الحساب.
+                </span>
+              </div>
+
+              <div className="auth-actions-row flex-col gap-2">
+                <button type="submit" className="duo-btn duo-btn-success auth-btn-main w-full" disabled={isLoading}>
+                  {isLoading ? 'جارٍ الاتصال بـ Google... ⏳' : 'حفظ وفتح نافذة Google فوراً 🚀'}
+                </button>
+
+                <div className="flex gap-2 w-full">
+                  <button 
+                    type="button" 
+                    className="duo-btn duo-btn-secondary auth-btn-back flex-1"
+                    onClick={() => {
+                      const mockGoogleUser = {
+                        id: `g-${Date.now().toString().slice(-6)}`,
+                        email: `student.${Math.floor(1000 + Math.random() * 9000)}@gmail.com`,
+                        user_metadata: {
+                          full_name: 'طالب كودلينجو التجريبي',
+                          avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=StudentDemo`
+                        },
+                        app_metadata: { provider: 'google' }
+                      };
+                      handleAuthCompletion(mockGoogleUser, { name: 'طالب كودلينجو التجريبي', provider: 'google' });
+                    }}
+                  >
+                    دخول تجريبي سريع
+                  </button>
+                  <button 
+                    type="button" 
+                    className="duo-btn duo-btn-secondary auth-btn-back flex-1"
+                    onClick={() => setShowGoogleKeyModal(false)}
+                  >
+                    رجوع
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        ) : showFacebookKeyModal ? (
+          /* =========================================================================
+              نافذة إدخال وتفعيل Facebook App ID
+              ========================================================================= */
+          <div className="auth-step-container">
+            <div className="auth-icon-badge">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="#1877f2">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </div>
+
+            <h2 className="auth-title">المتابعة المباشرة بحساب Facebook</h2>
+            <p className="auth-subtitle">
+              لسحب اسمك وصورتك من Facebook تلقائياً، أدخل معرّف التطبيق (Facebook App ID):
+            </p>
+
+            {errorMessage && (
+              <div className="auth-error-banner w-full mb-3">
+                {errorMessage}
+              </div>
+            )}
+
+            <form 
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const aid = inputFbAppId.trim();
+                if (!aid) {
+                  setErrorMessage('يرجى إدخال Facebook App ID');
+                  return;
+                }
+                saveSocialKeys({ facebookAppId: aid });
+                setShowFacebookKeyModal(false);
+                setIsLoading(true);
+                setErrorMessage('');
+                try {
+                  const { user, profile } = await signInWithFacebookSDK(aid);
+                  await handleAuthCompletion(user, profile);
+                } catch (err) {
+                  console.warn('Facebook Auth Error:', err);
+                  setIsLoading(false);
+                  setShowFacebookKeyModal(true);
+                  setErrorMessage(err.message || 'تعذر إتمام تسجيل الدخول بـ Facebook');
+                }
+              }}
+              className="auth-form-stack"
+            >
+              <div className="form-field text-right">
+                <label className="field-label">معرّف تطبيق فيسبوك (Facebook App ID) *</label>
+                <div className="input-with-icon">
+                  <KeyRound size={18} className="field-icon" />
+                  <input 
+                    type="text" 
+                    placeholder="مثال: 123456789012345"
+                    value={inputFbAppId}
+                    onChange={(e) => setInputFbAppId(e.target.value)}
+                    dir="ltr"
+                    className="font-mono text-xs"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="auth-actions-row flex-col gap-2">
+                <button type="submit" className="duo-btn duo-btn-success auth-btn-main w-full" disabled={isLoading}>
+                  {isLoading ? 'جارٍ الاتصال بـ Facebook... ⏳' : 'حفظ وفتح نافذة Facebook فوراً 🚀'}
+                </button>
+
+                <div className="flex gap-2 w-full">
+                  <button 
+                    type="button" 
+                    className="duo-btn duo-btn-secondary auth-btn-back flex-1"
+                    onClick={() => {
+                      const mockFbUser = {
+                        id: `fb-${Date.now().toString().slice(-6)}`,
+                        email: `student.fb.${Math.floor(1000 + Math.random() * 9000)}@facebook.com`,
+                        user_metadata: {
+                          full_name: 'طالب فيسبوك التجريبي',
+                          avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=FBStudent`
+                        },
+                        app_metadata: { provider: 'facebook' }
+                      };
+                      handleAuthCompletion(mockFbUser, { name: 'طالب فيسبوك التجريبي', provider: 'facebook' });
+                    }}
+                  >
+                    دخول تجريبي سريع
+                  </button>
+                  <button 
+                    type="button" 
+                    className="duo-btn duo-btn-secondary auth-btn-back flex-1"
+                    onClick={() => setShowFacebookKeyModal(false)}
+                  >
+                    رجوع
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        ) : showQuickLocalPicker ? (
+          <div className="auth-step-container">
+            <div className="auth-icon-badge">
+              <User size={34} className="text-indigo-500" />
+            </div>
+            <h2 className="auth-title">تسجيل حساب سريع</h2>
             <form 
               onSubmit={(e) => {
                 e.preventDefault();
                 const name = quickPickerName.trim() || formData.name.trim() || 'طالب كودلينجو';
                 const email = quickPickerEmail.trim() || formData.email.trim() || `student.${Math.floor(1000 + Math.random() * 9000)}@gmail.com`;
-                const mockGoogleUser = {
-                  id: `g-${Date.now().toString().slice(-6)}`,
+                const mockUser = {
+                  id: `u-${Date.now().toString().slice(-6)}`,
                   email: email,
-                  user_metadata: {
-                    full_name: name,
-                    avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`
-                  },
-                  app_metadata: { provider: 'google' }
+                  user_metadata: { full_name: name, avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}` },
+                  app_metadata: { provider: 'local' }
                 };
-                handleAuthCompletion(mockGoogleUser, { name, email, provider: 'google' });
+                handleAuthCompletion(mockUser, { name, email, provider: 'local' });
               }}
               className="auth-form-stack"
             >
               <div className="form-field text-right">
-                <label className="field-label">اسمك في حساب Google *</label>
+                <label className="field-label">اسم الطالب *</label>
                 <div className="input-with-icon">
                   <User size={18} className="field-icon" />
-                  <input 
-                    type="text" 
-                    placeholder="مثال: يوسف أحمد محمد"
-                    value={quickPickerName}
-                    onChange={(e) => setQuickPickerName(e.target.value)}
-                    required
-                  />
+                  <input type="text" value={quickPickerName} onChange={(e) => setQuickPickerName(e.target.value)} required />
                 </div>
               </div>
-
               <div className="form-field text-right">
-                <label className="field-label">بريدك الإلكتروني (Gmail) *</label>
+                <label className="field-label">البريد الإلكتروني *</label>
                 <div className="input-with-icon">
                   <Mail size={18} className="field-icon" />
-                  <input 
-                    type="email" 
-                    placeholder="yourname@gmail.com"
-                    value={quickPickerEmail}
-                    onChange={(e) => setQuickPickerEmail(e.target.value)}
-                    required
-                  />
+                  <input type="email" value={quickPickerEmail} onChange={(e) => setQuickPickerEmail(e.target.value)} required />
                 </div>
               </div>
-
               <div className="auth-actions-row">
-                <button type="submit" className="duo-btn duo-btn-success auth-btn-main">
-                  متابعة وسحب البيانات 🚀
-                </button>
-                <button 
-                  type="button" 
-                  className="duo-btn duo-btn-secondary auth-btn-back"
-                  onClick={() => setShowQuickLocalPicker(false)}
-                >
-                  رجوع
-                </button>
+                <button type="submit" className="duo-btn duo-btn-success auth-btn-main">متابعة 🚀</button>
+                <button type="button" className="duo-btn duo-btn-secondary auth-btn-back" onClick={() => setShowQuickLocalPicker(false)}>رجوع</button>
               </div>
             </form>
           </div>

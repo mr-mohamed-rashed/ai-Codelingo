@@ -107,12 +107,18 @@ export default function TeacherDashboard() {
   const [adminFormError, setAdminFormError] = useState('');
   const [adminSearchQuery, setAdminSearchQuery] = useState('');
 
-  // إعدادات وتصريح مفاتيح Google Cloud و Meta (Facebook) OAuth
+  // إعدادات وتصريح مفاتيح Google Cloud و Meta (Facebook) OAuth و Supabase السحابية
   const [googleClientIdInput, setGoogleClientIdInput] = useState(() => {
     return localStorage.getItem('codelingo_google_client_id') || import.meta.env?.VITE_GOOGLE_CLIENT_ID || '';
   });
   const [fbAppIdInput, setFbAppIdInput] = useState(() => {
     return localStorage.getItem('codelingo_fb_app_id') || import.meta.env?.VITE_FACEBOOK_APP_ID || '';
+  });
+  const [supabaseUrlInput, setSupabaseUrlInput] = useState(() => {
+    return localStorage.getItem('codelingo_supabase_url') || import.meta.env?.VITE_SUPABASE_URL || '';
+  });
+  const [supabaseAnonKeyInput, setSupabaseAnonKeyInput] = useState(() => {
+    return localStorage.getItem('codelingo_supabase_anon_key') || import.meta.env?.VITE_SUPABASE_ANON_KEY || '';
   });
   const [oauthSaveSuccess, setOauthSaveSuccess] = useState(false);
 
@@ -127,6 +133,16 @@ export default function TeacherDashboard() {
       localStorage.setItem('codelingo_fb_app_id', fbAppIdInput.trim());
     } else {
       localStorage.removeItem('codelingo_fb_app_id');
+    }
+    if (supabaseUrlInput.trim()) {
+      localStorage.setItem('codelingo_supabase_url', supabaseUrlInput.trim());
+    } else {
+      localStorage.removeItem('codelingo_supabase_url');
+    }
+    if (supabaseAnonKeyInput.trim()) {
+      localStorage.setItem('codelingo_supabase_anon_key', supabaseAnonKeyInput.trim());
+    } else {
+      localStorage.removeItem('codelingo_supabase_anon_key');
     }
     setOauthSaveSuccess(true);
     playSound.correct();
@@ -1214,14 +1230,53 @@ export default function TeacherDashboard() {
                   </span>
                 </div>
 
+                <div className="pt-2 border-t border-slate-700/60">
+                  <h4 className="text-xs font-bold text-indigo-300 mb-2">إعدادات قاعدة بيانات سوبا بيز (Supabase Cloud Database):</h4>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-300 mb-1 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: supabaseUrlInput ? '#10b981' : '#f59e0b' }}></span>
+                        <span>رابط مشروع سوبا بيز (Project URL)</span>
+                        {supabaseUrlInput ? <span className="text-emerald-400 text-xs font-semibold">(مربوط ✓)</span> : <span className="text-amber-400 text-xs font-semibold">(غير مدخل ⚠️)</span>}
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="https://xxxxxxxxxxxx.supabase.co"
+                        value={supabaseUrlInput}
+                        onChange={(e) => setSupabaseUrlInput(e.target.value)}
+                        className="form-input text-xs font-mono"
+                        dir="ltr"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-300 mb-1 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: supabaseAnonKeyInput ? '#10b981' : '#f59e0b' }}></span>
+                        <span>مفتاح سوبا بيز العام (Anon Public Key)</span>
+                        {supabaseAnonKeyInput ? <span className="text-emerald-400 text-xs font-semibold">(مربوط ✓)</span> : <span className="text-amber-400 text-xs font-semibold">(غير مدخل ⚠️)</span>}
+                      </label>
+                      <input
+                        type="password"
+                        placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        value={supabaseAnonKeyInput}
+                        onChange={(e) => setSupabaseAnonKeyInput(e.target.value)}
+                        className="form-input text-xs font-mono"
+                        dir="ltr"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div className="p-3 rounded-lg bg-slate-800/80 border border-slate-700/60 text-xs text-slate-300 space-y-1.5">
                   <div className="font-bold text-indigo-400 flex items-center gap-1.5">
                     <ExternalLink size={14} />
-                    <span>الروابط المعتمدة التي يجب أن تضعها في Google Cloud Console (Authorized JavaScript origins):</span>
+                    <span>الروابط المعتمدة التي يجب أن تضعها في Google Cloud Console و Supabase:</span>
                   </div>
                   <div className="flex flex-wrap gap-2 pt-1 font-mono text-[11px]">
                     <span className="bg-slate-900 px-2 py-1 rounded border border-slate-700 text-emerald-400">https://ai-codelingo.pages.dev</span>
                     <span className="bg-slate-900 px-2 py-1 rounded border border-slate-700 text-blue-400">http://localhost:5173</span>
+                    <span className="bg-slate-900 px-2 py-1 rounded border border-slate-700 text-purple-400">http://localhost:4173</span>
                   </div>
                 </div>
 
