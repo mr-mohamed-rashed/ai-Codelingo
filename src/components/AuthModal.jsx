@@ -46,6 +46,7 @@ export default function AuthModal({ initialMode = 'register' }) {
     registerNewStudent, 
     setActiveModal, 
     students = [], 
+    setStudents,
     setCurrentStudentId, 
     currentStudent,
     isStudentLoggedIn,
@@ -128,7 +129,7 @@ export default function AuthModal({ initialMode = 'register' }) {
         provider: extraProfile.provider || authMethod
       });
 
-      // تسجيله في ذاكرة التطبيق المحلية فوراً
+      // تسجيله في ذاكرة التطبيق المحلية فوراً مع الحفاظ التام على حالة الاعتماد والمجموعة
       let localStd = students.find(s => 
         (syncedStudent?.email && s.email && s.email.toLowerCase() === syncedStudent.email.toLowerCase()) ||
         (syncedStudent?.phone && s.phone === syncedStudent.phone) ||
@@ -136,17 +137,31 @@ export default function AuthModal({ initialMode = 'register' }) {
       );
 
       if (!localStd) {
-        localStd = registerNewStudent({
-          name: syncedStudent?.name || formData.name || 'طالب كودلينجو',
-          email: syncedStudent?.email || formData.email,
-          phone: syncedStudent?.phone || formData.phone,
-          guardianPhone: syncedStudent?.guardianPhone || formData.guardianPhone,
-          avatar: syncedStudent?.avatar || formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${Date.now()}`,
-          provider: extraProfile.provider || authMethod
-        });
+        if (syncedStudent) {
+          if (typeof setStudents === 'function') {
+            setStudents(prev => [syncedStudent, ...prev]);
+          }
+          localStd = syncedStudent;
+        } else {
+          localStd = registerNewStudent({
+            name: formData.name || 'طالب كودلينجو',
+            email: formData.email,
+            phone: formData.phone,
+            guardianPhone: formData.guardianPhone,
+            avatar: formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${Date.now()}`,
+            provider: extraProfile.provider || authMethod
+          });
+        }
+      } else if (syncedStudent && typeof setStudents === 'function') {
+        setStudents(prev => prev.map(s => {
+          if (s.id === localStd.id || (s.email && syncedStudent.email && s.email.toLowerCase() === syncedStudent.email.toLowerCase())) {
+            return { ...s, ...syncedStudent };
+          }
+          return s;
+        }));
       }
 
-      setCurrentStudentId(localStd.id || syncedStudent?.id);
+      setCurrentStudentId(localStd?.id || syncedStudent?.id);
       playSound.levelUp();
       setSuccessMessage('تمت المصادقة بنجاح! جاري فتح المنصة... 🚀');
       

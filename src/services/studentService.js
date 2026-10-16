@@ -191,6 +191,75 @@ export async function updateStudentProgressInSupabase(studentId, updates) {
 }
 
 /**
+ * تحديث حقول الطالب في جدول students في Supabase (مثل الاعتماد، وتسكين المجموعة، وتحديث الملف)
+ */
+export async function updateStudentInSupabase(studentId, updates = {}) {
+  if (!isSupabaseConfigured || !studentId) return null;
+
+  try {
+    const supabase = await getSupabaseClient();
+    const payload = {};
+    if (updates.status !== undefined) payload.status = updates.status;
+    if (updates.groupId !== undefined) payload.group_id = updates.groupId;
+    if (updates.currentStation !== undefined) payload.current_station = updates.currentStation;
+    if (updates.name !== undefined) payload.name = updates.name.trim();
+    if (updates.phone !== undefined) payload.phone = updates.phone ? updates.phone.trim() : null;
+    if (updates.guardianPhone !== undefined) payload.guardian_phone = updates.guardianPhone ? updates.guardianPhone.trim() : null;
+    if (updates.avatar !== undefined) payload.avatar = updates.avatar;
+    if (updates.authUserId !== undefined) payload.auth_user_id = updates.authUserId;
+    if (updates.xp !== undefined) payload.xp = Number(updates.xp);
+    if (updates.stars !== undefined) payload.stars = Number(updates.stars);
+    if (updates.streak !== undefined) payload.streak = Number(updates.streak);
+    if (updates.completedChunks !== undefined) payload.completed_chunks = updates.completedChunks;
+    if (updates.chunkRatings !== undefined) payload.chunk_ratings = updates.chunkRatings;
+    if (updates.trophies !== undefined) payload.trophies = updates.trophies;
+    if (updates.wrongAnswers !== undefined) payload.wrong_answers = updates.wrongAnswers;
+    if (updates.allowedCurriculum !== undefined) payload.allowed_curriculum = updates.allowedCurriculum;
+    payload.updated_at = new Date().toISOString();
+
+    const { data, error } = await supabase
+      .from('students')
+      .update(payload)
+      .eq('id', studentId)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.warn('⚠️ updateStudentInSupabase note:', error.message);
+      return null;
+    }
+    return data ? mapDbStudentToApp(data) : null;
+  } catch (err) {
+    console.warn('⚠️ updateStudentInSupabase error:', err);
+    return null;
+  }
+}
+
+/**
+ * حذف حساب طالب نهائياً من قاعدة بيانات Supabase
+ */
+export async function deleteStudentFromSupabase(studentId) {
+  if (!isSupabaseConfigured || !studentId) return false;
+
+  try {
+    const supabase = await getSupabaseClient();
+    const { error } = await supabase
+      .from('students')
+      .delete()
+      .eq('id', studentId);
+
+    if (error) {
+      console.warn('⚠️ deleteStudentFromSupabase note:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.warn('⚠️ deleteStudentFromSupabase error:', err);
+    return false;
+  }
+}
+
+/**
  * تنسيق وتوحيد رقم الهاتف بالصيغة الدولية (+20 لمصر إذا بدأ بـ 01)
  */
 export function formatInternationalPhone(phone) {
@@ -405,7 +474,63 @@ export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
 
   const isMaster = cleanEmail.includes('mrrashed0777');
 
-  // كائن الطالب المطلوب حفظه (افتراضياً قيد الانتظار لاعتماد المعلم وتسكينه في مجموعة)
+  // 1. فحص ما إذا كان الطالب مسجلاً مسبقاً في قاعدة بيانات Supabase
+  let existingStudent = null;
+  if (isSupabaseConfigured) {
+    if (cleanEmail) {
+      existingStudent = await fetchStudentByEmail(cleanEmail);
+    }
+    if (!existingStudent && authUser.id) {
+      try {
+        const supabase = await getSupabaseClient();
+        const { data } = await supabase
+          .from('students')
+          .select('*')
+          .eq('auth_user_id', authUser.id)
+          .maybeSingle();
+        if (data) existingStudent = mapDbStudentToApp(data);
+      } catch (e) {
+        console.warn('⚠️ Error checking auth_user_id in Supabase:', e);
+      }
+    }
+  }
+
+  // 2. إذا كان الطالب موجوداً مسبقاً: نحافظ على حالة الاعتماد والتسكين والتقدم بالكامل!
+  if (existingStudent) {
+    const updatedStudent = {
+      ...existingStudent,
+      authUserId: authUser.id || existingStudent.authUserId,
+      name: (extractedName && extractedName !== 'طالب كودلينجو') ? extractedName : (existingStudent.name || extractedName),
+      avatar: extractedAvatar || existingStudent.avatar,
+      email: cleanEmail || existingStudent.email,
+      phone: cleanPhone || existingStudent.phone,
+      guardianPhone: guardianPhone || existingStudent.guardianPhone,
+      provider: provider || existingStudent.provider,
+      status: isMaster ? 'approved' : (existingStudent.status || 'pending'),
+      groupId: isMaster ? (existingStudent.groupId || 'grp-1') : (existingStudent.groupId || null),
+      isMasterTeacher: isMaster || Boolean(existingStudent.isMasterTeacher)
+    };
+
+    if (isSupabaseConfigured) {
+      try {
+        await updateStudentInSupabase(existingStudent.id, {
+          authUserId: updatedStudent.authUserId,
+          name: updatedStudent.name,
+          avatar: updatedStudent.avatar,
+          phone: updatedStudent.phone,
+          guardianPhone: updatedStudent.guardianPhone,
+          status: updatedStudent.status,
+          groupId: updatedStudent.groupId
+        });
+      } catch (err) {
+        console.warn('⚠️ Error updating existing student in Supabase:', err);
+      }
+    }
+
+    return updatedStudent;
+  }
+
+  // 3. طالب جديد يسجل للمرة الأولى
   const studentPayload = {
     id: `std-${authUser.id ? authUser.id.substring(0, 8) : Date.now().toString().slice(-6)}`,
     authUserId: authUser.id,
@@ -417,6 +542,7 @@ export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
     provider: provider,
     status: isMaster ? 'approved' : 'pending',
     groupId: isMaster ? 'grp-1' : null,
+    isMasterTeacher: isMaster,
     currentStation: isMaster ? 'حساب الأستاذ - المنهج بالكامل متاح للاختبار والمعاينة' : 'في انتظار تصريح المعلم وتحديد المجموعة'
   };
 

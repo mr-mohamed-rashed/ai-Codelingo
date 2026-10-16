@@ -887,7 +887,7 @@ export default function TeacherDashboard() {
                               className="duo-btn duo-btn-success text-sm py-2 px-3 flex items-center gap-1.5"
                               onClick={() => {
                                 setStudentToApproveWithGroup(student);
-                                setSelectedGroupIdForApproval(groups[0]?.id || '');
+                                setSelectedGroupIdForApproval(student.groupId || groups[0]?.id || 'grp-1');
                                 playSound.click();
                               }}
                               title={lang === 'en' ? 'Approve and assign student to group' : 'اعتماد الطالب وتسكينه في مجموعته الدراسية'}
@@ -2970,7 +2970,8 @@ export default function TeacherDashboard() {
               <button 
                 className="duo-btn duo-btn-success flex-1 py-2.5"
                 onClick={() => {
-                  approveStudentWithGroup(studentToApproveWithGroup.id, selectedGroupIdForApproval);
+                  const targetGrpId = selectedGroupIdForApproval || studentToApproveWithGroup.groupId || groups[0]?.id || 'grp-1';
+                  approveStudentWithGroup(studentToApproveWithGroup.id, targetGrpId);
                   setStudentToApproveWithGroup(null);
                 }}
               >

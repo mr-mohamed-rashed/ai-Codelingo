@@ -215,15 +215,19 @@ export const Navbar = () => {
                 alt={currentStudent.name} 
                 className="user-avatar-img" 
               />
-              <span className={`avatar-status-dot ${currentStudent.status === 'approved' ? 'dot-approved' : 'dot-pending'}`} />
+              <span className={`avatar-status-dot ${currentStudent.status === 'approved' ? 'dot-approved' : currentStudent.status === 'guest' ? 'dot-guest' : 'dot-pending'}`} />
             </div>
             <div className="user-profile-info">
               <span className="user-profile-name">{currentStudent.name}</span>
               <span 
                 className="user-profile-status"
-                style={{ color: currentStudent.status === 'approved' ? '#10b981' : '#f59e0b' }}
+                style={{ color: currentStudent.status === 'approved' ? '#10b981' : currentStudent.status === 'guest' ? '#64748b' : '#f59e0b' }}
               >
-                {currentStudent.status === 'approved' ? `✓ ${t('approvedStudent')}` : `⏳ ${t('pendingStudent')}`}
+                {currentStudent.status === 'approved' 
+                  ? `✓ ${t('approvedStudent')}` 
+                  : currentStudent.status === 'guest'
+                    ? (lang === 'en' ? 'Visitor Mode' : 'تصفح كزائر')
+                    : `⏳ ${t('pendingStudent')}`}
               </span>
             </div>
           </div>

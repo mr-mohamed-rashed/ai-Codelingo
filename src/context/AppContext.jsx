@@ -524,10 +524,10 @@ export const AppProvider = ({ children }) => {
   };
 
   /**
-   * تعيين طالب لمجموعة دراسية محددة
+   * تعيين طالب لمجموعة دراسية محددة وحفظ التسكين سحابياً فوراً
    */
   const assignStudentToGroup = (studentId, groupId) => {
-    setStudents(prev => prev.map(s => s.id === studentId ? { ...s, groupId } : s));
+    setStudents(prev => prev.map(s => s.id === studentId ? { ...s, groupId: groupId || null } : s));
     setGroups(prev => prev.map(g => {
       const studentSet = new Set(g.studentIds || []);
       if (g.id === groupId) {
@@ -537,6 +537,13 @@ export const AppProvider = ({ children }) => {
       }
       return { ...g, studentIds: Array.from(studentSet) };
     }));
+
+    // حفظ التسكين سحابياً في جدول students في Supabase فوراً
+    import('../services/studentService').then(({ updateStudentInSupabase }) => {
+      updateStudentInSupabase(studentId, { groupId: groupId || null })
+        .catch(err => console.warn('Supabase assignStudentToGroup error:', err));
+    }).catch(() => {});
+
     playSound.click();
   };
 
@@ -738,7 +745,13 @@ export const AppProvider = ({ children }) => {
               );
               if (idx >= 0) {
                 const updated = [...prev];
-                updated[idx] = { ...updated[idx], ...syncedStudent };
+                // دمج ذكي يحافظ على حالة الاعتماد والمجموعة المسجلة
+                updated[idx] = { 
+                  ...updated[idx], 
+                  ...syncedStudent,
+                  status: (syncedStudent.status === 'approved' || updated[idx].status === 'approved') ? 'approved' : syncedStudent.status,
+                  groupId: syncedStudent.groupId || updated[idx].groupId || null
+                };
                 return updated;
               }
               return [syncedStudent, ...prev];
@@ -764,7 +777,7 @@ export const AppProvider = ({ children }) => {
       });
       subscription = data?.subscription;
 
-      // مزامنة قائمة الطلاب مع جدول Supabase السحابي لمدرج الشرف
+      // مزامنة قائمة الطلاب مع جدول Supabase السحابي لمدرج الشرف ولوحة المعلم
       import('../services/studentService').then(({ fetchAllStudentsFromSupabase }) => {
         fetchAllStudentsFromSupabase().then(remoteStudents => {
           if (remoteStudents && remoteStudents.length > 0) {
@@ -772,7 +785,17 @@ export const AppProvider = ({ children }) => {
               const map = new Map(prev.map(s => [s.email ? s.email.toLowerCase() : s.id, s]));
               remoteStudents.forEach(rs => {
                 const key = rs.email ? rs.email.toLowerCase() : rs.id;
-                map.set(key, { ...(map.get(key) || {}), ...rs });
+                const existing = map.get(key);
+                if (existing) {
+                  map.set(key, { 
+                    ...existing, 
+                    ...rs,
+                    status: (rs.status === 'approved' || existing.status === 'approved') ? 'approved' : rs.status,
+                    groupId: rs.groupId || existing.groupId || null
+                  });
+                } else {
+                  map.set(key, rs);
+                }
               });
               return Array.from(map.values());
             });
@@ -784,39 +807,56 @@ export const AppProvider = ({ children }) => {
     return () => {
       subscription?.unsubscribe();
     };
-  }, [isSupabaseConfigured, students, currentStudentId]);
+  }, [isSupabaseConfigured]);
 
   /**
-   * تحديث وتعديل الملف الشخصي للطالب (الاسم، الصورة، رقم الهاتف، ورقم ولي الأمر)
+   * تحديث وتعديل الملف الشخصي للطالب (الاسم، الصورة، رقم الهاتف، ورقم ولي الأمر) مع المزامنة السحابية
    */
   const updateStudentProfile = (studentId, { name, phone, guardianPhone, email, avatar }) => {
+    let updatedProfile = null;
     setStudents(prev => prev.map(s => {
       if (s.id !== studentId) return s;
-      return {
-        ...s,
+      updatedProfile = {
         name: name !== undefined ? name.trim() : s.name,
         phone: phone !== undefined ? phone.trim() : s.phone,
         guardianPhone: guardianPhone !== undefined ? guardianPhone.trim() : (s.guardianPhone || ''),
         email: email !== undefined ? email.trim() : s.email,
         avatar: avatar || s.avatar
       };
+      return {
+        ...s,
+        ...updatedProfile
+      };
     }));
+
+    if (updatedProfile) {
+      import('../services/studentService').then(({ updateStudentInSupabase }) => {
+        updateStudentInSupabase(studentId, updatedProfile)
+          .catch(err => console.warn('Supabase updateStudentProfile error:', err));
+      }).catch(() => {});
+    }
+
     playSound.levelUp();
   };
 
   /**
-   * اعتماد حساب الطالب مع تعيين مجموعته الدراسية مباشرة (مطلب أساسي لدخول الطالب)
+   * اعتماد حساب الطالب مع تعيين مجموعته الدراسية مباشرة وحفظه سحابياً في Supabase فوراً
    */
   const approveStudentWithGroup = (studentId, groupId) => {
+    const targetStation = 'الدرس 1-1: المراحل الخمس التاريخية لتطور الحوسبة';
+    let targetStationToSave = targetStation;
+
     setStudents(prev => prev.map(s => {
       if (s.id === studentId) {
+        targetStationToSave = s.currentStation && !s.currentStation.includes('انتظار')
+          ? s.currentStation 
+          : targetStation;
+
         return { 
           ...s, 
           status: 'approved', 
           groupId: groupId || null,
-          currentStation: s.currentStation && !s.currentStation.includes('انتظار')
-            ? s.currentStation 
-            : 'الدرس 1-1: المراحل الخمس التاريخية لتطور الحوسبة'
+          currentStation: targetStationToSave
         };
       }
       return s;
@@ -824,20 +864,30 @@ export const AppProvider = ({ children }) => {
 
     if (groupId) {
       setGroups(prev => prev.map(g => {
+        const set = new Set(g.studentIds || []);
         if (g.id === groupId) {
-          const set = new Set(g.studentIds || []);
           set.add(studentId);
-          return { ...g, studentIds: Array.from(set) };
+        } else {
+          set.delete(studentId);
         }
-        return g;
+        return { ...g, studentIds: Array.from(set) };
       }));
     }
+
+    // حفظ واعتماد فوري ومباشر في جدول students في Supabase السحابية
+    import('../services/studentService').then(({ updateStudentInSupabase }) => {
+      updateStudentInSupabase(studentId, {
+        status: 'approved',
+        groupId: groupId || null,
+        currentStation: targetStationToSave
+      }).catch(err => console.warn('Supabase approveStudentWithGroup error:', err));
+    }).catch(() => {});
 
     playSound.levelUp();
   };
 
   /**
-   * اعتماد أو تعليق حساب الطالب بواسطة الأستاذ
+   * اعتماد أو تعليق حساب الطالب بواسطة الأستاذ مع الحفظ السحابي
    */
   const updateStudentStatus = (studentId, newStatus) => {
     setStudents(prev => prev.map(s => {
@@ -846,11 +896,18 @@ export const AppProvider = ({ children }) => {
       }
       return s;
     }));
+
+    // حفظ التحديث فورياً في قاعدة بيانات Supabase
+    import('../services/studentService').then(({ updateStudentInSupabase }) => {
+      updateStudentInSupabase(studentId, { status: newStatus })
+        .catch(err => console.warn('Supabase updateStudentStatus error:', err));
+    }).catch(() => {});
+
     playSound.click();
   };
 
   /**
-   * حذف حساب الطالب نهائياً من المنصة وإزالته من المجموعات والتخزين
+   * حذف حساب الطالب نهائياً من المنصة وإزالته من المجموعات والتخزين وقاعدة البيانات
    */
   const deleteStudent = (studentId) => {
     if (!studentId) return;
@@ -866,6 +923,12 @@ export const AppProvider = ({ children }) => {
       setCurrentStudentId(null);
       localStorage.removeItem('codelingo_current_student_id');
     }
+
+    // حذف فوري من Supabase السحابية
+    import('../services/studentService').then(({ deleteStudentFromSupabase }) => {
+      deleteStudentFromSupabase(studentId)
+        .catch(err => console.warn('Supabase deleteStudent error:', err));
+    }).catch(() => {});
 
     playSound.wrong();
   };
@@ -995,6 +1058,7 @@ export const AppProvider = ({ children }) => {
    * تحكم الأستاذ في صلاحيات المنهج لكل طالب بشكل فردي
    */
   const toggleStudentCurriculum = (studentId, type, itemId) => {
+    let targetAllowed = null;
     setStudents(prev => prev.map(s => {
       if (s.id !== studentId) return s;
 
@@ -1010,8 +1074,17 @@ export const AppProvider = ({ children }) => {
       }
 
       currentAllowed[type] = updatedList;
+      targetAllowed = currentAllowed;
       return { ...s, allowedCurriculum: currentAllowed };
     }));
+
+    if (targetAllowed) {
+      import('../services/studentService').then(({ updateStudentInSupabase }) => {
+        updateStudentInSupabase(studentId, { allowedCurriculum: targetAllowed })
+          .catch(err => console.warn('Supabase toggleStudentCurriculum error:', err));
+      }).catch(() => {});
+    }
+
     playSound.click();
   };
 
@@ -1021,6 +1094,7 @@ export const AppProvider = ({ children }) => {
   const unlockEntireChapter = (studentId, chapterId) => {
     const chunkIds = ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${chapterId}-`));
     const lessonIds = [...new Set(chunkIds.map(id => getLessonIdFromChunkId(id)).filter(Boolean))];
+    let targetAllowed = null;
 
     setStudents(prev => prev.map(s => {
       if (s.id !== studentId) return s;
@@ -1030,8 +1104,17 @@ export const AppProvider = ({ children }) => {
       allowed.lessons = [...new Set([...(allowed.lessons || []), ...lessonIds])];
       allowed.chunks = [...new Set([...(allowed.chunks || []), ...chunkIds])];
 
+      targetAllowed = allowed;
       return { ...s, allowedCurriculum: allowed };
     }));
+
+    if (targetAllowed) {
+      import('../services/studentService').then(({ updateStudentInSupabase }) => {
+        updateStudentInSupabase(studentId, { allowedCurriculum: targetAllowed })
+          .catch(err => console.warn('Supabase unlockEntireChapter error:', err));
+      }).catch(() => {});
+    }
+
     playSound.levelUp();
   };
 
@@ -1042,6 +1125,7 @@ export const AppProvider = ({ children }) => {
     const [ch, l] = lessonId.split('-');
     const chunkIds = ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${ch}-l${l}-`));
     const chapterId = parseInt(ch, 10);
+    let targetAllowed = null;
 
     setStudents(prev => prev.map(s => {
       if (s.id !== studentId) return s;
@@ -1053,8 +1137,17 @@ export const AppProvider = ({ children }) => {
       allowed.lessons = [...new Set([...(allowed.lessons || []), lessonId])];
       allowed.chunks = [...new Set([...(allowed.chunks || []), ...chunkIds])];
 
+      targetAllowed = allowed;
       return { ...s, allowedCurriculum: allowed };
     }));
+
+    if (targetAllowed) {
+      import('../services/studentService').then(({ updateStudentInSupabase }) => {
+        updateStudentInSupabase(studentId, { allowedCurriculum: targetAllowed })
+          .catch(err => console.warn('Supabase unlockEntireLesson error:', err));
+      }).catch(() => {});
+    }
+
     playSound.levelUp();
   };
 
@@ -1064,6 +1157,7 @@ export const AppProvider = ({ children }) => {
   const lockEntireLesson = (studentId, lessonId) => {
     const [ch, l] = lessonId.split('-');
     const chunkIds = ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${ch}-l${l}-`));
+    let targetAllowed = null;
 
     setStudents(prev => prev.map(s => {
       if (s.id !== studentId) return s;
@@ -1072,8 +1166,17 @@ export const AppProvider = ({ children }) => {
       allowed.lessons = (allowed.lessons || []).filter(lId => lId !== lessonId);
       allowed.chunks = (allowed.chunks || []).filter(c => !chunkIds.includes(c));
 
+      targetAllowed = allowed;
       return { ...s, allowedCurriculum: allowed };
     }));
+
+    if (targetAllowed) {
+      import('../services/studentService').then(({ updateStudentInSupabase }) => {
+        updateStudentInSupabase(studentId, { allowedCurriculum: targetAllowed })
+          .catch(err => console.warn('Supabase lockEntireLesson error:', err));
+      }).catch(() => {});
+    }
+
     playSound.click();
   };
 
@@ -1087,6 +1190,7 @@ export const AppProvider = ({ children }) => {
     const chunkIds = ALL_CHUNK_IDS.slice(0, targetIndex + 1);
     const chapterIds = [...new Set(chunkIds.map(id => getChapterIdFromChunkId(id)).filter(Boolean))];
     const lessonIds = [...new Set(chunkIds.map(id => getLessonIdFromChunkId(id)).filter(Boolean))];
+    let targetAllowed = null;
 
     setStudents(prev => prev.map(s => {
       if (s.id !== studentId) return s;
@@ -1096,8 +1200,17 @@ export const AppProvider = ({ children }) => {
       allowed.lessons = [...new Set([...(allowed.lessons || []), ...lessonIds])];
       allowed.chunks = [...new Set([...(allowed.chunks || []), ...chunkIds])];
 
+      targetAllowed = allowed;
       return { ...s, allowedCurriculum: allowed };
     }));
+
+    if (targetAllowed) {
+      import('../services/studentService').then(({ updateStudentInSupabase }) => {
+        updateStudentInSupabase(studentId, { allowedCurriculum: targetAllowed })
+          .catch(err => console.warn('Supabase unlockUpToChunk error:', err));
+      }).catch(() => {});
+    }
+
     playSound.levelUp();
   };
 
@@ -1232,6 +1345,7 @@ export const AppProvider = ({ children }) => {
     <AppContext.Provider
       value={{
         students,
+        setStudents,
         currentStudent,
         currentStudentId,
         setCurrentStudentId,
