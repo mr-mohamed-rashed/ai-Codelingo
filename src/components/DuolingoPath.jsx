@@ -34,11 +34,14 @@ export const DuolingoPath = () => {
 
   // تحديد المحطة النشطة التي عليها الدور (أول محطة مفتوحة وغير مكتملة)
   const activeStationId = useMemo(() => {
+    if (!isStudentLoggedIn || currentStudent?.status !== 'approved' || !currentStudent?.groupId) {
+      return null;
+    }
     const uncompletedUnlocked = PATH_NODES.find(c => 
       isChunkUnlocked(c.id) && !currentStudent?.completedChunks?.includes(c.id)
     );
-    return uncompletedUnlocked ? uncompletedUnlocked.id : PATH_NODES[0].id;
-  }, [currentStudent?.completedChunks, isChunkUnlocked]);
+    return uncompletedUnlocked ? uncompletedUnlocked.id : null;
+  }, [currentStudent?.completedChunks, currentStudent?.status, currentStudent?.groupId, isStudentLoggedIn, isChunkUnlocked]);
 
   // حالة الروبوت الطائر عند الانتقال بين المحطات
   const [flyingRobot, setFlyingRobot] = useState(null);

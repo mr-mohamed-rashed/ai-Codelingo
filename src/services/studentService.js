@@ -236,26 +236,39 @@ export async function updateStudentInSupabase(studentId, updates = {}) {
 }
 
 /**
- * حذف حساب طالب نهائياً من قاعدة بيانات Supabase
+ * حذف حساب طالب نهائياً من قاعدة بيانات Supabase (بالمعرف أو بالإيميل)
  */
-export async function deleteStudentFromSupabase(studentId) {
-  if (!isSupabaseConfigured || !studentId) return false;
+export async function deleteStudentFromSupabase(studentId, studentEmail) {
+  if (!isSupabaseConfigured || (!studentId && !studentEmail)) return false;
 
   try {
     const supabase = await getSupabaseClient();
-    const { error } = await supabase
-      .from('students')
-      .delete()
-      .eq('id', studentId);
-
-    if (error) {
-      console.warn('⚠️ deleteStudentFromSupabase note:', error.message);
-      return false;
+    if (studentId) {
+      await supabase.from('students').delete().eq('id', studentId);
+    }
+    if (studentEmail && studentEmail.trim()) {
+      await supabase.from('students').delete().ilike('email', studentEmail.trim().toLowerCase());
     }
     return true;
   } catch (err) {
     console.warn('⚠️ deleteStudentFromSupabase error:', err);
     return false;
+  }
+}
+
+/**
+ * تنظيف جدول الطلاب واستبعاد حساب الأستاذ محمد راشد نهائياً من قاعدة البيانات
+ */
+export async function purgeTeacherFromStudentsTable() {
+  if (!isSupabaseConfigured) return;
+  try {
+    const supabase = await getSupabaseClient();
+    await supabase
+      .from('students')
+      .delete()
+      .or('id.eq.std-master-teacher,email.ilike.%mrrashed0777%,name.ilike.%محمد راشد%');
+  } catch (err) {
+    console.warn('⚠️ purgeTeacherFromStudentsTable note:', err);
   }
 }
 
@@ -472,7 +485,17 @@ export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
   const guardianPhone = (metadata.guardian_phone || extraData.guardianPhone || '').trim();
   const provider = authUser.app_metadata?.provider || extraData.provider || 'supabase';
 
-  const isMaster = cleanEmail.includes('mrrashed0777');
+  const isMaster = cleanEmail.includes('mrrashed0777') || cleanEmail.includes('mr.mohamed.rashed');
+
+  // إذا كان الحساب هو حساب الأستاذ محمد راشد، فهو المعلم والسوبر أدمن وليس طالباً
+  if (isMaster) {
+    console.log('Teacher account detected in syncUserMetadataToStudentTable. Bypassing student creation.');
+    // تنظيف أي سجل طالب سابق للمعلم إن وجد
+    if (isSupabaseConfigured) {
+      purgeTeacherFromStudentsTable().catch(() => {});
+    }
+    return null;
+  }
 
   // 1. فحص ما إذا كان الطالب مسجلاً مسبقاً في قاعدة بيانات Supabase
   let existingStudent = null;
@@ -495,7 +518,7 @@ export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
     }
   }
 
-  // 2. إذا كان الطالب موجوداً مسبقاً: نحافظ على حالة الاعتماد والتسكين والتقدم بالكامل!
+  // 2. إذا كان الطالب موجوداً مسبقاً في السيرفر: نحافظ على تقدمه وحالة اعتماده المسجلة في السيرفر
   if (existingStudent) {
     const updatedStudent = {
       ...existingStudent,
@@ -506,9 +529,9 @@ export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
       phone: cleanPhone || existingStudent.phone,
       guardianPhone: guardianPhone || existingStudent.guardianPhone,
       provider: provider || existingStudent.provider,
-      status: isMaster ? 'approved' : (existingStudent.status || 'pending'),
-      groupId: isMaster ? (existingStudent.groupId || 'grp-1') : (existingStudent.groupId || null),
-      isMasterTeacher: isMaster || Boolean(existingStudent.isMasterTeacher)
+      status: existingStudent.status || 'pending',
+      groupId: existingStudent.groupId || null,
+      isMasterTeacher: false
     };
 
     if (isSupabaseConfigured) {
@@ -530,7 +553,8 @@ export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
     return updatedStudent;
   }
 
-  // 3. طالب جديد يسجل للمرة الأولى
+  // 3. طالب جديد يسجل للمرة الأولى أو تم حذفه مسبقاً من المعلم:
+  // إلزامي: يبدأ فوراً بحالة 'pending' وبدون مجموعة (groupId: null) بانتظار اعتماد وتسكين المعلم
   const studentPayload = {
     id: `std-${authUser.id ? authUser.id.substring(0, 8) : Date.now().toString().slice(-6)}`,
     authUserId: authUser.id,
@@ -540,10 +564,10 @@ export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
     guardianPhone: guardianPhone || null,
     avatar: extractedAvatar,
     provider: provider,
-    status: isMaster ? 'approved' : 'pending',
-    groupId: isMaster ? 'grp-1' : null,
-    isMasterTeacher: isMaster,
-    currentStation: isMaster ? 'حساب الأستاذ - المنهج بالكامل متاح للاختبار والمعاينة' : 'في انتظار تصريح المعلم وتحديد المجموعة'
+    status: 'pending',
+    groupId: null,
+    isMasterTeacher: false,
+    currentStation: 'في انتظار تصريح المعلم وتحديد المجموعة'
   };
 
   // عمل Upsert سحابي في جدول students

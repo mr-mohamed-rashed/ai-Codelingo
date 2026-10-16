@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useApp } from '../context/AppContext';
+import { useApp, isMasterTeacherEmail } from '../context/AppContext';
 import { 
   Trophy, 
   Crown, 
@@ -23,9 +23,16 @@ export const LeaderboardPodium = () => {
   // تصفية حسب المجموعة أو كل المنصة
   const [selectedGroupFilter, setSelectedGroupFilter] = useState('all');
 
-  // حساب ترتيب الطلاب وترتيبهم بناءً على درجاتهم وإنجازاتهم
+  // حساب ترتيب الطلاب وترتيبهم بناءً على درجاتهم وإنجازاتهم (خالٍ تماماً من حساب المعلم)
   const rankedStudents = useMemo(() => {
-    let list = students.filter(s => s.status === 'approved');
+    let list = students.filter(s => 
+      s && 
+      s.status === 'approved' &&
+      !s.isMasterTeacher &&
+      !isMasterTeacherEmail(s.email) &&
+      s.id !== 'std-master-teacher' &&
+      !s.name?.includes('محمد راشد')
+    );
 
     if (selectedGroupFilter !== 'all') {
       list = list.filter(s => s.groupId === selectedGroupFilter);

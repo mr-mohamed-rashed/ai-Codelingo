@@ -67,36 +67,8 @@ export const isMasterTeacherEmail = (email) => {
   );
 };
 
-// قائمة الطلاب المعتمدة - تتضمن حساب الأستاذ الماستر مفتوح الصلاحيات 100% للاختبار والمعاينة
-export const INITIAL_STUDENTS = [
-  {
-    id: "std-master-teacher",
-    name: "الأستاذ / محمد راشد",
-    phone: "01000000777",
-    guardianPhone: "01000000778",
-    email: "mrrashed0777@gmailc.om",
-    avatar: "./teacher-avatar.svg",
-    provider: "email",
-    password: "risho123man",
-    status: "approved",
-    isMasterTeacher: true,
-    joinDate: "2026-09-01",
-    groupId: "grp-1",
-    xp: 2500,
-    stars: 120,
-    streak: 15,
-    completedChunks: [],
-    chunkRatings: {},
-    trophies: [],
-    wrongAnswers: [],
-    currentStation: "حساب الأستاذ - المنهج بالكامل متاح للاختبار والمعاينة",
-    allowedCurriculum: {
-      chapters: [1, 2, 3, 4],
-      lessons: ["1-1", "1-2", "1-3", "1-4", "2-1", "2-2", "2-3", "3-1", "3-2", "3-3", "4-1", "4-2", "4-3", "4-4"],
-      chunks: ALL_CHUNK_IDS
-    }
-  }
-];
+// قائمة الطلاب الأولية (خالية من أي حسابات وهمية، والأستاذ محمد راشد معلم ومدير وليس طالباً)
+export const INITIAL_STUDENTS = [];
 
 
 export const AppProvider = ({ children }) => {
@@ -195,36 +167,22 @@ export const AppProvider = ({ children }) => {
     document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
   }, [lang]);
 
-  // حفظ واسترجاع بيانات الطلاب من التخزين المحلي (نسخة نظيفة خالية من الحسابات الوهمية)
+  // حفظ واسترجاع بيانات الطلاب من التخزين المحلي (نسخة نظيفة خالية تماماً من حساب المعلم أو الحسابات الوهمية)
   const [students, setStudents] = useState(() => {
     try {
-
       const saved = localStorage.getItem('codelingo_students_clean_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          // استبعاد أي حسابات تجريبية قديمة تبدأ بـ std-00
-          const filtered = parsed.filter(s => s && !String(s.id).startsWith('std-00'));
-          const hasMaster = filtered.some(s => isMasterTeacherEmail(s.email));
-          if (!hasMaster) {
-            return [...INITIAL_STUDENTS, ...filtered];
-          }
-          return filtered.map(s => {
-            if (isMasterTeacherEmail(s.email) || s.id === 'std-master-teacher') {
-              return {
-                ...s,
-                name: "الأستاذ / محمد راشد",
-                status: 'approved',
-                isMasterTeacher: true,
-                allowedCurriculum: {
-                  chapters: [1, 2, 3, 4],
-                  lessons: ["1-1", "1-2", "1-3", "1-4", "2-1", "2-2", "2-3", "3-1", "3-2", "3-3", "4-1", "4-2", "4-3", "4-4"],
-                  chunks: ALL_CHUNK_IDS
-                }
-              };
-            }
-            return s;
-          });
+          // استبعاد أي حسابات تجريبية قديمة أو حساب الأستاذ محمد راشد نهائياً من الطلاب
+          return parsed.filter(s => 
+            s && 
+            !String(s.id).startsWith('std-00') && 
+            s.id !== 'std-master-teacher' && 
+            !isMasterTeacherEmail(s.email) && 
+            !s.isMasterTeacher &&
+            !s.name?.includes('محمد راشد')
+          );
         }
       }
     } catch (e) {
@@ -233,13 +191,18 @@ export const AppProvider = ({ children }) => {
     return INITIAL_STUDENTS;
   });
 
-  // حفظ واسترجاع بيانات المجموعات الدراسية
+  // حفظ واسترجاع بيانات المجموعات الدراسية (مع استبعاد أي وجود لحساب المعلم فيها)
   const [groups, setGroups] = useState(() => {
     try {
       const saved = localStorage.getItem('codelingo_groups_clean_v1');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map(g => ({
+            ...g,
+            studentIds: (g.studentIds || []).filter(id => id !== 'std-master-teacher')
+          }));
+        }
       }
     } catch (e) {}
     return INITIAL_GROUPS;
@@ -733,6 +696,21 @@ export const AppProvider = ({ children }) => {
     import('../utils/supabaseClient').then(({ supabase }) => {
       const handleOAuthUser = async (user) => {
         if (!user) return;
+        const email = (user.email || '').toLowerCase().trim();
+
+        // فحص إذا كان المستخدم هو الأستاذ محمد راشد (المعلم ومدير المنصة)
+        if (isMasterTeacherEmail(email)) {
+          console.log('Teacher logged in via OAuth. Switching directly to admin mode.');
+          setCurrentAdmin({
+            name: user.user_metadata?.full_name || user.user_metadata?.name || 'الأستاذ / محمد راشد',
+            email: email,
+            role: 'super_admin',
+            avatar: user.user_metadata?.avatar_url || user.user_metadata?.picture || './teacher-avatar.svg'
+          });
+          setIsTeacherMode(true);
+          return;
+        }
+
         try {
           const { syncUserMetadataToStudentTable } = await import('../services/studentService');
           const syncedStudent = await syncUserMetadataToStudentTable(user);
@@ -745,12 +723,12 @@ export const AppProvider = ({ children }) => {
               );
               if (idx >= 0) {
                 const updated = [...prev];
-                // دمج ذكي يحافظ على حالة الاعتماد والمجموعة المسجلة
+                // الالتزام بحالة السيرفر: الطالب الجديد أو المحذوف يبدأ كـ pending
                 updated[idx] = { 
                   ...updated[idx], 
                   ...syncedStudent,
-                  status: (syncedStudent.status === 'approved' || updated[idx].status === 'approved') ? 'approved' : syncedStudent.status,
-                  groupId: syncedStudent.groupId || updated[idx].groupId || null
+                  status: syncedStudent.status || 'pending',
+                  groupId: syncedStudent.groupId || null
                 };
                 return updated;
               }
@@ -778,27 +756,53 @@ export const AppProvider = ({ children }) => {
       subscription = data?.subscription;
 
       // مزامنة قائمة الطلاب مع جدول Supabase السحابي لمدرج الشرف ولوحة المعلم
-      import('../services/studentService').then(({ fetchAllStudentsFromSupabase }) => {
+      import('../services/studentService').then(({ fetchAllStudentsFromSupabase, purgeTeacherFromStudentsTable }) => {
+        purgeTeacherFromStudentsTable().catch(() => {});
         fetchAllStudentsFromSupabase().then(remoteStudents => {
-          if (remoteStudents && remoteStudents.length > 0) {
-            setStudents(prev => {
-              const map = new Map(prev.map(s => [s.email ? s.email.toLowerCase() : s.id, s]));
-              remoteStudents.forEach(rs => {
-                const key = rs.email ? rs.email.toLowerCase() : rs.id;
-                const existing = map.get(key);
-                if (existing) {
-                  map.set(key, { 
-                    ...existing, 
-                    ...rs,
-                    status: (rs.status === 'approved' || existing.status === 'approved') ? 'approved' : rs.status,
-                    groupId: rs.groupId || existing.groupId || null
-                  });
-                } else {
-                  map.set(key, rs);
+          if (Array.isArray(remoteStudents)) {
+            // استبعاد حساب الأستاذ محمد راشد نهائياً من الطلاب
+            const validRemoteStudents = remoteStudents.filter(s => 
+              s && 
+              !isMasterTeacherEmail(s.email) && 
+              !s.isMasterTeacher && 
+              s.id !== 'std-master-teacher' &&
+              !s.name?.includes('محمد راشد')
+            );
+
+            // اعتماد القائمة السحابية كمرجع وحيد
+            setStudents(validRemoteStudents);
+
+            // فحص حالة الطالب الحالي المسجل دخوله
+            if (currentStudentId) {
+              const matched = validRemoteStudents.find(s => 
+                s.id === currentStudentId || 
+                (s.email && currentStudent?.email && s.email.toLowerCase() === currentStudent.email.toLowerCase())
+              );
+
+              if (!matched) {
+                // الطالب تم حذفه من قاعدة البيانات من قِبل المعلم!
+                console.log('Student was deleted by teacher, resetting to pending approval.');
+                if (currentStudent) {
+                  const pendingStudent = {
+                    ...currentStudent,
+                    status: 'pending',
+                    groupId: null,
+                    isMasterTeacher: false,
+                    allowedCurriculum: { chapters: [], lessons: [], chunks: [] }
+                  };
+                  setStudents(prev => [pendingStudent, ...prev.filter(s => s.id !== pendingStudent.id)]);
                 }
-              });
-              return Array.from(map.values());
-            });
+              } else if (matched.status !== 'approved' || !matched.groupId) {
+                // الطالب موجود لكن حالته معلقة أو غير مسكن
+                setStudents(prev => prev.map(s => s.id === matched.id ? { 
+                  ...s, 
+                  ...matched, 
+                  status: 'pending', 
+                  groupId: null, 
+                  allowedCurriculum: { chapters: [], lessons: [], chunks: [] } 
+                } : s));
+              }
+            }
           }
         }).catch(err => console.warn('Supabase fetch students note:', err));
       }).catch(() => {});
@@ -808,6 +812,73 @@ export const AppProvider = ({ children }) => {
       subscription?.unsubscribe();
     };
   }, [isSupabaseConfigured]);
+
+  // مراقبة دورية وسريعة لحالة الطالب الحالي مع قاعدة البيانات السحابية (لسحب الاعتماد فوراً إذا حذفه المعلم)
+  useEffect(() => {
+    if (!isSupabaseConfigured || !currentStudentId) return;
+
+    const verifyCurrentStudentStatus = async () => {
+      if (isTeacherMode || isMasterTeacherEmail(currentStudent?.email)) return;
+
+      try {
+        const { fetchStudentByEmail, fetchAllStudentsFromSupabase } = await import('../services/studentService');
+        
+        let remoteMatch = null;
+        if (currentStudent?.email) {
+          remoteMatch = await fetchStudentByEmail(currentStudent.email);
+        }
+
+        if (!remoteMatch) {
+          const allRemote = await fetchAllStudentsFromSupabase();
+          if (Array.isArray(allRemote)) {
+            remoteMatch = allRemote.find(s => 
+              s.id === currentStudentId || 
+              (s.email && currentStudent?.email && s.email.toLowerCase() === currentStudent.email.toLowerCase())
+            );
+          }
+        }
+
+        if (!remoteMatch) {
+          // تم مسح الطالب من قِبل الأستاذ! سحب الاعتماد والتسكين وإغلاق المنهج فوراً
+          setStudents(prev => prev.map(s => {
+            if (s.id === currentStudentId || (s.email && currentStudent?.email && s.email.toLowerCase() === currentStudent.email.toLowerCase())) {
+              return {
+                ...s,
+                status: 'pending',
+                groupId: null,
+                allowedCurriculum: { chapters: [], lessons: [], chunks: [] }
+              };
+            }
+            return s;
+          }));
+        } else if (remoteMatch.status !== 'approved' || !remoteMatch.groupId) {
+          // تم سحب اعتماد الطالب أو إلغاء تسكينه
+          setStudents(prev => prev.map(s => {
+            if (s.id === remoteMatch.id) {
+              return {
+                ...s,
+                ...remoteMatch,
+                status: 'pending',
+                groupId: null,
+                allowedCurriculum: { chapters: [], lessons: [], chunks: [] }
+              };
+            }
+            return s;
+          }));
+        }
+      } catch (e) {
+        console.warn('verifyCurrentStudentStatus error:', e);
+      }
+    };
+
+    window.addEventListener('focus', verifyCurrentStudentStatus);
+    const interval = setInterval(verifyCurrentStudentStatus, 10000);
+
+    return () => {
+      window.removeEventListener('focus', verifyCurrentStudentStatus);
+      clearInterval(interval);
+    };
+  }, [isSupabaseConfigured, currentStudentId, currentStudent?.email, isTeacherMode]);
 
   /**
    * تحديث وتعديل الملف الشخصي للطالب (الاسم، الصورة، رقم الهاتف، ورقم ولي الأمر) مع المزامنة السحابية
@@ -912,21 +983,36 @@ export const AppProvider = ({ children }) => {
   const deleteStudent = (studentId) => {
     if (!studentId) return;
 
-    setStudents(prev => prev.filter(s => s.id !== studentId));
+    const targetStudent = students.find(s => s.id === studentId);
+    const targetEmail = targetStudent?.email;
 
+    // 1. إزالة الطالب من القائمة المحلية فوراً
+    setStudents(prev => prev.filter(s => s.id !== studentId && (!targetEmail || s.email?.toLowerCase() !== targetEmail.toLowerCase())));
+
+    // 2. إزالة الطالب من كافة المجموعات الدراسية
     setGroups(prev => prev.map(g => ({
       ...g,
       studentIds: (g.studentIds || []).filter(id => id !== studentId)
     })));
 
-    if (currentStudentId === studentId) {
-      setCurrentStudentId(null);
-      localStorage.removeItem('codelingo_current_student_id');
+    // 3. إذا كان هذا الطالب هو المسجل دخوله حالياً في هذا المتصفح، سحب اعتماده فوراً
+    if (currentStudentId === studentId || (targetEmail && currentStudent?.email?.toLowerCase() === targetEmail.toLowerCase())) {
+      console.log('Current student was deleted by teacher, resetting to pending');
+      if (currentStudent) {
+        const revokedStudent = {
+          ...currentStudent,
+          status: 'pending',
+          groupId: null,
+          isMasterTeacher: false,
+          allowedCurriculum: { chapters: [], lessons: [], chunks: [] }
+        };
+        setStudents(prev => [revokedStudent, ...prev.filter(s => s.id !== studentId)]);
+      }
     }
 
-    // حذف فوري من Supabase السحابية
+    // 4. حذف سحابي فوري من Supabase السحابية بالإيميل والمعرّف
     import('../services/studentService').then(({ deleteStudentFromSupabase }) => {
-      deleteStudentFromSupabase(studentId)
+      deleteStudentFromSupabase(studentId, targetEmail)
         .catch(err => console.warn('Supabase deleteStudent error:', err));
     }).catch(() => {});
 

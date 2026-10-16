@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import './TeacherDashboard.css';
 import { 
   Users, 
@@ -49,7 +49,7 @@ import {
   Award,
   Zap
 } from 'lucide-react';
-import { useApp } from '../context/AppContext';
+import { useApp, isMasterTeacherEmail } from '../context/AppContext';
 import { CHAPTERS_METADATA, PATH_NODES as CURRICULUM_DATA } from '../data/curriculumMeta.js';
 import { playSound } from '../utils/audioEngine';
 
@@ -91,9 +91,25 @@ export default function TeacherDashboard() {
     t
   } = useApp();
 
-  // مصفوفات آمنة مع حماية قصوى ضد القيم الفارغة والـ TDZ
-  const safeGroups = Array.isArray(groups) ? groups.filter(Boolean) : [];
-  const safeStudents = Array.isArray(students) ? students.filter(Boolean) : [];
+  // مصفوفات آمنة مع استبعاد حساب المعلم نهائياً من أي جدول أو مجموعة أو مدرج للطلاب
+  const safeGroups = useMemo(() => {
+    if (!Array.isArray(groups)) return [];
+    return groups.filter(Boolean).map(g => ({
+      ...g,
+      studentIds: (g.studentIds || []).filter(id => id !== 'std-master-teacher')
+    }));
+  }, [groups]);
+
+  const safeStudents = useMemo(() => {
+    if (!Array.isArray(students)) return [];
+    return students.filter(s => 
+      s && 
+      !isMasterTeacherEmail(s.email) && 
+      !s.isMasterTeacher && 
+      s.id !== 'std-master-teacher' &&
+      !s.name?.includes('محمد راشد')
+    );
+  }, [students]);
 
   // التبويب النشط: المجموعات والواجبات | الطلاب والاشتراكات | إدارة المشرفين
   const [activeTab, setActiveTab] = useState('groups'); // 'groups' | 'students' | 'admins'
