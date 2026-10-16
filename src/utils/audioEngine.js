@@ -141,7 +141,16 @@ class VoiceNarrator {
   }
 
   /**
-   * البحث عن أفضل صوت أنثوي عربي هادئ ومتزن
+   * هل يحتوي نظام/متصفح المستخدم على صوت عربي مثبت؟
+   */
+  hasArabicVoice() {
+    if (!this.synth) return false;
+    const voices = this.synth.getVoices();
+    return voices.some(v => v.lang.startsWith('ar') || /arabic/i.test(v.name) || /ar[-_]/i.test(v.lang));
+  }
+
+  /**
+   * البحث عن أفضل صوت عربي متاح (مع أولوية للأصوات الأنثوية الطبيعية)
    */
   getBestFemaleArabicVoice() {
     if (!this.synth) return null;
@@ -149,19 +158,19 @@ class VoiceNarrator {
     if (!voices || voices.length === 0) return null;
 
     // 1. الأصوات الأنثوية العربية المخصصة (Microsoft, Google, Apple)
-    const femaleVoicePatterns = /(salma|zariyah|hoda|laila|zeina|fatima|maryam|sana|amany|mageda|female|woman)/i;
+    const femaleVoicePatterns = /(salma|zariyah|hoda|laila|zeina|fatima|maryam|sana|amany|mageda)/i;
     
     const preferredFemaleAr = voices.find(v => 
-      v.lang.startsWith('ar') && femaleVoicePatterns.test(v.name)
+      (v.lang.startsWith('ar') || /arabic/i.test(v.name)) && femaleVoicePatterns.test(v.name)
     );
     if (preferredFemaleAr) return preferredFemaleAr;
 
-    // 2. أي صوت عربي متاح
+    // 2. أي صوت عربي متاح في النظام (بدون تمييز، المهم أن ينطق العربية بشكل صحيح)
     const anyArVoice = voices.find(v => v.lang.startsWith('ar') || /arabic/i.test(v.name) || /ar[-_]/i.test(v.lang));
     if (anyArVoice) return anyArVoice;
 
-    // 3. صوت افتراضي ناعم
-    return voices.find(v => femaleVoicePatterns.test(v.name)) || null;
+    // تنبيه حاسم: لا ترجع مطلقاً صوتاً إنجليزياً عند طلب نطق عربي!
+    return null;
   }
 
   speak(text, lang = 'ar-SA', onStart, onEnd, onError, customRate) {
@@ -182,7 +191,7 @@ class VoiceNarrator {
     utterance.rate = customRate || (lang.startsWith('en') ? 0.90 : this.currentRate);
     utterance.pitch = this.currentPitch; // نبرة هادئة ومريحة
 
-    // انتقاء الصوت الأنثوي المناسب
+    // انتقاء الصوت المناسب للغة
     if (lang.startsWith('en')) {
       const voices = this.synth.getVoices();
       const enFemale = voices.find(v => 
@@ -190,9 +199,15 @@ class VoiceNarrator {
       );
       if (enFemale) utterance.voice = enFemale;
     } else {
-      const bestFemaleVoice = this.getBestFemaleArabicVoice();
-      if (bestFemaleVoice) {
-        utterance.voice = bestFemaleVoice;
+      const bestArVoice = this.getBestFemaleArabicVoice();
+      if (bestArVoice) {
+        utterance.voice = bestArVoice;
+      } else {
+        // لا يوجد أي صوت عربي مثبت في النظام
+        // منع النطق بصوت إنجليزي مشوه
+        this.isPlaying = false;
+        if (onError) onError("NO_ARABIC_VOICE");
+        return;
       }
     }
 

@@ -2,25 +2,76 @@
    MODAL LESSON CONTAINER & BODY SPACING
    ========================================================= */
 .modal-lesson-enhanced {
-  max-width: 660px !important;
-  width: 94% !important;
-  margin: auto;
-  border-radius: 22px !important;
-  overflow: hidden;
+  max-width: 680px !important;
+  width: 95% !important;
+  max-height: 90vh !important;
+  height: 90vh !important;
+  margin: auto !important;
+  border-radius: 24px !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  position: relative !important;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75) !important;
 }
 
+.chapter-card-banner {
+  flex-shrink: 0 !important;
+}
+
 .modal-lesson-body {
-  padding: 8px 24px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 12px 24px 32px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom sleek scrollbar for modal-lesson-body */
+.modal-lesson-body::-webkit-scrollbar {
+  width: 7px;
+}
+
+.modal-lesson-body::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 8px;
+}
+
+.modal-lesson-body::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.45);
+  border-radius: 8px;
+}
+
+.modal-lesson-body::-webkit-scrollbar-thumb:hover {
+  background: #6366f1;
+}
+
+body.theme-light .modal-lesson-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+body.theme-light .modal-lesson-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+
+body.theme-light .modal-lesson-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 @media (max-width: 640px) {
+  .modal-lesson-enhanced {
+    max-height: 94vh !important;
+    height: 94vh !important;
+    width: 98% !important;
+    border-radius: 18px !important;
+  }
   .modal-lesson-body {
-    padding: 6px 14px 20px;
-    gap: 14px;
+    padding: 10px 14px 24px !important;
+    gap: 14px !important;
   }
 }
 
@@ -55,6 +106,50 @@
 .lesson-concept-card.card-exam-tip {
   background: linear-gradient(145deg, rgba(45, 32, 18, 0.85) 0%, rgba(24, 18, 12, 0.9) 100%);
   border: 1.5px solid rgba(245, 158, 11, 0.45);
+}
+
+.lesson-concept-card.is-currently-playing {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.35), 0 8px 28px rgba(56, 189, 248, 0.25) !important;
+  transform: scale(1.01);
+}
+
+.audio-card-id-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 8px;
+  border-radius: 6px;
+  direction: ltr;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+}
+
+body.theme-light .audio-card-id-pill {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.audio-teacher-notice-banner {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fbbf24;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  animation: fadeIn 0.3s ease;
+}
+
+body.theme-light .audio-teacher-notice-banner {
+  background: #fffbeb;
+  border-color: #f59e0b;
+  color: #92400e;
 }
 
 /* Concept Card Header Row & Speaker Audio Player */

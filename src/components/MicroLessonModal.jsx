@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import './MicroLessonModal.css';
 import { useApp } from '../context/AppContext';
 import { CHAPTERS_METADATA } from '../data/curriculumMeta.js';
-import { X, Volume2, Square, Pause, Play, Sparkles, BookOpen, Lightbulb, HelpCircle, ArrowLeft, ArrowRight, CheckCircle2, RotateCw } from 'lucide-react';
+import { X, Volume2, Square, Pause, Play, Sparkles, BookOpen, Lightbulb, HelpCircle, ArrowLeft, ArrowRight, CheckCircle2, RotateCw, AlertCircle, Radio } from 'lucide-react';
 import { narrator, speakEnglish, playSound } from '../utils/audioEngine';
+import { teacherAudioPlayer } from '../utils/teacherAudioEngine';
 
 export const MicroLessonModal = () => {
   const {
@@ -19,33 +20,17 @@ export const MicroLessonModal = () => {
   const [activePlayingCard, setActivePlayingCard] = useState(null);
   const [flippedTerms, setFlippedTerms] = useState({});
   const [speechRate, setSpeechRate] = useState(0.88);
+  const [isAutoPlayNext, setIsAutoPlayNext] = useState(true);
+  const [audioNotice, setAudioNotice] = useState(null);
 
   useEffect(() => {
     return () => {
+      teacherAudioPlayer.stop();
       narrator.stop();
     };
   }, []);
 
   const chunk = localizedActiveChunk || activeChunk;
-
-  // نص القراءة الصوتية الفعلي لمحتوى المنهج التعليمي (بدون قراءة الفهرس أو العناوين المكررة)
-  const fullNarrationScript = React.useMemo(() => {
-    if (!chunk) return '';
-    let segments = [];
-    if (chunk.contentCards && chunk.contentCards.length > 0) {
-      chunk.contentCards.forEach(c => {
-        const cleanTitle = (c.title || '').replace(/^[💡📌⚠️✅]\s*/, '');
-        const pts = c.points 
-          ? c.points.map(p => p.replace(/^[0-9️⃣🔟#•\-–—]\s*/, '')).join('. ') 
-          : (c.text || '');
-        segments.push(`${cleanTitle}: ${pts}`);
-      });
-    }
-    if (segments.length === 0 && chunk.audioNarrationText) {
-      segments.push(chunk.audioNarrationText);
-    }
-    return segments.join('. ');
-  }, [chunk]);
 
   if (!activeChunk || !chunk) return null;
 
@@ -63,76 +48,99 @@ export const MicroLessonModal = () => {
   const handleToggleAudio = () => {
     playSound.click();
     if (isPlayingAudio) {
-      narrator.stop();
+      teacherAudioPlayer.stop();
       setIsPlayingAudio(false);
-    } else {
-      narrator.stop();
       setActivePlayingCard(null);
-      narrator.speak(
-        fullNarrationScript,
-        lang === 'ar' ? 'ar-SA' : 'en-US',
-        () => setIsPlayingAudio(true),
-        () => setIsPlayingAudio(false),
-        () => setIsPlayingAudio(false),
-        speechRate
-      );
+    } else {
+      setAudioNotice(null);
+      teacherAudioPlayer.autoPlayNext = isAutoPlayNext;
+      teacherAudioPlayer.playFullSequence(chunk, {
+        rate: speechRate,
+        onStart: (info) => {
+          setIsPlayingAudio(true);
+          if (typeof info.cardIndex === 'number') {
+            setActivePlayingCard(info.cardIndex);
+            const el = document.getElementById(`concept-card-${info.cardIndex}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } else {
+            setActivePlayingCard('full');
+          }
+        },
+        onAutoAdvance: (nextIndex) => {
+          setActivePlayingCard(nextIndex);
+          const el = document.getElementById(`concept-card-${nextIndex}`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        },
+        onAllCardsCompleted: () => {
+          setIsPlayingAudio(false);
+          setActivePlayingCard(null);
+        },
+        onError: (err) => {
+          setIsPlayingAudio(false);
+          setActivePlayingCard(null);
+          if (err.code === 'RECORDING_PENDING') {
+            setAudioNotice(err.message);
+          } else if (err.code === 'NO_ARABIC_VOICE') {
+            setAudioNotice(`💡 هذا المتصفح لا يحتوي على قارئ صوتي عربي مثبت، وسيتم تفعيل الصوت الحقيقي فور رفع ملف التسجيل الصوتي للأستاذ: ${err.cardMeta?.fileName || 'المقطع'}`);
+          }
+        }
+      });
     }
   };
 
   const handleToggleCardAudio = (idx, card) => {
     playSound.click();
-    if (activePlayingCard === idx) {
-      narrator.stop();
+    if (activePlayingCard === idx && isPlayingAudio) {
+      teacherAudioPlayer.stop();
+      setIsPlayingAudio(false);
       setActivePlayingCard(null);
     } else {
-      narrator.stop();
-      setIsPlayingAudio(false);
-      const cleanTitle = (card.title || '').replace(/^[💡📌⚠️✅]\s*/, '');
-      const pts = card.points 
-        ? card.points.map(p => p.replace(/^[0-9️⃣🔟#•\-–—]\s*/, '')).join('. ') 
-        : (card.text || '');
-      const textToRead = `${cleanTitle}. ${pts}`.trim();
-
-      narrator.speak(
-        textToRead,
-        lang === 'ar' ? 'ar-SA' : 'en-US',
-        () => setActivePlayingCard(idx),
-        () => setActivePlayingCard(null),
-        () => setActivePlayingCard(null),
-        speechRate
-      );
+      setAudioNotice(null);
+      teacherAudioPlayer.autoPlayNext = isAutoPlayNext;
+      teacherAudioPlayer.playCard(chunk, idx, {
+        rate: speechRate,
+        onStart: () => {
+          setIsPlayingAudio(true);
+          setActivePlayingCard(idx);
+        },
+        onAutoAdvance: (nextIndex) => {
+          setActivePlayingCard(nextIndex);
+          const el = document.getElementById(`concept-card-${nextIndex}`);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        },
+        onCardEnded: () => {
+          if (!isAutoPlayNext || idx + 1 >= (chunk.contentCards?.length || 0)) {
+            setIsPlayingAudio(false);
+            setActivePlayingCard(null);
+          }
+        },
+        onAllCardsCompleted: () => {
+          setIsPlayingAudio(false);
+          setActivePlayingCard(null);
+        },
+        onError: (err) => {
+          setIsPlayingAudio(false);
+          setActivePlayingCard(null);
+          if (err.code === 'RECORDING_PENDING') {
+            setAudioNotice(err.message);
+          } else if (err.code === 'NO_ARABIC_VOICE') {
+            setAudioNotice(`💡 هذا المتصفح لا يحتوي على قارئ صوتي عربي مثبت، بانتظار رفع ملف التسجيل للأستاذ: ${err.cardMeta?.fileName || 'المقطع'}`);
+          }
+        }
+      });
     }
   };
 
   const handleSpeedChange = (newRate) => {
     playSound.click();
     setSpeechRate(newRate);
-    if (isPlayingAudio) {
-      narrator.stop();
-      narrator.speak(
-        fullNarrationScript,
-        lang === 'ar' ? 'ar-SA' : 'en-US',
-        () => setIsPlayingAudio(true),
-        () => setIsPlayingAudio(false),
-        () => setIsPlayingAudio(false),
-        newRate
-      );
-    } else if (activePlayingCard !== null && chunk?.contentCards?.[activePlayingCard]) {
-      const card = chunk.contentCards[activePlayingCard];
-      const cleanTitle = (card.title || '').replace(/^[💡📌⚠️✅]\s*/, '');
-      const pts = card.points 
-        ? card.points.map(p => p.replace(/^[0-9️⃣🔟#•\-–—]\s*/, '')).join('. ') 
-        : (card.text || '');
-      narrator.stop();
-      narrator.speak(
-        `${cleanTitle}. ${pts}`.trim(),
-        lang === 'ar' ? 'ar-SA' : 'en-US',
-        () => setActivePlayingCard(activePlayingCard),
-        () => setActivePlayingCard(null),
-        () => setActivePlayingCard(null),
-        newRate
-      );
-    }
+  };
+
+  const toggleAutoPlay = () => {
+    playSound.click();
+    const nextVal = !isAutoPlayNext;
+    setIsAutoPlayNext(nextVal);
+    teacherAudioPlayer.autoPlayNext = nextVal;
   };
 
   const handlePronounceEnglish = (enTerm, e) => {
@@ -247,43 +255,53 @@ export const MicroLessonModal = () => {
           <p className="chunk-full-summary">{summary}</p>
         </div>
 
-        {/* 3. AI Female Teacher Audio Reader Player Bar */}
+        {/* 3. AI / Teacher Audio Reader Player Bar */}
         <div className={`audio-player-bar ai-female-narrator-bar ${isPlayingAudio ? 'is-playing' : ''}`}>
           <div className="audio-left-controls">
             <button 
               className={`audio-play-btn ${isPlayingAudio ? 'btn-stop-pulse' : ''}`} 
               onClick={handleToggleAudio} 
-              title={isPlayingAudio ? 'إيقاف مؤقت' : 'استماع للشرح الصوتي بالذكاء الاصطناعي'}
+              title={isPlayingAudio ? 'إيقاف مؤقت' : 'استماع للشرح الصوتي بالتتابع'}
             >
               {isPlayingAudio ? <Square size={18} fill="#fff" /> : <Play size={20} fill="#fff" />}
             </button>
             <div className="audio-narrator-meta">
               <div className="flex items-center gap-2">
-                <span className="narrator-avatar-emoji">🎙️👩‍🏫</span>
+                <span className="narrator-avatar-emoji">🎙️👨‍🏫</span>
                 <h4 className="audio-narrator-title">
                   {isPlayingAudio 
-                    ? (lang === 'ar' ? 'جاري قراءة وشرح الدرس بالذكاء الاصطناعي...' : 'Narrating lesson with AI Tutor...') 
-                    : (lang === 'ar' ? 'المعلمة الافتراضية (الشرح الصوتي للدرس)' : 'AI Tutor (Voice Narration)')
+                    ? (lang === 'ar' ? 'جاري الاستماع للشرح الصوتي...' : 'Playing lesson audio...') 
+                    : (lang === 'ar' ? 'الشرح الصوتي للمحطة (أ. محمد راشد)' : 'Lesson Audio Narration')
                   }
                 </h4>
               </div>
               <p className="audio-narrator-hint">
                 {lang === 'ar' 
-                  ? 'قراءة ذكية وميسرة لكافة محاور ومفاهيم المحطة لتثبيت وتلخيص المعلومة'
-                  : 'Articulate AI narration designed for clear comprehension'
+                  ? 'تسجيلات الشرح الصوتي المباشر للمنهج مع الانتقال التلقائي بين الفقرات'
+                  : 'Direct lesson voice recordings with automatic card progression'
                 }
               </p>
             </div>
           </div>
 
           <div className="audio-right-utilities">
+            {/* خيار الانتقال التلقائي للفقرة التالية */}
+            <button 
+              type="button"
+              className={`speed-chip ${isAutoPlayNext ? 'active' : ''}`}
+              onClick={toggleAutoPlay}
+              title={isAutoPlayNext ? 'التشغيل المتتابع مفعّل: سينتقل تلقائياً للكارت التالي' : 'التشغيل المتتابع متوقف'}
+            >
+              🔁 {lang === 'ar' ? 'تتابع تلقائي' : 'Auto-Next'}
+            </button>
+
             {/* سرعات القراءة */}
             <div className="audio-speed-chips">
               <button 
                 type="button"
                 className={`speed-chip ${speechRate === 0.85 ? 'active' : ''}`}
                 onClick={() => handleSpeedChange(0.85)}
-                title="قراءة هادئة ومركزة"
+                title="سرعة هادئة"
               >
                 0.85x
               </button>
@@ -299,12 +317,20 @@ export const MicroLessonModal = () => {
                 type="button"
                 className={`speed-chip ${speechRate === 1.15 ? 'active' : ''}`}
                 onClick={() => handleSpeedChange(1.15)}
-                title="قراءة سريعة"
+                title="سرعة سريعة"
               >
                 1.15x
               </button>
             </div>
           </div>
+
+          {/* تنبيه حالة التسجيل أو الصوت */}
+          {audioNotice && (
+            <div className="audio-teacher-notice-banner w-full">
+              <AlertCircle size={16} className="shrink-0" />
+              <span>{audioNotice}</span>
+            </div>
+          )}
         </div>
 
         {/* 4. Core Concepts & Educational Content Cards with Dedicated Audio Players */}
@@ -312,12 +338,18 @@ export const MicroLessonModal = () => {
           {chunk.contentCards && chunk.contentCards.map((card, idx) => (
             <div 
               key={idx} 
-              className={`lesson-concept-card ${card.type === 'teacherTip' ? 'card-exam-tip' : ''}`}
+              id={`concept-card-${idx}`}
+              className={`lesson-concept-card ${activePlayingCard === idx ? 'is-currently-playing' : ''} ${card.type === 'teacherTip' ? 'card-exam-tip' : ''}`}
             >
               <div className="concept-card-header-row">
-                <h4 className="concept-card-title">
-                  {card.title}
-                </h4>
+                <div className="flex items-center gap-2 flex-wrap flex-1">
+                  <h4 className="concept-card-title">
+                    {card.title}
+                  </h4>
+                  <span className="audio-card-id-pill" title="كود ملف التسجيل الصوتي في مجلد audio/lessons">
+                    🎙️ {chunk.id}-card-{idx + 1}
+                  </span>
+                </div>
                 <button
                   type="button"
                   className={`btn-play-card-audio ${activePlayingCard === idx ? 'is-playing' : ''}`}
