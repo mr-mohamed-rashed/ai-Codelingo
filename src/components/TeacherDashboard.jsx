@@ -792,24 +792,28 @@ export default function TeacherDashboard() {
                             </div>
 
                             <div className="student-contacts-row">
-                              <a 
-                                href={`https://wa.me/2${student.phone.replace(/[^0-9]/g, '')}`} 
-                                target="_blank" 
-                                rel="noreferrer"
-                                className="contact-pill phone-pill"
-                                title={lang === 'en' ? 'Chat on WhatsApp' : 'مراسلة الطالب مباشرة عبر واتساب'}
-                              >
-                                <Phone size={14} />
-                                <span>{student.phone}</span>
-                                <ExternalLink size={12} />
-                              </a>
-                              <span className="contact-pill email-pill">
-                                <Mail size={14} />
-                                <span>{student.email}</span>
-                              </span>
+                              {student.phone && (
+                                <a 
+                                  href={`https://wa.me/2${String(student.phone).replace(/[^0-9]/g, '')}`} 
+                                  target="_blank" 
+                                  rel="noreferrer"
+                                  className="contact-pill phone-pill"
+                                  title={lang === 'en' ? 'Chat on WhatsApp' : 'مراسلة الطالب مباشرة عبر واتساب'}
+                                >
+                                  <Phone size={14} />
+                                  <span>{student.phone}</span>
+                                  <ExternalLink size={12} />
+                                </a>
+                              )}
+                              {student.email && (
+                                <span className="contact-pill email-pill">
+                                  <Mail size={14} />
+                                  <span>{student.email}</span>
+                                </span>
+                              )}
                               {student.guardianPhone && (
                                 <a 
-                                  href={`https://wa.me/2${student.guardianPhone.replace(/[^0-9]/g, '')}`} 
+                                  href={`https://wa.me/2${String(student.guardianPhone).replace(/[^0-9]/g, '')}`} 
                                   target="_blank" 
                                   rel="noreferrer"
                                   className="contact-pill phone-pill"
@@ -2589,19 +2593,21 @@ export default function TeacherDashboard() {
                           <div>
                             <h4 className="review-student-name">{student.name}</h4>
                             <div className="flex flex-wrap items-center gap-2 mt-1">
-                              <a 
-                                href={`https://wa.me/2${student.phone.replace(/[^0-9]/g, '')}`} 
-                                target="_blank" 
-                                rel="noreferrer"
-                                className="whatsapp-quick-link"
-                                title="مراسلة الطالب عبر واتساب"
-                              >
-                                <Phone size={12} />
-                                <span>{student.phone}</span>
-                              </a>
+                              {student.phone && (
+                                <a 
+                                  href={`https://wa.me/2${String(student.phone).replace(/[^0-9]/g, '')}`} 
+                                  target="_blank" 
+                                  rel="noreferrer"
+                                  className="whatsapp-quick-link"
+                                  title="مراسلة الطالب عبر واتساب"
+                                >
+                                  <Phone size={12} />
+                                  <span>{student.phone}</span>
+                                </a>
+                              )}
                               {student.guardianPhone && (
                                 <a 
-                                  href={`https://wa.me/2${student.guardianPhone.replace(/[^0-9]/g, '')}`} 
+                                  href={`https://wa.me/2${String(student.guardianPhone).replace(/[^0-9]/g, '')}`} 
                                   target="_blank" 
                                   rel="noreferrer"
                                   className="whatsapp-quick-link"
@@ -2849,19 +2855,21 @@ export default function TeacherDashboard() {
                             <span>{lang === 'en' ? 'Reset Topic for Retake 🔄' : 'إعادة فتح الفقرة للطالب لاختبارها وتجاوزها 🔄'}</span>
                           </button>
 
-                          <a
-                            href={`https://wa.me/2${selectedStudentForDiagnosis.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-                              `أهلاً يا ${selectedStudentForDiagnosis.name} 👋\nمعاك أ/ محمد راشد.\nبخصوص سؤالك في درس "${err.lessonTitle}" (${err.chunkTitle}):\n\n❓ السؤال: ${err.questionText}\n❌ إجابتك: ${err.selectedAnswerText}\n✅ الإجابة النموذجية: ${err.correctAnswerText}\n\n💡 توضيح وتثبيت المفهوم:\n${err.explanation}\n\nراجعها كويس وجهز نفسك للاختبار مرة ثانية لتجاوز الجزء بالعلامة الكاملة! 💪`
-                            )}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="duo-btn duo-btn-success text-xs py-2 px-3 flex items-center gap-1.5 text-white"
-                            style={{ background: '#25D366', borderBottomColor: '#128C7E' }}
-                            title="إرسال توضيح وشرح السؤال للطالب على واتساب بنقرة واحدة"
-                          >
-                            <MessageSquare size={13} />
-                            <span>{lang === 'en' ? 'Send Explanation via WhatsApp 📲' : 'إرسال شرح السؤال على واتساب 📲'}</span>
-                          </a>
+                          {selectedStudentForDiagnosis.phone && (
+                            <a
+                              href={`https://wa.me/2${String(selectedStudentForDiagnosis.phone).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                                `أهلاً يا ${selectedStudentForDiagnosis.name} 👋\nمعاك أ/ محمد راشد.\nبخصوص سؤالك في درس "${err.lessonTitle}" (${err.chunkTitle}):\n\n❓ السؤال: ${err.questionText}\n❌ إجابتك: ${err.selectedAnswerText}\n✅ الإجابة النموذجية: ${err.correctAnswerText}\n\n💡 توضيح وتثبيت المفهوم:\n${err.explanation}\n\nراجعها كويس وجهز نفسك للاختبار مرة ثانية لتجاوز الجزء بالعلامة الكاملة! 💪`
+                              )}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="duo-btn duo-btn-success text-xs py-2 px-3 flex items-center gap-1.5 text-white"
+                              style={{ background: '#25D366', borderBottomColor: '#128C7E' }}
+                              title="إرسال توضيح وشرح السؤال للطالب على واتساب بنقرة واحدة"
+                            >
+                              <MessageSquare size={13} />
+                              <span>{lang === 'en' ? 'Send Explanation via WhatsApp 📲' : 'إرسال شرح السؤال على واتساب 📲'}</span>
+                            </a>
+                          )}
                         </div>
                       </div>
                     ))}

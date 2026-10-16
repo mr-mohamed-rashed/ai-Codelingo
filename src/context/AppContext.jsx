@@ -274,11 +274,17 @@ export const AppProvider = ({ children }) => {
   }, [currentPage]);
 
   // تسجيل خروج الطالب
-  const logoutStudent = () => {
+  const logoutStudent = async () => {
     playSound.click();
     setCurrentStudentId(null);
     localStorage.removeItem('codelingo_current_student_id');
     setCurrentPage('home');
+    try {
+      const { supabase } = await import('../utils/supabaseClient');
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.warn('SignOut error:', e);
+    }
   };
 
   // وضع لوحة تحكم المعلم
@@ -353,11 +359,17 @@ export const AppProvider = ({ children }) => {
   };
 
   // تسجيل خروج الأدمن
-  const logoutAdmin = () => {
+  const logoutAdmin = async () => {
     playSound.click();
     setCurrentAdmin(null);
     setIsTeacherMode(false);
     localStorage.removeItem('codelingo_current_admin');
+    try {
+      const { supabase } = await import('../utils/supabaseClient');
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.warn('SignOut error:', e);
+    }
   };
 
   // إضافة حساب أدمن جديد (خاص بالسوبر أدمن الماستر فقط)
