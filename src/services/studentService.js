@@ -216,19 +216,11 @@ export function formatInternationalPhone(phone) {
  * prompt: 'select_account' يتيح للمستخدم اختيار الحساب الذي يفضله
  */
 export async function signInWithGoogleOAuth() {
-  if (!isSupabaseConfigured) {
-    throw new Error('يرجى ضبط مفاتيح Supabase في ملف .env أولاً');
-  }
-
   const supabase = await getSupabaseClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: window.location.origin + window.location.pathname,
-      queryParams: {
-        prompt: 'select_account',
-        access_type: 'offline'
-      }
+      redirectTo: window.location.origin
     }
   });
 
@@ -240,16 +232,11 @@ export async function signInWithGoogleOAuth() {
  * 6. بدء تسجيل الدخول بحساب Facebook (OAuth)
  */
 export async function signInWithFacebookOAuth() {
-  if (!isSupabaseConfigured) {
-    throw new Error('يرجى ضبط مفاتيح Supabase في ملف .env أولاً');
-  }
-
   const supabase = await getSupabaseClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'facebook',
     options: {
-      redirectTo: window.location.origin + window.location.pathname,
-      scopes: 'email,public_profile'
+      redirectTo: window.location.origin
     }
   });
 

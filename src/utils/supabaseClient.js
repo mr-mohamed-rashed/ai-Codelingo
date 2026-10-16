@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 // قراءة بيانات الاتصال بسوبا بيز من متغيرات البيئة أو التخزين المحلي كبديل فوري
-const getEnvOrStorage = (envKey, storageKey) => {
+export const getEnvOrStorage = (envKey, storageKey) => {
   if (typeof import.meta !== 'undefined' && import.meta.env?.[envKey]) {
     return import.meta.env[envKey];
   }
@@ -11,23 +11,53 @@ const getEnvOrStorage = (envKey, storageKey) => {
   return '';
 };
 
-const supabaseUrl = getEnvOrStorage('VITE_SUPABASE_URL', 'codelingo_supabase_url');
-const supabaseAnonKey = getEnvOrStorage('VITE_SUPABASE_ANON_KEY', 'codelingo_supabase_anon_key');
+export const getSupabaseUrl = () => getEnvOrStorage('VITE_SUPABASE_URL', 'codelingo_supabase_url');
+export const getSupabaseAnonKey = () => getEnvOrStorage('VITE_SUPABASE_ANON_KEY', 'codelingo_supabase_anon_key');
 
 // التحقق من توافر المفاتيح لتنبيه المطور في الكونسول
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+export const isSupabaseConfigured = Boolean(getSupabaseUrl() && getSupabaseAnonKey());
 
-if (!isSupabaseConfigured) {
-  console.info(
-    'ℹ️ [Supabase] بانتظار إدخال VITE_SUPABASE_URL و VITE_SUPABASE_ANON_KEY في ملف .env أو إعدادات المنصة السحابية.'
-  );
+export function checkIsSupabaseConfigured() {
+  const url = getSupabaseUrl();
+  const key = getSupabaseAnonKey();
+  return Boolean(url && key && !url.includes('placeholder'));
 }
 
-// إنشاء عميل Supabase المشترك
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseAnonKey || 'placeholder-anon-key'
-);
+export function saveSupabaseCredentials(url, anonKey) {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    if (url && url.trim()) {
+      window.localStorage.setItem('codelingo_supabase_url', url.trim());
+    }
+    if (anonKey && anonKey.trim()) {
+      window.localStorage.setItem('codelingo_supabase_anon_key', anonKey.trim());
+    }
+  }
+}
+
+// إنشاء وإدارة عميل Supabase المشترك ديناميكياً
+let _clientInstance = null;
+export function getSupabaseInstance() {
+  const url = getSupabaseUrl();
+  const key = getSupabaseAnonKey();
+  if (!_clientInstance || _clientInstance.__url !== url || _clientInstance.__key !== key) {
+    _clientInstance = createClient(
+      url || 'https://placeholder.supabase.co',
+      key || 'placeholder-anon-key'
+    );
+    _clientInstance.__url = url;
+    _clientInstance.__key = key;
+  }
+  return _clientInstance;
+}
+
+// تصدير كائن supabase كـ Proxy يضمن دائماً استخدام أحدث بيانات اتصال حتى لو تم تحديثها أثناء التشغيل
+export const supabase = new Proxy({}, {
+  get(target, prop) {
+    const client = getSupabaseInstance();
+    const value = client[prop];
+    return typeof value === 'function' ? value.bind(client) : value;
+  }
+});
 
 /**
  * 1) إرسال رمز التحقق OTP لرقم الهاتف (SMS)
