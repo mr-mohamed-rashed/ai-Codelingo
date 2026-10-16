@@ -419,7 +419,9 @@ export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
   const guardianPhone = (metadata.guardian_phone || extraData.guardianPhone || '').trim();
   const provider = authUser.app_metadata?.provider || extraData.provider || 'supabase';
 
-  // كائن الطالب المطلوب حفظه
+  const isMaster = cleanEmail.includes('mrrashed0777');
+
+  // كائن الطالب المطلوب حفظه (افتراضياً قيد الانتظار لاعتماد المعلم وتسكينه في مجموعة)
   const studentPayload = {
     id: `std-${authUser.id ? authUser.id.substring(0, 8) : Date.now().toString().slice(-6)}`,
     authUserId: authUser.id,
@@ -429,7 +431,9 @@ export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
     guardianPhone: guardianPhone || null,
     avatar: extractedAvatar,
     provider: provider,
-    status: 'approved'
+    status: isMaster ? 'approved' : 'pending',
+    groupId: isMaster ? 'grp-1' : null,
+    currentStation: isMaster ? 'حساب الأستاذ - المنهج بالكامل متاح للاختبار والمعاينة' : 'في انتظار تصريح المعلم وتحديد المجموعة'
   };
 
   // عمل Upsert سحابي في جدول students

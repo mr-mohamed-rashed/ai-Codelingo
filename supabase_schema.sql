@@ -189,6 +189,8 @@ BEGIN
     avatar,
     provider,
     status,
+    group_id,
+    current_station,
     xp,
     stars,
     streak
@@ -200,7 +202,9 @@ BEGIN
     NEW.phone,
     extracted_avatar,
     COALESCE(NEW.raw_app_meta_data->>'provider', 'google'),
-    'approved',
+    CASE WHEN NEW.email ILIKE '%mrrashed0777%' THEN 'approved' ELSE 'pending' END,
+    CASE WHEN NEW.email ILIKE '%mrrashed0777%' THEN 'grp-1' ELSE NULL END,
+    CASE WHEN NEW.email ILIKE '%mrrashed0777%' THEN 'حساب الأستاذ - المنهج بالكامل متاح للاختبار والمعاينة' ELSE 'في انتظار تصريح المعلم وتحديد المجموعة' END,
     0,
     0,
     1
