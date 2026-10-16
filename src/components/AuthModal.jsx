@@ -85,14 +85,7 @@ export default function AuthModal({ initialMode = 'register' }) {
     avatar: isActualStudent ? (currentStudent.avatar || '') : '',
   });
 
-  // نوافذ إعداد وربط المفاتيح إذا لم تكن مدخلة
-  const [showSupabaseSetupModal, setShowSupabaseSetupModal] = useState(false);
-  const [inputSupabaseUrl, setInputSupabaseUrl] = useState(() => {
-    return (typeof window !== 'undefined' && window.localStorage?.getItem('codelingo_supabase_url')) || import.meta.env?.VITE_SUPABASE_URL || '';
-  });
-  const [inputSupabaseAnonKey, setInputSupabaseAnonKey] = useState(() => {
-    return (typeof window !== 'undefined' && window.localStorage?.getItem('codelingo_supabase_anon_key')) || import.meta.env?.VITE_SUPABASE_ANON_KEY || '';
-  });
+
 
   const [showGoogleKeyModal, setShowGoogleKeyModal] = useState(false);
   const [inputGoogleClientId, setInputGoogleClientId] = useState(() => getGoogleClientId());
@@ -179,17 +172,6 @@ export default function AuthModal({ initialMode = 'register' }) {
     setErrorMessage('');
     setIsLoading(true);
 
-    const hasSupabase = Boolean(
-      (import.meta.env?.VITE_SUPABASE_URL && import.meta.env?.VITE_SUPABASE_ANON_KEY) ||
-      (typeof window !== 'undefined' && window.localStorage?.getItem('codelingo_supabase_url') && window.localStorage?.getItem('codelingo_supabase_anon_key'))
-    );
-
-    if (!hasSupabase) {
-      setIsLoading(false);
-      setShowSupabaseSetupModal(true);
-      return;
-    }
-
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -214,17 +196,6 @@ export default function AuthModal({ initialMode = 'register' }) {
     playSound.click();
     setErrorMessage('');
     setIsLoading(true);
-
-    const hasSupabase = Boolean(
-      (import.meta.env?.VITE_SUPABASE_URL && import.meta.env?.VITE_SUPABASE_ANON_KEY) ||
-      (typeof window !== 'undefined' && window.localStorage?.getItem('codelingo_supabase_url') && window.localStorage?.getItem('codelingo_supabase_anon_key'))
-    );
-
-    if (!hasSupabase) {
-      setIsLoading(false);
-      setShowSupabaseSetupModal(true);
-      return;
-    }
 
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -432,110 +403,7 @@ export default function AuthModal({ initialMode = 'register' }) {
           ✕
         </button>
 
-        {/* =========================================================================
-            نافذة إدخال وتفعيل إعدادات Supabase لربط التسجيل السحابي
-            ========================================================================= */}
-        {showSupabaseSetupModal ? (
-          <div className="auth-step-container">
-            <div className="auth-icon-badge" style={{ background: '#ecfdf5', color: '#10b981' }}>
-              <ShieldCheck size={34} />
-            </div>
-
-            <h2 className="auth-title">ربط مشروع Supabase لتفعيل تسجيل الدخول</h2>
-            <p className="auth-subtitle">
-              أدخل رابط مشروع Supabase ومفتاح الـ Anon Key لتفعيل تسجيل الدخول بجوجل وفيسبوك وتسجيل الطلاب مباشرة في قاعدة البيانات:
-            </p>
-
-            {errorMessage && (
-              <div className="auth-error-banner w-full mb-3">
-                {errorMessage}
-              </div>
-            )}
-
-            <form 
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const url = inputSupabaseUrl.trim();
-                const key = inputSupabaseAnonKey.trim();
-                if (!url || !key) {
-                  setErrorMessage('يرجى إدخال كل من رابط المشروع ومفتاح Anon Key');
-                  return;
-                }
-                saveSupabaseCredentials(url, key);
-                setShowSupabaseSetupModal(false);
-                setIsLoading(true);
-                setErrorMessage('');
-                try {
-                  const { error } = await supabase.auth.signInWithOAuth({
-                    provider: authMethod === 'facebook' ? 'facebook' : 'google',
-                    options: {
-                      redirectTo: window.location.origin
-                    }
-                  });
-                  if (error) throw error;
-                } catch (err) {
-                  console.warn('OAuth Error:', err);
-                  setIsLoading(false);
-                  setShowSupabaseSetupModal(true);
-                  setErrorMessage(err.message || 'تعذر إتمام المصادقة عبر Supabase');
-                }
-              }}
-              className="auth-form-stack"
-            >
-              <div className="form-field text-right">
-                <label className="field-label">رابط مشروع Supabase (Project URL) *</label>
-                <div className="input-with-icon">
-                  <Globe size={18} className="field-icon" />
-                  <input 
-                    type="text" 
-                    placeholder="https://xxxxxxxxxxxx.supabase.co"
-                    value={inputSupabaseUrl}
-                    onChange={(e) => setInputSupabaseUrl(e.target.value)}
-                    dir="ltr"
-                    className="font-mono text-xs"
-                    required
-                  />
-                </div>
-                <span className="text-[11px] text-slate-500 block mt-1">
-                  💡 ستجده في Supabase Dashboard &gt; Project Settings &gt; API &gt; Project URL
-                </span>
-              </div>
-
-              <div className="form-field text-right">
-                <label className="field-label">مفتاح الوصول العام (Anon Public Key) *</label>
-                <div className="input-with-icon">
-                  <KeyRound size={18} className="field-icon" />
-                  <input 
-                    type="text" 
-                    placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                    value={inputSupabaseAnonKey}
-                    onChange={(e) => setInputSupabaseAnonKey(e.target.value)}
-                    dir="ltr"
-                    className="font-mono text-xs"
-                    required
-                  />
-                </div>
-                <span className="text-[11px] text-slate-500 block mt-1">
-                  💡 ستجده في نفس الصفحة تحت اسم `anon` / `public`
-                </span>
-              </div>
-
-              <div className="auth-actions-row flex-col gap-2">
-                <button type="submit" className="duo-btn duo-btn-success auth-btn-main w-full" disabled={isLoading}>
-                  {isLoading ? 'جارٍ الاتصال بـ Supabase... ⏳' : 'حفظ ومتابعة الدخول بجوجل فوراً 🚀'}
-                </button>
-
-                <button 
-                  type="button" 
-                  className="duo-btn duo-btn-secondary auth-btn-back w-full"
-                  onClick={() => setShowSupabaseSetupModal(false)}
-                >
-                  إلغاء
-                </button>
-              </div>
-            </form>
-          </div>
-        ) : showGoogleKeyModal ? (
+        {showGoogleKeyModal ? (
           <div className="auth-step-container">
             <div className="auth-icon-badge">
               <svg width="34" height="34" viewBox="0 0 24 24">
