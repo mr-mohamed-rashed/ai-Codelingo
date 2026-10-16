@@ -7,11 +7,8 @@
  * 4. التحميل الكسول (Dynamic Import) لمكتبة Supabase للحفاظ على أداء المنصة 100%
  */
 
-// فحص توافر متغيرات البيئة أو التخزين المحلي كبديل
-export const isSupabaseConfigured = Boolean(
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPABASE_URL && import.meta.env?.VITE_SUPABASE_ANON_KEY) ||
-  (typeof window !== 'undefined' && window.localStorage?.getItem('codelingo_supabase_url') && window.localStorage?.getItem('codelingo_supabase_anon_key'))
-);
+import { isSupabaseConfigured } from '../utils/supabaseClient';
+export { isSupabaseConfigured };
 
 // جلب عميل Supabase عند الطلب فقط لحماية سرعة الصفحة الأولى
 let _supabaseCache = null;

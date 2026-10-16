@@ -11,8 +11,17 @@ export const getEnvOrStorage = (envKey, storageKey) => {
   return '';
 };
 
-export const getSupabaseUrl = () => getEnvOrStorage('VITE_SUPABASE_URL', 'codelingo_supabase_url');
-export const getSupabaseAnonKey = () => getEnvOrStorage('VITE_SUPABASE_ANON_KEY', 'codelingo_supabase_anon_key');
+export const getSupabaseUrl = () => {
+  const envVal = getEnvOrStorage('VITE_SUPABASE_URL', 'codelingo_supabase_url');
+  if (envVal && !envVal.includes('placeholder')) return envVal;
+  return 'https://ugmczeteraqkjvioqbrj.supabase.co';
+};
+
+export const getSupabaseAnonKey = () => {
+  const envVal = getEnvOrStorage('VITE_SUPABASE_ANON_KEY', 'codelingo_supabase_anon_key');
+  if (envVal && !envVal.includes('placeholder')) return envVal;
+  return 'sb_publishable_WYhzpIEluZrOoLXm3UOIcw_etoMCv6y';
+};
 
 // التحقق من توافر المفاتيح لتنبيه المطور في الكونسول
 export const isSupabaseConfigured = Boolean(getSupabaseUrl() && getSupabaseAnonKey());

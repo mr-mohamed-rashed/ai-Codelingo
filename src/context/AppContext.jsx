@@ -12,6 +12,7 @@ const getLocalizedChunk = (baseChunk, currentLang = 'ar') => {
   };
 };
 import { playSound } from '../utils/audioEngine';
+import { isSupabaseConfigured } from '../utils/supabaseClient';
 
 const AppContext = createContext();
 // البريد الإلكتروني للماستر / السوبر أدمن الأساسي
@@ -703,11 +704,7 @@ export const AppProvider = ({ children }) => {
     return newStudent;
   };
 
-  // فحص توفر مفاتيح Supabase دون حظر التحميل المبدئي
-  const isSupabaseConfigured = Boolean(
-    (import.meta.env?.VITE_SUPABASE_URL && import.meta.env?.VITE_SUPABASE_ANON_KEY) ||
-    (typeof window !== 'undefined' && window.localStorage?.getItem('codelingo_supabase_url') && window.localStorage?.getItem('codelingo_supabase_anon_key'))
-  );
+
 
   // المزامنة التلقائية مع جلسة تسجيل الدخول السحابي (Google / Facebook / Phone عبر Supabase)
   useEffect(() => {
