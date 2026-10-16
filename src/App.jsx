@@ -25,6 +25,8 @@ const TeacherLoginModal = lazy(() => import('./components/TeacherLoginModal'));
 const PrivacyPolicyModal = lazy(() => import('./components/PrivacyPolicyModal'));
 const TermsOfUseModal = lazy(() => import('./components/TermsOfUseModal'));
 const InstallGuideModal = lazy(() => import('./components/InstallGuideModal'));
+const InitialPhoneSetupModal = lazy(() => import('./components/InitialPhoneSetupModal'));
+const StudentProfileModal = lazy(() => import('./components/StudentProfileModal'));
 
 class DashboardErrorBoundary extends React.Component {
   constructor(props) {
@@ -323,14 +325,14 @@ function MainAppContent() {
         {activeModal === 'lesson' && <MicroLessonModal />}
         {activeModal === 'ai_tutor' && <AITutorModal />}
         {activeModal === 'quiz' && <QuizEngine />}
-        {(activeModal === 'auth' || activeModal === 'profile' || activeModal === 'auth_register' || activeModal === 'auth_login') && (
+        {activeModal === 'initial_phone_setup' && <InitialPhoneSetupModal />}
+        {activeModal === 'profile' && <StudentProfileModal />}
+        {(activeModal === 'auth' || activeModal === 'auth_register' || activeModal === 'auth_login') && (
           <AuthModal 
             initialMode={
-              activeModal === 'profile' 
-                ? 'profile' 
-                : activeModal === 'auth_login' 
-                  ? 'login' 
-                  : 'register'
+              activeModal === 'auth_login' 
+                ? 'login' 
+                : 'register'
             } 
           />
         )}

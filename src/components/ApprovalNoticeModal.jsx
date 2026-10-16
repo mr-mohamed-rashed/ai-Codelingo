@@ -67,9 +67,19 @@ export default function ApprovalNoticeModal() {
           </div>
 
           <div className="mt-4 flex flex-col gap-2 w-full">
+            {(!currentStudent?.phone || !currentStudent?.guardianPhone) && (
+              <button
+                className="duo-btn duo-btn-primary w-full py-2 flex items-center justify-center gap-2"
+                onClick={() => setActiveModal('initial_phone_setup')}
+              >
+                <Phone size={15} />
+                <span>استكمال تسجيل رقم الهاتف ورقم ولي الأمر 📱</span>
+              </button>
+            )}
+
             <a
               href={`https://wa.me/201012345678?text=${encodeURIComponent(
-                `أهلاً يا أستاذ محمد، أنا الطالب ${currentStudent?.name || ''}، سجلت في المنصة (${currentStudent?.email || ''}) ورقم ولي أمري (${currentStudent?.guardianPhone || ''}). أرجو من حضرتك إعطائي تصريح الدخول لمراجعة المنهج وفتح الدروس.`
+                `أهلاً يا أستاذ محمد، أنا الطالب ${currentStudent?.name || ''}، سجلت في المنصة (${currentStudent?.email || ''})، ورقم هاتفي: (${currentStudent?.phone || 'غير مسجل'}) ورقم ولي أمري: (${currentStudent?.guardianPhone || 'غير مسجل'}). أرجو من حضرتك إعطائي تصريح الدخول لمراجعة المنهج وتسكيني في مجموعتي الدراسية.`
               )}`}
               target="_blank"
               rel="noreferrer"

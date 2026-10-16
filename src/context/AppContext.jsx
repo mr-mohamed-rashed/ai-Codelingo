@@ -409,7 +409,7 @@ export const AppProvider = ({ children }) => {
   }), [lang]);
 
   // الطالب الفعلي الحالي أو حساب الزائر
-  const currentStudent = currentStudentId ? (students.find(s => s.id === currentStudentId) || students[0]) : guestStudent;
+  const currentStudent = currentStudentId ? (students.find(s => s.id === currentStudentId) || guestStudent) : guestStudent;
   const isStudentLoggedIn = Boolean(currentStudentId && currentStudentId !== 'guest' && students.some(s => s.id === currentStudentId));
 
   // المجموعة التي ينتمي إليها الطالب الحالي
@@ -909,6 +909,62 @@ export const AppProvider = ({ children }) => {
 
     playSound.levelUp();
   };
+
+  /**
+   * تحديث وتثبيت أرقام هواتف الطالب وولي الأمر في ملفه الأكاديمي وسحابياً لمرة واحدة
+   */
+  const updateStudentPhones = async (studentId, { phone, guardianPhone, name }) => {
+    const cleanPhone = phone ? phone.trim() : '';
+    const cleanGuardian = guardianPhone ? guardianPhone.trim() : '';
+    const cleanName = name ? name.trim() : undefined;
+
+    setStudents(prev => prev.map(s => {
+      if (s.id !== studentId) return s;
+      return {
+        ...s,
+        ...(cleanName ? { name: cleanName } : {}),
+        phone: cleanPhone,
+        guardianPhone: cleanGuardian,
+        hasCompletedInitialPhoneSetup: true
+      };
+    }));
+
+    // حفظ علامة إتمام إعداد الهاتف محلياً
+    try {
+      localStorage.setItem(`codelingo_phone_done_${studentId}`, 'true');
+    } catch (e) {}
+
+    try {
+      const { updateStudentInSupabase } = await import('../services/studentService');
+      await updateStudentInSupabase(studentId, {
+        ...(cleanName ? { name: cleanName } : {}),
+        phone: cleanPhone,
+        guardianPhone: cleanGuardian
+      });
+    } catch (err) {
+      console.warn('updateStudentPhones Supabase note:', err);
+    }
+  };
+
+  // فحص الحاجة لإدخال رقم الهاتف ورقم ولي الأمر لمرة واحدة فقط عند أول تسجيل
+  useEffect(() => {
+    if (
+      isStudentLoggedIn && 
+      currentStudent && 
+      currentStudent.status !== 'guest' &&
+      !isTeacherMode && 
+      !isMasterTeacherEmail(currentStudent.email)
+    ) {
+      const hasPhone = Boolean(currentStudent.phone && String(currentStudent.phone).trim().length >= 8);
+      const hasGuardianPhone = Boolean(currentStudent.guardianPhone && String(currentStudent.guardianPhone).trim().length >= 8);
+      const isAlreadyMarkedDone = localStorage.getItem(`codelingo_phone_done_${currentStudent.id}`) === 'true';
+
+      if ((!hasPhone || !hasGuardianPhone) && !isAlreadyMarkedDone) {
+        // فتح نافذة استكمال بيانات الهاتف لمرة واحدة فقط فور الدخول
+        setActiveModal('initial_phone_setup');
+      }
+    }
+  }, [currentStudent?.id, currentStudent?.phone, currentStudent?.guardianPhone, isStudentLoggedIn, isTeacherMode]);
 
   /**
    * اعتماد حساب الطالب مع تعيين مجموعته الدراسية مباشرة وحفظه سحابياً في Supabase فوراً
@@ -1470,6 +1526,7 @@ export const AppProvider = ({ children }) => {
         pendingStudentsCount,
         registerNewStudent,
         updateStudentProfile,
+        updateStudentPhones,
         updateStudentStatus,
         approveStudentWithGroup,
         deleteStudent,
