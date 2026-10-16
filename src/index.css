@@ -1995,14 +1995,6 @@ body.theme-light .audio-player-bar p {
   font-weight: 600;
 }
 
-html[data-theme='light'] .audio-lang-indicator,
-body.theme-light .audio-lang-indicator {
-  background: #e0e7ff;
-  color: #3730a3;
-  border: 1px solid #c7d2fe;
-  font-weight: 700;
-}
-
 /* Concept Cards in Light Mode */
 html[data-theme='light'] .lesson-concept-card,
 body.theme-light .lesson-concept-card {

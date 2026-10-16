@@ -16,6 +16,7 @@ export const MicroLessonModal = () => {
   } = useApp();
 
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [activePlayingCard, setActivePlayingCard] = useState(null);
   const [flippedTerms, setFlippedTerms] = useState({});
   const [speechRate, setSpeechRate] = useState(0.88);
 
@@ -27,19 +28,23 @@ export const MicroLessonModal = () => {
 
   const chunk = localizedActiveChunk || activeChunk;
 
-  // نص القراءة الصوتية الكامل والمتقن للمحطة
+  // نص القراءة الصوتية الفعلي لمحتوى المنهج التعليمي (بدون قراءة الفهرس أو العناوين المكررة)
   const fullNarrationScript = React.useMemo(() => {
     if (!chunk) return '';
-    const chunkTitle = chunk.chunkTitle || '';
-    const summary = chunk.summary || '';
-    let script = `${chunkTitle}. ${summary}. `;
+    let segments = [];
     if (chunk.contentCards && chunk.contentCards.length > 0) {
-      script += "المفاهيم التعليمية: " + chunk.contentCards.map(c => `${c.title}: ${c.points ? c.points.join('، ') : (c.text || '')}`).join('. ') + ". ";
+      chunk.contentCards.forEach(c => {
+        const cleanTitle = (c.title || '').replace(/^[💡📌⚠️✅]\s*/, '');
+        const pts = c.points 
+          ? c.points.map(p => p.replace(/^[0-9️⃣🔟#•\-–—]\s*/, '')).join('. ') 
+          : (c.text || '');
+        segments.push(`${cleanTitle}: ${pts}`);
+      });
     }
-    if (chunk.audioNarrationText) {
-      script += chunk.audioNarrationText;
+    if (segments.length === 0 && chunk.audioNarrationText) {
+      segments.push(chunk.audioNarrationText);
     }
-    return script;
+    return segments.join('. ');
   }, [chunk]);
 
   if (!activeChunk || !chunk) return null;
@@ -61,12 +66,39 @@ export const MicroLessonModal = () => {
       narrator.stop();
       setIsPlayingAudio(false);
     } else {
+      narrator.stop();
+      setActivePlayingCard(null);
       narrator.speak(
         fullNarrationScript,
         lang === 'ar' ? 'ar-SA' : 'en-US',
         () => setIsPlayingAudio(true),
         () => setIsPlayingAudio(false),
         () => setIsPlayingAudio(false),
+        speechRate
+      );
+    }
+  };
+
+  const handleToggleCardAudio = (idx, card) => {
+    playSound.click();
+    if (activePlayingCard === idx) {
+      narrator.stop();
+      setActivePlayingCard(null);
+    } else {
+      narrator.stop();
+      setIsPlayingAudio(false);
+      const cleanTitle = (card.title || '').replace(/^[💡📌⚠️✅]\s*/, '');
+      const pts = card.points 
+        ? card.points.map(p => p.replace(/^[0-9️⃣🔟#•\-–—]\s*/, '')).join('. ') 
+        : (card.text || '');
+      const textToRead = `${cleanTitle}. ${pts}`.trim();
+
+      narrator.speak(
+        textToRead,
+        lang === 'ar' ? 'ar-SA' : 'en-US',
+        () => setActivePlayingCard(idx),
+        () => setActivePlayingCard(null),
+        () => setActivePlayingCard(null),
         speechRate
       );
     }
@@ -83,6 +115,21 @@ export const MicroLessonModal = () => {
         () => setIsPlayingAudio(true),
         () => setIsPlayingAudio(false),
         () => setIsPlayingAudio(false),
+        newRate
+      );
+    } else if (activePlayingCard !== null && chunk?.contentCards?.[activePlayingCard]) {
+      const card = chunk.contentCards[activePlayingCard];
+      const cleanTitle = (card.title || '').replace(/^[💡📌⚠️✅]\s*/, '');
+      const pts = card.points 
+        ? card.points.map(p => p.replace(/^[0-9️⃣🔟#•\-–—]\s*/, '')).join('. ') 
+        : (card.text || '');
+      narrator.stop();
+      narrator.speak(
+        `${cleanTitle}. ${pts}`.trim(),
+        lang === 'ar' ? 'ar-SA' : 'en-US',
+        () => setActivePlayingCard(activePlayingCard),
+        () => setActivePlayingCard(null),
+        () => setActivePlayingCard(null),
         newRate
       );
     }
@@ -106,6 +153,7 @@ export const MicroLessonModal = () => {
     playSound.click();
     narrator.stop();
     setIsPlayingAudio(false);
+    setActivePlayingCard(null);
     setActiveModal('ai_tutor');
   };
 
@@ -113,6 +161,7 @@ export const MicroLessonModal = () => {
     playSound.click();
     narrator.stop();
     setIsPlayingAudio(false);
+    setActivePlayingCard(null);
     setActiveModal(null);
   };
 
@@ -145,8 +194,9 @@ export const MicroLessonModal = () => {
           </span>
         </div>
 
-        {/* شارة توضيحية للفقرة المكتملة وإمكانية تحسين النتيجة */}
-        {isChunkCompleted && (
+        <div className="modal-lesson-body">
+          {/* شارة توضيحية للفقرة المكتملة وإمكانية تحسين النتيجة */}
+          {isChunkCompleted && (
           <div className="chunk-improvement-callout">
             <div className="callout-header-row">
               <div className="flex items-center gap-2">
@@ -212,15 +262,15 @@ export const MicroLessonModal = () => {
                 <span className="narrator-avatar-emoji">🎙️👩‍🏫</span>
                 <h4 className="audio-narrator-title">
                   {isPlayingAudio 
-                    ? (lang === 'ar' ? 'جاري قراءة وشرح الدرس بصوت أنثوي هادئ...' : 'Narrating lesson in calm female voice...') 
-                    : (lang === 'ar' ? 'المعلمة الافتراضية (قراءة وشرح صوتي هادئ)' : 'AI Female Tutor (Calm Voice Narration)')
+                    ? (lang === 'ar' ? 'جاري قراءة وشرح الدرس بالذكاء الاصطناعي...' : 'Narrating lesson with AI Tutor...') 
+                    : (lang === 'ar' ? 'المعلمة الافتراضية (الشرح الصوتي للدرس)' : 'AI Tutor (Voice Narration)')
                   }
                 </h4>
               </div>
               <p className="audio-narrator-hint">
                 {lang === 'ar' 
-                  ? 'قراءة ذكية وميسرة لكافة محاور ومفاهيم المحطة بصوت أنثوي هادئ لتثبيت المعلومة'
-                  : 'Articulate AI narration designed for calm comprehension'
+                  ? 'قراءة ذكية وميسرة لكافة محاور ومفاهيم المحطة لتثبيت وتلخيص المعلومة'
+                  : 'Articulate AI narration designed for clear comprehension'
                 }
               </p>
             </div>
@@ -254,24 +304,39 @@ export const MicroLessonModal = () => {
                 1.15x
               </button>
             </div>
-
-            <div className="audio-lang-indicator">
-              <Volume2 size={16} />
-              <span>{lang === 'ar' ? 'صوت أنثى هادئ' : 'Calm Voice'}</span>
-            </div>
           </div>
         </div>
 
-        {/* 4. Core Concepts & Educational Content Cards */}
+        {/* 4. Core Concepts & Educational Content Cards with Dedicated Audio Players */}
         <div className="lesson-cards-section">
           {chunk.contentCards && chunk.contentCards.map((card, idx) => (
             <div 
               key={idx} 
               className={`lesson-concept-card ${card.type === 'teacherTip' ? 'card-exam-tip' : ''}`}
             >
-              <h4 className="concept-card-title">
-                {card.title}
-              </h4>
+              <div className="concept-card-header-row">
+                <h4 className="concept-card-title">
+                  {card.title}
+                </h4>
+                <button
+                  type="button"
+                  className={`btn-play-card-audio ${activePlayingCard === idx ? 'is-playing' : ''}`}
+                  onClick={() => handleToggleCardAudio(idx, card)}
+                  title={activePlayingCard === idx ? (lang === 'ar' ? 'إيقاف الاستماع' : 'Stop') : (lang === 'ar' ? 'استمع لشرح هذه البطاقة' : 'Listen to this card')}
+                >
+                  {activePlayingCard === idx ? (
+                    <>
+                      <Square size={13} fill="currentColor" />
+                      <span>{lang === 'ar' ? 'إيقاف' : 'Stop'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 size={15} />
+                      <span>{lang === 'ar' ? 'استمع للشرح' : 'Listen'}</span>
+                    </>
+                  )}
+                </button>
+              </div>
 
               {card.points && (
                 <ul className="concept-points-list">
@@ -368,6 +433,7 @@ export const MicroLessonModal = () => {
             </div>
           </div>
         )}
+        </div>
 
         {/* 6. Modal Footer Action: Proceed to AI Tutor & Quiz */}
         <div className="modal-footer-actions">

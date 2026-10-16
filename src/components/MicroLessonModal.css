@@ -1,5 +1,191 @@
 /* =========================================================
-   AI FEMALE NARRATOR AUDIO PLAYER STYLES
+   MODAL LESSON CONTAINER & BODY SPACING
+   ========================================================= */
+.modal-lesson-enhanced {
+  max-width: 660px !important;
+  width: 94% !important;
+  margin: auto;
+  border-radius: 22px !important;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75) !important;
+}
+
+.modal-lesson-body {
+  padding: 8px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .modal-lesson-body {
+    padding: 6px 14px 20px;
+    gap: 14px;
+  }
+}
+
+/* =========================================================
+   LESSON CONCEPT CARDS & MARGINS
+   ========================================================= */
+.lesson-cards-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 4px 0 10px;
+}
+
+.lesson-concept-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.92) 100%);
+  border: 1.5px solid rgba(99, 102, 241, 0.28);
+  border-radius: 18px;
+  padding: 18px 22px;
+  margin: 2px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease;
+}
+
+.lesson-concept-card:hover {
+  border-color: rgba(99, 102, 241, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+}
+
+.lesson-concept-card.card-exam-tip {
+  background: linear-gradient(145deg, rgba(45, 32, 18, 0.85) 0%, rgba(24, 18, 12, 0.9) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.45);
+}
+
+/* Concept Card Header Row & Speaker Audio Player */
+.concept-card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+}
+
+.concept-card-title {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  margin: 0;
+  line-height: 1.45;
+  flex: 1;
+}
+
+.card-exam-tip .concept-card-title {
+  color: #fef08a;
+}
+
+.btn-play-card-audio {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.16);
+  border: 1.5px solid rgba(99, 102, 241, 0.4);
+  color: #a5b4fc;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.btn-play-card-audio:hover {
+  background: #4f46e5;
+  color: #ffffff;
+  border-color: #6366f1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+
+.btn-play-card-audio.is-playing {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.6) !important;
+  animation: pulseStop 1.8s infinite ease-in-out;
+}
+
+/* Explanation Typography: Slightly reduced font size for comfortable reading within cards */
+.concept-points-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.concept-points-list li {
+  font-size: 0.90rem;
+  line-height: 1.7;
+  color: #cbd5e1;
+  font-weight: 500;
+  padding-right: 2px;
+  position: relative;
+}
+
+.concept-card-text {
+  font-size: 0.90rem;
+  line-height: 1.7;
+  color: #cbd5e1;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Modal Footer Actions */
+.modal-footer-actions {
+  padding: 14px 24px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+}
+
+.completed-modal-actions-grid {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.btn-proceed-tutor {
+  width: 100%;
+  padding: 13px 22px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  color: #ffffff;
+  font-size: 0.96rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+  transition: all 0.22s ease;
+}
+
+.btn-proceed-tutor:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(79, 70, 229, 0.5);
+}
+
+/* =========================================================
+   AI NARRATOR AUDIO PLAYER STYLES
    ========================================================= */
 .ai-female-narrator-bar {
   display: flex;
@@ -10,7 +196,7 @@
   border: 1.5px solid rgba(99, 102, 241, 0.4);
   border-radius: 18px;
   padding: 14px 20px;
-  margin: 18px 0;
+  margin: 4px 0 8px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   transition: all 0.25s ease;
   flex-wrap: wrap;
@@ -488,3 +674,59 @@ body.theme-light .flip-hint-strip {
   border-top: 1px solid #e2e8f0 !important;
   font-weight: 700 !important;
 }
+
+/* Concept Cards in Light Mode */
+html[data-theme='light'] .lesson-concept-card,
+body.theme-light .lesson-concept-card {
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+  border: 1.5px solid #e2e8f0 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
+}
+
+html[data-theme='light'] .lesson-concept-card.card-exam-tip,
+body.theme-light .lesson-concept-card.card-exam-tip {
+  background: linear-gradient(145deg, #fffbeb 0%, #fef3c7 100%) !important;
+  border: 1.5px solid #f59e0b !important;
+}
+
+html[data-theme='light'] .concept-card-header-row,
+body.theme-light .concept-card-header-row {
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+html[data-theme='light'] .concept-card-title,
+body.theme-light .concept-card-title {
+  color: #0f172a;
+  font-weight: 900;
+}
+
+html[data-theme='light'] .card-exam-tip .concept-card-title,
+body.theme-light .card-exam-tip .concept-card-title {
+  color: #78350f;
+}
+
+html[data-theme='light'] .btn-play-card-audio,
+body.theme-light .btn-play-card-audio {
+  background: #e0e7ff;
+  border: 1.5px solid #818cf8;
+  color: #3730a3;
+}
+
+html[data-theme='light'] .btn-play-card-audio:hover,
+body.theme-light .btn-play-card-audio:hover {
+  background: #4f46e5;
+  color: #ffffff;
+}
+
+html[data-theme='light'] .concept-points-list li,
+body.theme-light .concept-points-list li {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+html[data-theme='light'] .concept-card-text,
+body.theme-light .concept-card-text {
+  color: #1e293b;
+  font-weight: 600;
+}
+
