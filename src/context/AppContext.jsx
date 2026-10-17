@@ -236,9 +236,13 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('codelingo_current_page', currentPage);
   }, [currentPage]);
 
+  // التحكم في النوافذ المنبثقة
+  const [activeModal, setActiveModal] = useState(null); // 'lesson' | 'ai_tutor' | 'quiz' | 'auth' | 'term_tooltip'
+
   // تسجيل خروج الطالب
   const logoutStudent = async () => {
     playSound.click();
+    setActiveModal(null);
     setCurrentStudentId(null);
     localStorage.removeItem('codelingo_current_student_id');
     setCurrentPage('home');
@@ -375,8 +379,6 @@ export const AppProvider = ({ children }) => {
     return { success: true };
   };
 
-  // التحكم في النوافذ المنبثقة
-  const [activeModal, setActiveModal] = useState(null); // 'lesson' | 'ai_tutor' | 'quiz' | 'auth' | 'term_tooltip'
   const [activeChunk, setActiveChunk] = useState(null);
   const [currentTermTooltip, setCurrentTermTooltip] = useState(null);
 
@@ -949,22 +951,28 @@ export const AppProvider = ({ children }) => {
   // فحص الحاجة لإدخال رقم الهاتف ورقم ولي الأمر لمرة واحدة فقط عند أول تسجيل
   useEffect(() => {
     if (
-      isStudentLoggedIn && 
-      currentStudent && 
-      currentStudent.status !== 'guest' &&
-      !isTeacherMode && 
-      !isMasterTeacherEmail(currentStudent.email)
+      !isStudentLoggedIn || 
+      !currentStudent || 
+      currentStudent.status === 'guest' ||
+      !currentStudent.id ||
+      isTeacherMode || 
+      isMasterTeacherEmail(currentStudent.email)
     ) {
-      const hasPhone = Boolean(currentStudent.phone && String(currentStudent.phone).trim().length >= 8);
-      const hasGuardianPhone = Boolean(currentStudent.guardianPhone && String(currentStudent.guardianPhone).trim().length >= 8);
-      const isAlreadyMarkedDone = localStorage.getItem(`codelingo_phone_done_${currentStudent.id}`) === 'true';
-
-      if ((!hasPhone || !hasGuardianPhone) && !isAlreadyMarkedDone) {
-        // فتح نافذة استكمال بيانات الهاتف لمرة واحدة فقط فور الدخول
-        setActiveModal('initial_phone_setup');
+      if (activeModal === 'initial_phone_setup') {
+        setActiveModal(null);
       }
+      return;
     }
-  }, [currentStudent?.id, currentStudent?.phone, currentStudent?.guardianPhone, isStudentLoggedIn, isTeacherMode]);
+
+    const hasPhone = Boolean(currentStudent.phone && String(currentStudent.phone).trim().length >= 8);
+    const hasGuardianPhone = Boolean(currentStudent.guardianPhone && String(currentStudent.guardianPhone).trim().length >= 8);
+    const isAlreadyMarkedDone = localStorage.getItem(`codelingo_phone_done_${currentStudent.id}`) === 'true';
+
+    if ((!hasPhone || !hasGuardianPhone) && !isAlreadyMarkedDone) {
+      // فتح نافذة استكمال بيانات الهاتف لمرة واحدة فقط فور الدخول
+      setActiveModal('initial_phone_setup');
+    }
+  }, [currentStudent?.id, currentStudent?.phone, currentStudent?.guardianPhone, isStudentLoggedIn, isTeacherMode, activeModal]);
 
   /**
    * اعتماد حساب الطالب مع تعيين مجموعته الدراسية مباشرة وحفظه سحابياً في Supabase فوراً

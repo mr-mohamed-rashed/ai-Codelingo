@@ -5,13 +5,27 @@ import { useApp } from '../context/AppContext';
 import { playSound } from '../utils/audioEngine';
 
 export default function InitialPhoneSetupModal() {
-  const { currentStudent, updateStudentPhones, setActiveModal, logoutStudent, lang = 'ar' } = useApp();
+  const { currentStudent, updateStudentPhones, setActiveModal, logoutStudent, setCurrentPage, lang = 'ar' } = useApp();
 
   const [studentPhone, setStudentPhone] = useState(currentStudent?.phone || '');
   const [guardianPhone, setGuardianPhone] = useState(currentStudent?.guardianPhone || '');
   const [errorMsg, setErrorMsg] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [isSavedSuccessfully, setIsSavedSuccessfully] = useState(false);
+
+  // إذا كان الحساب غير مسجل أو زائر، لا تظهر النافذة مطلقاً
+  if (!currentStudent || currentStudent.status === 'guest' || !currentStudent.id) {
+    return null;
+  }
+
+  const handleExit = async () => {
+    playSound.click();
+    setActiveModal(null);
+    setCurrentPage('home');
+    if (typeof logoutStudent === 'function') {
+      await logoutStudent();
+    }
+  };
 
   const cleanDigits = (val) => String(val || '').replace(/[^0-9+]/g, '');
 
@@ -77,6 +91,14 @@ export default function InitialPhoneSetupModal() {
   return (
     <div className="initial-setup-backdrop">
       <div className="initial-setup-card">
+        <button 
+          className="profile-close-btn"
+          onClick={handleExit}
+          title={lang === 'ar' ? 'إغلاق والعودة للرئيسية' : 'Close and return home'}
+        >
+          ✕
+        </button>
+
         <div className="setup-header-badge">
           <Smartphone size={32} />
         </div>
@@ -187,11 +209,11 @@ export default function InitialPhoneSetupModal() {
         <button 
           type="button" 
           className="setup-logout-link"
-          onClick={logoutStudent}
-          title="تسجيل الخروج والعودة لاحقاً"
+          onClick={handleExit}
+          title="العودة للصفحة الرئيسية والتصفح كزائر"
         >
-          <LogOut size={13} style={{ display: 'inline', marginLeft: '4px', verticalAlign: 'middle' }} />
-          <span>{lang === 'ar' ? 'تسجيل الخروج والعودة لاحقاً' : 'Sign out and return later'}</span>
+          <LogOut size={14} style={{ display: 'inline', marginLeft: '6px', verticalAlign: 'middle' }} />
+          <span>{lang === 'ar' ? 'العودة للصفحة الرئيسية كزائر' : 'Return to home as guest'}</span>
         </button>
       </div>
     </div>
