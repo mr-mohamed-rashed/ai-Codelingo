@@ -25,7 +25,7 @@ export function getGoogleClientId() {
   if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GOOGLE_CLIENT_ID) {
     return import.meta.env.VITE_GOOGLE_CLIENT_ID.trim();
   }
-  return '';
+  return '185036534923-r2hc2bevojkjl073gbfs0ef008s1lckh.apps.googleusercontent.com';
 }
 
 /**
@@ -39,7 +39,7 @@ export function getFacebookAppId() {
   if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_FACEBOOK_APP_ID) {
     return import.meta.env.VITE_FACEBOOK_APP_ID.trim();
   }
-  return '';
+  return '2287502738483185';
 }
 
 /**

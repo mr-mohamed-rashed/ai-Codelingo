@@ -14,13 +14,13 @@ export const getEnvOrStorage = (envKey, storageKey) => {
 export const getSupabaseUrl = () => {
   const envVal = getEnvOrStorage('VITE_SUPABASE_URL', 'codelingo_supabase_url');
   if (envVal && !envVal.includes('placeholder')) return envVal.trim();
-  return '';
+  return 'https://ugmczeteraqkjvioqbrj.supabase.co';
 };
 
 export const getSupabaseAnonKey = () => {
   const envVal = getEnvOrStorage('VITE_SUPABASE_ANON_KEY', 'codelingo_supabase_anon_key');
   if (envVal && !envVal.includes('placeholder')) return envVal.trim();
-  return '';
+  return 'sb_publishable_WYhzpIEluZrOoLXm3UOIcw_etoMCv6y';
 };
 
 // التحقق من توافر المفاتيح لتنبيه المطور في الكونسول
