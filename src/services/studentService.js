@@ -8,6 +8,7 @@
  */
 
 import { isSupabaseConfigured } from '../utils/supabaseClient';
+import { sanitizeText, sanitizePhone, sanitizeEmail, sanitizeStudentInput } from '../utils/security';
 export { isSupabaseConfigured };
 
 // جلب عميل Supabase عند الطلب فقط لحماية سرعة الصفحة الأولى
@@ -53,10 +54,10 @@ export function mapAppStudentToDb(appStudent) {
   return {
     id: String(appStudent.id),
     auth_user_id: appStudent.authUserId || null,
-    name: (appStudent.name || '').trim(),
-    email: appStudent.email ? appStudent.email.trim().toLowerCase() : null,
-    phone: (appStudent.phone || '').trim() || null,
-    guardian_phone: (appStudent.guardianPhone || '').trim() || null,
+    name: sanitizeText(appStudent.name, 80) || 'طالب كودلينجو',
+    email: sanitizeEmail(appStudent.email) || null,
+    phone: sanitizePhone(appStudent.phone) || null,
+    guardian_phone: sanitizePhone(appStudent.guardianPhone) || null,
     avatar: appStudent.avatar || null,
     provider: appStudent.provider || 'google',
     status: appStudent.status || 'pending',
@@ -202,9 +203,9 @@ export async function updateStudentInSupabase(studentId, updates = {}) {
     if (updates.status !== undefined) payload.status = updates.status;
     if (updates.groupId !== undefined) payload.group_id = updates.groupId;
     if (updates.currentStation !== undefined) payload.current_station = updates.currentStation;
-    if (updates.name !== undefined) payload.name = updates.name.trim();
-    if (updates.phone !== undefined) payload.phone = updates.phone ? updates.phone.trim() : null;
-    if (updates.guardianPhone !== undefined) payload.guardian_phone = updates.guardianPhone ? updates.guardianPhone.trim() : null;
+    if (updates.name !== undefined) payload.name = sanitizeText(updates.name, 80);
+    if (updates.phone !== undefined) payload.phone = sanitizePhone(updates.phone) || null;
+    if (updates.guardianPhone !== undefined) payload.guardian_phone = sanitizePhone(updates.guardianPhone) || null;
     if (updates.avatar !== undefined) payload.avatar = updates.avatar;
     if (updates.authUserId !== undefined) payload.auth_user_id = updates.authUserId;
     if (updates.xp !== undefined) payload.xp = Number(updates.xp);
