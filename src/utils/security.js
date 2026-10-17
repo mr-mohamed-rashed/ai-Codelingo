@@ -28,27 +28,25 @@ export function sanitizeText(input, maxLength = 200) {
 }
 
 /**
- * تنظيف وفحص أرقام الهواتف (يقبل الأرقام وعلامة + فقط)
+ * تنظيف وفحص أرقام الهواتف (أرقام فقط بحد أقصى 11 رقماً)
  * @param {string} phone - رقم الهاتف
  * @returns {string} رقم الهاتف النظيف
  */
 export function sanitizePhone(phone) {
   if (!phone) return '';
-  // استخراج الأرقام وعلامة + فقط
-  const cleaned = String(phone).replace(/[^0-9+]/g, '').trim();
-  return cleaned.slice(0, 20);
+  // استخراج الأرقام فقط وقفلها على 11 رقماً بدقة
+  const cleaned = String(phone).replace(/[^0-9]/g, '').trim();
+  return cleaned.slice(0, 11);
 }
 
 /**
- * التحقق من صحة رقم الهاتف (لا يقل عن 10 أرقام)
+ * التحقق من صحة رقم الهاتف (11 رقماً ويبدأ بـ 01)
  * @param {string} phone
  * @returns {boolean}
  */
 export function isValidPhone(phone) {
   const cleaned = sanitizePhone(phone);
-  // أرقام الهواتف المقبولة في مصر والدول العربية بين 10 و 15 رقماً
-  const digitsOnly = cleaned.replace(/[^0-9]/g, '');
-  return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+  return cleaned.length === 11 && cleaned.startsWith('01');
 }
 
 /**

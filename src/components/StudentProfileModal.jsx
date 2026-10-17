@@ -44,17 +44,23 @@ export default function StudentProfileModal() {
     setErrorMsg('');
     setSaveSuccess(false);
 
-    const cleanPhone = String(phone || '').replace(/[^0-9+]/g, '');
-    const cleanGuardian = String(guardianPhone || '').replace(/[^0-9+]/g, '');
+    const cleanPhone = String(phone || '').replace(/[^0-9]/g, '').slice(0, 11);
+    const cleanGuardian = String(guardianPhone || '').replace(/[^0-9]/g, '').slice(0, 11);
 
-    if (!cleanPhone || cleanPhone.length < 10) {
-      setErrorMsg(lang === 'ar' ? '⚠️ يرجى إدخال رقم هاتف صحيح (10 أرقام على الأقل)' : 'Please enter a valid phone number');
+    if (!cleanPhone || cleanPhone.length !== 11 || !cleanPhone.startsWith('01')) {
+      setErrorMsg(lang === 'ar' ? '⚠️ رقم هاتف الطالب يجب أن يتكون من 11 رقماً بالضبط ويبدأ بـ 01' : 'Student phone must be exactly 11 digits starting with 01');
       playSound.wrong();
       return;
     }
 
-    if (!cleanGuardian || cleanGuardian.length < 10) {
-      setErrorMsg(lang === 'ar' ? '⚠️ يرجى إدخال رقم هاتف ولي الأمر بشكل صحيح' : 'Please enter a valid guardian phone');
+    if (!cleanGuardian || cleanGuardian.length !== 11 || !cleanGuardian.startsWith('01')) {
+      setErrorMsg(lang === 'ar' ? '⚠️ رقم ولي الأمر يجب أن يتكون من 11 رقماً بالضبط ويبدأ بـ 01' : 'Guardian phone must be exactly 11 digits starting with 01');
+      playSound.wrong();
+      return;
+    }
+
+    if (cleanPhone === cleanGuardian) {
+      setErrorMsg(lang === 'ar' ? '⚠️ رقم ولي الأمر يجب أن يكون مختلفاً عن رقم الطالب' : 'Guardian phone must be different from student phone');
       playSound.wrong();
       return;
     }
@@ -183,15 +189,16 @@ export default function StudentProfileModal() {
             <div className="profile-field-item">
               <label className="profile-field-label">
                 <Phone size={14} />
-                <span>رقم هاتف الطالب / واتساب</span>
+                <span>رقم هاتف الطالب / واتساب ({phone.length}/11)</span>
               </label>
               <div className="profile-field-input-box">
                 <Phone size={16} className="profile-field-icon" />
                 <input 
                   type="tel" 
                   value={phone} 
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="010XXXXXXXX"
+                  onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 11))}
+                  placeholder="010XXXXXXXX (11 رقماً)"
+                  maxLength={11}
                   dir="ltr"
                   required
                 />
@@ -201,15 +208,16 @@ export default function StudentProfileModal() {
             <div className="profile-field-item">
               <label className="profile-field-label">
                 <HeartHandshake size={14} style={{ color: '#f59e0b' }} />
-                <span>رقم ولي الأمر</span>
+                <span>رقم ولي الأمر ({guardianPhone.length}/11)</span>
               </label>
               <div className="profile-field-input-box">
                 <HeartHandshake size={16} className="profile-field-icon" style={{ color: '#f59e0b' }} />
                 <input 
                   type="tel" 
                   value={guardianPhone} 
-                  onChange={(e) => setGuardianPhone(e.target.value)}
-                  placeholder="011XXXXXXXX / 012XXXXXXXX"
+                  onChange={(e) => setGuardianPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 11))}
+                  placeholder="011XXXXXXXX / 012XXXXXXXX (11 رقماً)"
+                  maxLength={11}
                   dir="ltr"
                   required
                 />

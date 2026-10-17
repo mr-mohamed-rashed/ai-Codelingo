@@ -27,7 +27,7 @@ export default function InitialPhoneSetupModal() {
     }
   };
 
-  const cleanDigits = (val) => String(val || '').replace(/[^0-9+]/g, '');
+  const cleanDigits = (val) => String(val || '').replace(/[^0-9]/g, '').slice(0, 11);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,19 +36,19 @@ export default function InitialPhoneSetupModal() {
     const cleanStudent = cleanDigits(studentPhone);
     const cleanGuardian = cleanDigits(guardianPhone);
 
-    if (!cleanStudent || cleanStudent.length < 10) {
+    if (!cleanStudent || cleanStudent.length !== 11 || !cleanStudent.startsWith('01')) {
       setErrorMsg(lang === 'ar' 
-        ? '⚠️ يرجى إدخال رقم هاتف الطالب بشكل صحيح (10 أرقام على الأقل، مثال: 01012345678)' 
-        : 'Please enter a valid student phone number (at least 10 digits)'
+        ? '⚠️ رقم هاتف الطالب يجب أن يتكون من 11 رقماً بالضبط ويبدأ بـ 01 (مثال: 01012345678)' 
+        : 'Student phone must be exactly 11 digits starting with 01'
       );
       playSound.wrong();
       return;
     }
 
-    if (!cleanGuardian || cleanGuardian.length < 10) {
+    if (!cleanGuardian || cleanGuardian.length !== 11 || !cleanGuardian.startsWith('01')) {
       setErrorMsg(lang === 'ar' 
-        ? '⚠️ يرجى إدخال رقم هاتف ولي الأمر بشكل صحيح لمتابعة الأستاذ وتسكينك في المجموعة' 
-        : 'Please enter a valid guardian phone number'
+        ? '⚠️ رقم ولي الأمر يجب أن يتكون من 11 رقماً بالضبط ويبدأ بـ 01 (مثال: 01123456789)' 
+        : 'Guardian phone must be exactly 11 digits starting with 01'
       );
       playSound.wrong();
       return;
@@ -56,9 +56,11 @@ export default function InitialPhoneSetupModal() {
 
     if (cleanStudent === cleanGuardian) {
       setErrorMsg(lang === 'ar'
-        ? '⚠️ يُفضل أن يكون رقم ولي الأمر مختلفاً عن رقم الطالب للتواصل ومتابعة الحضور والتقارير'
-        : 'Guardian phone should preferably be different from student phone'
+        ? '⚠️ يُشترط أن يكون رقم ولي الأمر مختلفاً عن رقم الطالب للتواصل ومتابعة الحضور والتقارير'
+        : 'Guardian phone must be different from student phone'
       );
+      playSound.wrong();
+      return;
     }
 
     try {
@@ -141,17 +143,18 @@ export default function InitialPhoneSetupModal() {
           <form onSubmit={handleSubmit} className="setup-form">
             <div className="setup-field">
               <label className="setup-label">
-                <span>{lang === 'ar' ? 'رقم هاتف الطالب / واتساب' : 'Student Phone / WhatsApp'}</span>
-                <span className="setup-label-req">{lang === 'ar' ? '* مطلوب' : '* Required'}</span>
+                <span>{lang === 'ar' ? 'رقم هاتف الطالب / واتساب' : 'Student Phone / WhatsApp'} ({studentPhone.length}/11)</span>
+                <span className="setup-label-req">{lang === 'ar' ? '* 11 رقماً' : '* 11 digits'}</span>
               </label>
               <div className="setup-input-wrapper">
                 <Phone size={18} className="setup-input-icon" />
                 <input 
                   type="tel"
                   className="setup-input"
-                  placeholder="010XXXXXXXX"
+                  placeholder="010XXXXXXXX (11 رقماً)"
                   value={studentPhone}
-                  onChange={(e) => setStudentPhone(e.target.value)}
+                  onChange={(e) => setStudentPhone(cleanDigits(e.target.value))}
+                  maxLength={11}
                   disabled={isSaving}
                   required
                   autoFocus
@@ -161,17 +164,18 @@ export default function InitialPhoneSetupModal() {
 
             <div className="setup-field">
               <label className="setup-label">
-                <span>{lang === 'ar' ? 'رقم هاتف ولي الأمر' : 'Guardian Phone'}</span>
-                <span className="setup-label-req">{lang === 'ar' ? '* إجباري للمتابعة' : '* Required'}</span>
+                <span>{lang === 'ar' ? 'رقم هاتف ولي الأمر' : 'Guardian Phone'} ({guardianPhone.length}/11)</span>
+                <span className="setup-label-req">{lang === 'ar' ? '* 11 رقماً' : '* 11 digits'}</span>
               </label>
               <div className="setup-input-wrapper">
                 <HeartHandshake size={18} className="setup-input-icon" style={{ color: '#f59e0b' }} />
                 <input 
                   type="tel"
                   className="setup-input"
-                  placeholder="011XXXXXXXX / 012XXXXXXXX"
+                  placeholder="011XXXXXXXX / 012XXXXXXXX (11 رقماً)"
                   value={guardianPhone}
-                  onChange={(e) => setGuardianPhone(e.target.value)}
+                  onChange={(e) => setGuardianPhone(cleanDigits(e.target.value))}
+                  maxLength={11}
                   disabled={isSaving}
                   required
                 />

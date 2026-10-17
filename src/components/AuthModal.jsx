@@ -249,6 +249,27 @@ export default function AuthModal({ initialMode = 'register' }) {
       return;
     }
 
+    // التحقق من رقم الطالب وولي الأمر في حالة إنشاء حساب جديد
+    if (authMode === 'register') {
+      const cleanStudent = (formData.phone || '').trim().replace(/[^0-9]/g, '').slice(0, 11);
+      const cleanGuardian = (formData.guardianPhone || '').trim().replace(/[^0-9]/g, '').slice(0, 11);
+
+      if (cleanStudent && (cleanStudent.length !== 11 || !cleanStudent.startsWith('01'))) {
+        setErrorMessage('⚠️ رقم هاتف الطالب يجب أن يتكون من 11 رقماً ويبدأ بـ 01 (مثال: 01012345678)');
+        return;
+      }
+
+      if (!cleanGuardian || cleanGuardian.length !== 11 || !cleanGuardian.startsWith('01')) {
+        setErrorMessage('⚠️ رقم ولي الأمر مطلوب إجباري ويتكون من 11 رقماً ويبدأ بـ 01');
+        return;
+      }
+
+      if (cleanStudent && cleanStudent === cleanGuardian) {
+        setErrorMessage('⚠️ عذراً، رقم ولي الأمر يجب أن يكون مختلفاً تماماً عن رقم هاتف الطالب');
+        return;
+      }
+    }
+
     // فحص حساب الأستاذ الماستر
     if (isMasterTeacherEmail(email)) {
       const masterStudent = students.find(s => isMasterTeacherEmail(s.email));
@@ -319,16 +340,23 @@ export default function AuthModal({ initialMode = 'register' }) {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
-    const phone = formData.phone.trim();
+    const phone = (formData.phone || '').trim().replace(/[^0-9]/g, '').slice(0, 11);
+    const guardian = (formData.guardianPhone || '').trim().replace(/[^0-9]/g, '').slice(0, 11);
 
-    if (!phone || phone.length < 10) {
-      setErrorMessage('يرجى إدخال رقم هاتف صحيح (10 أرقام على الأقل)');
+    if (!phone || phone.length !== 11 || !phone.startsWith('01')) {
+      setErrorMessage('⚠️ رقم هاتف الطالب يجب أن يتكون من 11 رقماً ويبدأ بـ 01 (مثال: 01012345678)');
       return;
     }
 
-    if (authMode === 'register' && !formData.guardianPhone) {
-      setErrorMessage('⚠️ رقم ولي الأمر مطلوب إجباري لمتابعة الأستاذ');
-      return;
+    if (authMode === 'register') {
+      if (!guardian || guardian.length !== 11 || !guardian.startsWith('01')) {
+        setErrorMessage('⚠️ رقم ولي الأمر مطلوب إجباري ويتكون من 11 رقماً ويبدأ بـ 01');
+        return;
+      }
+      if (phone === guardian) {
+        setErrorMessage('⚠️ عذراً، رقم ولي الأمر يجب أن يكون مختلفاً تماماً عن رقم هاتف الطالب');
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -919,30 +947,34 @@ export default function AuthModal({ initialMode = 'register' }) {
                 {authMode === 'register' && (
                   <>
                     <div className="form-field text-right">
-                      <label className="field-label">رقم هاتف الطالب / واتساب</label>
+                      <label className="field-label">
+                        رقم هاتف الطالب / واتساب ({formData.phone ? formData.phone.length : 0}/11)
+                      </label>
                       <div className="input-with-icon">
                         <Phone size={18} className="field-icon" />
                         <input 
                           type="tel" 
-                          placeholder="010XXXXXXXX"
+                          placeholder="010XXXXXXXX (11 رقماً)"
+                          maxLength={11}
                           value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 11) })}
                         />
                       </div>
                     </div>
 
                     <div className="form-field text-right">
                       <label className="field-label flex items-center justify-between">
-                        <span>رقم ولي الأمر * (إجباري)</span>
+                        <span>رقم ولي الأمر * (إجباري) ({formData.guardianPhone ? formData.guardianPhone.length : 0}/11)</span>
                         <span className="text-amber-400 text-xs font-bold">لمتابعة الأستاذ</span>
                       </label>
                       <div className="input-with-icon">
                         <HeartHandshake size={18} className="field-icon text-amber-500" />
                         <input 
                           type="tel" 
-                          placeholder="011XXXXXXXX / 012XXXXXXXX"
+                          placeholder="011XXXXXXXX / 012XXXXXXXX (11 رقماً)"
+                          maxLength={11}
                           value={formData.guardianPhone}
-                          onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value })}
+                          onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value.replace(/[^0-9]/g, '').slice(0, 11) })}
                           required
                         />
                       </div>
@@ -1014,14 +1046,17 @@ export default function AuthModal({ initialMode = 'register' }) {
                 )}
 
                 <div className="form-field text-right">
-                  <label className="field-label">رقم هاتف الطالب (Phone Number) *</label>
+                  <label className="field-label">
+                    رقم هاتف الطالب (Phone Number) * ({formData.phone ? formData.phone.length : 0}/11)
+                  </label>
                   <div className="input-with-icon">
                     <Phone size={18} className="field-icon text-indigo-400" />
                     <input 
                       type="tel" 
-                      placeholder="010XXXXXXXX"
+                      placeholder="010XXXXXXXX (11 رقماً)"
+                      maxLength={11}
                       value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 11) })}
                       required
                       autoFocus
                     />
@@ -1075,16 +1110,17 @@ export default function AuthModal({ initialMode = 'register' }) {
                 {authMode === 'register' && (
                   <div className="form-field text-right">
                     <label className="field-label flex items-center justify-between">
-                      <span>رقم ولي الأمر * (إجباري)</span>
+                      <span>رقم ولي الأمر * (إجباري) ({formData.guardianPhone ? formData.guardianPhone.length : 0}/11)</span>
                       <span className="text-amber-400 text-xs font-bold">لمتابعة الأستاذ</span>
                     </label>
                     <div className="input-with-icon">
                       <HeartHandshake size={18} className="field-icon text-amber-500" />
                       <input 
                         type="tel" 
-                        placeholder="011XXXXXXXX / 012XXXXXXXX"
+                        placeholder="011XXXXXXXX / 012XXXXXXXX (11 رقماً)"
+                        maxLength={11}
                         value={formData.guardianPhone}
-                        onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value.replace(/[^0-9]/g, '').slice(0, 11) })}
                         required
                       />
                     </div>
