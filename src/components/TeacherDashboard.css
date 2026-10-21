@@ -1568,25 +1568,27 @@ html[dir='ltr'] .admin-hud-info {
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  padding: 22px 26px;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.14) 0%, rgba(99, 102, 241, 0.12) 100%);
-  border: 1.5px solid rgba(245, 158, 11, 0.35);
+  padding: 22px 28px;
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(49, 46, 129, 0.85) 50%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1.5px solid rgba(245, 158, 11, 0.55);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 25px rgba(245, 158, 11, 0.15);
   flex-wrap: wrap;
+  transition: all 0.3s ease;
 }
 
 .master-banner-icon {
-  width: 56px;
-  height: 56px;
+  width: 58px;
+  height: 58px;
   border-radius: 18px;
-  background: rgba(245, 158, 11, 0.18);
-  border: 1.5px solid rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.2);
+  border: 1.5px solid rgba(245, 158, 11, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
 }
 
 .master-banner-text {
@@ -1595,17 +1597,165 @@ html[dir='ltr'] .admin-hud-info {
 }
 
 .master-banner-text h3 {
-  font-size: 1.22rem;
-  font-weight: 800;
-  color: #fef08a;
-  margin: 0 0 6px 0;
+  font-size: 1.25rem;
+  font-weight: 850;
+  color: #fbbf24;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .master-banner-text p {
-  font-size: 0.86rem;
-  line-height: 1.6;
-  color: #e2e8f0;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: #f1f5f9;
   margin: 0;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+/* =========================================================
+   LIGHT THEME ADAPTATION FOR SUPER ADMIN BANNER & CARDS
+   تنسيق فخم عالي التباين متناسق تماماً مع ألوان المنصة في الوضع النهاري
+   ========================================================= */
+body.theme-light .master-superadmin-banner,
+html[data-theme='light'] .master-superadmin-banner {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fef9c3 100%);
+  border: 1.5px solid #d97706;
+  box-shadow: 0 8px 24px rgba(217, 119, 6, 0.16), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+body.theme-light .master-banner-icon,
+html[data-theme='light'] .master-banner-icon {
+  background: #fde68a;
+  border-color: #d97706;
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+}
+
+body.theme-light .master-banner-icon svg,
+html[data-theme='light'] .master-banner-icon svg,
+body.theme-light .master-crown-icon,
+html[data-theme='light'] .master-crown-icon {
+  color: #b45309 !important;
+}
+
+body.theme-light .master-banner-text h3,
+html[data-theme='light'] .master-banner-text h3 {
+  color: #78350f !important; /* برونزي ذهبي داكن فخم عالي التباين والوضوح */
+  text-shadow: none;
+  font-weight: 900;
+}
+
+body.theme-light .master-banner-text p,
+html[data-theme='light'] .master-banner-text p {
+  color: #0f172a !important; /* كحلي داكن شديد الوضوح ومريح للقراءة مع تباين AAA */
+  font-weight: 600;
+  opacity: 1;
+}
+
+/* دعم بطاقات المشرفين والأدوات في الوضع النهاري */
+body.theme-light .admin-card-item,
+html[data-theme='light'] .admin-card-item {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+body.theme-light .admin-card-item.is-master-card,
+html[data-theme='light'] .admin-card-item.is-master-card {
+  background: linear-gradient(145deg, #fffbeb 0%, #ffffff 100%);
+  border-color: #f59e0b;
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.14);
+}
+
+body.theme-light .admin-name,
+html[data-theme='light'] .admin-name {
+  color: #0f172a;
+}
+
+body.theme-light .admin-avatar-box,
+html[data-theme='light'] .admin-avatar-box {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+body.theme-light .admin-card-details,
+html[data-theme='light'] .admin-card-details {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+body.theme-light .admin-card-details-closed,
+html[data-theme='light'] .admin-card-details-closed {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+body.theme-light .closed-title,
+html[data-theme='light'] .closed-title {
+  color: #1e293b;
+}
+
+body.theme-light .closed-subtitle,
+html[data-theme='light'] .closed-subtitle {
+  color: #64748b;
+}
+
+body.theme-light .btn-card-eye-toggle,
+html[data-theme='light'] .btn-card-eye-toggle {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+body.theme-light .btn-card-eye-toggle:hover,
+html[data-theme='light'] .btn-card-eye-toggle:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+body.theme-light .btn-inner-eye-pw,
+html[data-theme='light'] .btn-inner-eye-pw {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+body.theme-light .search-input,
+html[data-theme='light'] .search-input {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1.5px solid #cbd5e1 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+body.theme-light .search-input::placeholder,
+html[data-theme='light'] .search-input::placeholder {
+  color: #64748b !important;
+}
+
+body.theme-light .search-icon,
+html[data-theme='light'] .search-icon {
+  color: #475569 !important;
+}
+
+body.theme-light .admin-stat-card,
+body.theme-light .stat-card,
+html[data-theme='light'] .admin-stat-card,
+html[data-theme='light'] .stat-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+body.theme-light .stat-value,
+html[data-theme='light'] .stat-value {
+  color: #0f172a !important;
+}
+
+body.theme-light .stat-label,
+html[data-theme='light'] .stat-label {
+  color: #64748b !important;
 }
 
 .admins-cards-grid {

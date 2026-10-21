@@ -999,7 +999,7 @@ export default function TeacherDashboard() {
             {/* لافتة تعريف الماستر الذهبية */}
             <div className="master-superadmin-banner">
               <div className="master-banner-icon">
-                <Crown size={32} className="text-amber-400" />
+                <Crown size={32} className="master-crown-icon text-amber-400" />
               </div>
               <div className="master-banner-text">
                 <h3>{lang === 'en' ? 'Super Admin Master Control Panel' : 'لوحة تحكم السوبر أدمن الماستر (أ. محمد راشد)'}</h3>
