@@ -165,6 +165,7 @@ function MainAppContent() {
                         setActiveModal('auth_register');
                       }}
                       id="btn-create-account-start"
+                      aria-label={lang === 'ar' ? 'إنشاء حساب جديد لبدء المذاكرة' : 'Create new account to start learning'}
                     >
                       <Sparkles size={20} />
                       <span>{lang === 'ar' ? 'إنشاء حساب لبدء المذاكرة 🚀' : 'Create Account to Start 🚀'}</span>
@@ -177,6 +178,7 @@ function MainAppContent() {
                         setActiveModal('auth_login');
                       }}
                       id="btn-login-existing"
+                      aria-label={lang === 'ar' ? 'تسجيل الدخول إلى حسابك الحالي' : 'Sign in to your existing account'}
                     >
                       <LogIn size={18} />
                       <span>{lang === 'ar' ? 'تسجيل الدخول 🔑' : 'Sign In 🔑'}</span>
@@ -191,6 +193,7 @@ function MainAppContent() {
                         setCurrentPage('content');
                       }}
                       id="btn-enter-content-page"
+                      aria-label={lang === 'ar' ? 'الدخول إلى مسار المنهج والدروس' : 'Enter curriculum and lessons path'}
                     >
                       <BookOpen size={22} />
                       <span>{lang === 'ar' ? 'الدخول لمسار المنهج 📚' : 'Enter Curriculum 📚'}</span>
@@ -207,6 +210,7 @@ function MainAppContent() {
                             setActiveModal('profile');
                           }}
                           title={lang === 'ar' ? 'اضغط لتعديل بياناتك وصورتك ورقم ولي الأمر' : 'Edit profile'}
+                          aria-label={lang === 'ar' ? 'تعديل الملف الشخصي' : 'Edit Profile'}
                         >
                           <Settings size={13} className="text-emerald-400" />
                           <span>{lang === 'ar' ? 'تعديل الملف الشخصي' : 'Edit Profile'}</span>

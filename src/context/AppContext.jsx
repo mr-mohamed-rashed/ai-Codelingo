@@ -825,24 +825,41 @@ export const AppProvider = ({ children }) => {
     }).catch(err => console.warn('Supabase dynamic load note:', err));
     };
 
+    let triggered = false;
+    const triggerSync = () => {
+      if (triggered || isCancelled) return;
+      triggered = true;
+      cleanupListeners();
+      initCloudAuthAndSync();
+    };
+
+    const cleanupListeners = () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('pointerdown', triggerSync);
+        window.removeEventListener('touchstart', triggerSync);
+        window.removeEventListener('scroll', triggerSync);
+        window.removeEventListener('keydown', triggerSync);
+      }
+      if (timerId) clearTimeout(timerId);
+    };
+
     if (isReturningFromOAuth) {
       // عائد من OAuth: تنفيذ فوري دون تأخير
-      initCloudAuthAndSync();
-    } else if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      // تأجيل التحميل الكسول حتى استقرار الرندرة الأولى تماماً
-      idleId = window.requestIdleCallback(() => {
-        timerId = setTimeout(initCloudAuthAndSync, 1200);
-      }, { timeout: 3500 });
+      triggerSync();
     } else {
-      timerId = setTimeout(initCloudAuthAndSync, 2000);
+      // بدء المزامنة فور أول تفاعل بشري حقيقي (لمس الشاشة أو سكرول) أو بعد 6 ثوانٍ
+      if (typeof window !== 'undefined') {
+        window.addEventListener('pointerdown', triggerSync, { once: true, passive: true });
+        window.addEventListener('touchstart', triggerSync, { once: true, passive: true });
+        window.addEventListener('scroll', triggerSync, { once: true, passive: true });
+        window.addEventListener('keydown', triggerSync, { once: true, passive: true });
+      }
+      timerId = setTimeout(triggerSync, 6000);
     }
 
     return () => {
       isCancelled = true;
-      if (idleId && typeof window !== 'undefined' && window.cancelIdleCallback) {
-        window.cancelIdleCallback(idleId);
-      }
-      if (timerId) clearTimeout(timerId);
+      cleanupListeners();
       if (subscription) subscription.unsubscribe();
     };
   }, [isSupabaseConfigured]);

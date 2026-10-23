@@ -149,20 +149,37 @@
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;700;800&display=swap">
     </noscript>
 
+    <!-- Pre-render Theme Setter (Zero-Flash & Zero-CLS) -->
+    <script>
+      (function() {
+        try {
+          var t = localStorage.getItem('codelingo_theme_user_choice') || localStorage.getItem('codelingo_theme') || 'light';
+          document.documentElement.setAttribute('data-theme', t);
+          document.documentElement.className = t === 'dark' ? 'theme-dark' : 'theme-light';
+        } catch(e) {}
+      })();
+    </script>
+
     <!-- Critical Above-The-Fold Styles for Instant First Paint (Zero Render-Blocking) -->
     <style id="critical-above-the-fold">
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
       :root {
+        --bg-primary: #f8fafc;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --primary: #4f46e5;
+        --font-main: 'Alexandria', system-ui, -apple-system, sans-serif;
+      }
+      html[data-theme='dark'] {
         --bg-primary: #0b0f19;
         --text-primary: #f8fafc;
-        --primary: #6366f1;
-        --font-main: 'Alexandria', system-ui, -apple-system, sans-serif;
+        --text-secondary: #94a3b8;
       }
       body {
         margin: 0;
         padding: 0;
-        background: #0b0f19;
-        color: #f8fafc;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
         font-family: var(--font-main);
         direction: rtl;
         min-height: 100vh;
@@ -178,12 +195,16 @@
         align-items: center;
         justify-content: space-between;
         padding: 0.75rem 1.25rem;
-        background: rgba(15, 23, 42, 0.85);
-        backdrop-filter: blur(12px);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: #ffffff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08);
         position: sticky;
         top: 0;
         z-index: 50;
+      }
+      html[data-theme='dark'] .app-navbar {
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom-color: rgba(255, 255, 255, 0.08);
       }
       .home-standalone-page {
         flex: 1;
@@ -201,15 +222,18 @@
       .home-hero-main-title {
         font-size: clamp(1.8rem, 4vw, 2.75rem);
         font-weight: 800;
-        color: #f8fafc;
+        color: var(--text-primary);
         margin: 1rem 0;
         line-height: 1.25;
       }
       .brand-highlight {
+        color: #4f46e5;
+      }
+      html[data-theme='dark'] .brand-highlight {
         color: #818cf8;
       }
       .home-hero-subtitle {
-        color: #94a3b8;
+        color: var(--text-secondary);
         font-size: 1.05rem;
         line-height: 1.7;
         max-width: 680px;
