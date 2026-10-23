@@ -175,6 +175,10 @@ body {
   align-items: center;
 }
 
+.navbar-top-bar {
+  display: contents;
+}
+
 .brand-section {
   display: flex;
   align-items: center;
@@ -2042,30 +2046,175 @@ body.theme-light .card-exam-tip .concept-card-text {
    ========================================================= */
 @media (max-width: 768px) {
   .app-navbar {
-    padding: 10px 14px;
-    flex-wrap: wrap;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+    gap: 8px;
+    background: rgba(15, 23, 42, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
-  
+
+  /* الصف العلوي الأول: الشعار واسم المنصة يميناً، والبروفايل والخروج يساراً */
+  .navbar-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .brand-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .brand-logo-badge {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .brand-title-wrap {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .brand-title-heading,
   .brand-title-wrap h1 {
-    font-size: 0.95rem;
+    font-size: 0.86rem !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #ffffff;
+    line-height: 1.25;
   }
 
   .brand-subtitle {
+    font-size: 0.68rem;
+    color: #38bdf8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    line-height: 1.2;
+  }
+
+  /* أدوات التحكم والبروفايل وتسجيل الخروج في صف متناسق */
+  .navbar-controls-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .nav-utilities-capsule {
+    padding: 2px 4px;
+    gap: 2px;
+  }
+  .nav-capsule-btn {
+    min-height: 32px;
+    padding: 4px 6px;
+  }
+  .capsule-label {
     display: none;
   }
 
-  .hud-stats-group {
-    order: 3;
-    width: 100%;
-    justify-content: space-around;
-    padding-top: 6px;
-    border-top: 1px solid var(--border-glass);
+  /* زر تسجيل الخروج أنيق ومريح */
+  .btn-nav-auth {
+    min-height: 34px;
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    border-radius: 10px;
+    gap: 4px;
+    font-weight: 800;
+  }
+  .btn-nav-auth-text {
+    font-size: 0.78rem;
   }
 
+  /* بروفايل الطالب بشكل دائري أنيق متناسق بجوار الخروج */
+  .user-profile-trigger {
+    padding: 2px 6px 2px 2px;
+    gap: 6px;
+    height: 34px;
+    border-radius: 999px;
+  }
+  html[dir='ltr'] .user-profile-trigger {
+    padding: 2px 2px 2px 6px;
+  }
+  .avatar-ring-wrap {
+    width: 28px;
+    height: 28px;
+  }
+  .user-profile-status {
+    display: none;
+  }
+  .user-profile-name {
+    font-size: 0.75rem;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* الصف الثاني: التبويبات بعرض كامل مريح */
+  .nav-main-pages-links {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: stretch;
+    gap: 6px;
+    background: rgba(30, 41, 59, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 3px;
+    box-sizing: border-box;
+    margin: 0;
+  }
+  .nav-page-tab-btn {
+    flex: 1;
+    min-height: 36px;
+    padding: 6px 8px;
+    font-size: 0.82rem;
+    justify-content: center;
+    border-radius: 9px;
+  }
+
+  /* الصف الثالث: عدادات الـ HUD موزعة بالتساوي دون انكسار */
+  .hud-stats-group {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 4px 0 0 0;
+    margin: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-sizing: border-box;
+  }
   .hud-stat-chip {
-    padding: 4px 10px;
-    font-size: 0.8rem;
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+    padding: 4px 6px;
+    font-size: 0.72rem;
+    gap: 4px;
+    border-radius: 8px;
   }
 
   .chapter-path-header {
@@ -2121,13 +2270,13 @@ body.theme-light .card-exam-tip .concept-card-text {
   }
 
   .duo-node-btn {
-    width: 66px;
-    height: 64px;
+    width: 64px;
+    height: 60px;
   }
 
   .boss-btn {
-    width: 76px !important;
-    height: 76px !important;
+    width: 74px !important;
+    height: 74px !important;
   }
 }
 

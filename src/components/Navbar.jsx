@@ -36,34 +36,150 @@ export const Navbar = () => {
 
   return (
     <header className="app-navbar">
-      {/* Brand & Title */}
-      <div 
-        className="brand-section cursor-pointer"
-        onClick={() => {
-          playSound.click();
-          if (isTeacherMode) setIsTeacherMode(false);
-          setCurrentPage('home');
-        }}
-        title="الانتقال للصفحة الرئيسية ومدرج الأوائل"
-      >
-        <div className="brand-logo-badge">
-          <picture>
-            <source srcSet={`${import.meta.env.BASE_URL}icon-192.webp`} type="image/webp" />
-            <img 
-              src={`${import.meta.env.BASE_URL}icon-192.png`} 
-              width="44" 
-              height="44" 
-              alt="شعار منصة كودلينجو" 
-              className="brand-logo-img" 
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-            />
-          </picture>
+      {/* الصف العلوي الأول: الشعار واسم المنصة وأزرار البروفايل والخروج */}
+      <div className="navbar-top-bar">
+        {/* Brand & Title */}
+        <div 
+          className="brand-section cursor-pointer"
+          onClick={() => {
+            playSound.click();
+            if (isTeacherMode) setIsTeacherMode(false);
+            setCurrentPage('home');
+          }}
+          title="الانتقال للصفحة الرئيسية ومدرج الأوائل"
+        >
+          <div className="brand-logo-badge">
+            <picture>
+              <source srcSet={`${import.meta.env.BASE_URL}icon-192.webp`} type="image/webp" />
+              <img 
+                src={`${import.meta.env.BASE_URL}icon-192.png`} 
+                width="44" 
+                height="44" 
+                alt="شعار منصة كودلينجو" 
+                className="brand-logo-img" 
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+              />
+            </picture>
+          </div>
+          <div className="brand-title-wrap">
+            <div className="brand-title-heading">{t('appTitle')}</div>
+            <span className="brand-subtitle">{t('appSubtitle')}</span>
+          </div>
         </div>
-        <div className="brand-title-wrap">
-          <div className="brand-title-heading">{t('appTitle')}</div>
-          <span className="brand-subtitle">{t('appSubtitle')}</span>
+
+        {/* Right Controls: Unified Utilities Capsule, Teacher Button & Profile */}
+        <div className="navbar-controls-group">
+          {/* Segmented Utility Capsule (Theme, Lang, PWA) */}
+          <div className="nav-utilities-capsule">
+            {/* PWA Install Button */}
+            {canInstall && (
+              <button
+                className="nav-capsule-btn btn-pwa"
+                onClick={installApp}
+                title={t('installAppDesc')}
+              >
+                <Smartphone size={15} />
+                <span className="capsule-label">{t('installApp')}</span>
+              </button>
+            )}
+
+            {/* Theme Toggle (Light / Dark) */}
+            <button
+              className="nav-capsule-btn btn-theme"
+              onClick={toggleTheme}
+              title={theme === 'dark' ? t('lightMode') : t('darkMode')}
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Sun size={15} className="capsule-icon text-amber-400" />
+                  <span className="capsule-label">{lang === 'ar' ? 'لايت' : 'Light'}</span>
+                </>
+              ) : (
+                <>
+                  <Moon size={15} className="capsule-icon text-indigo-400" />
+                  <span className="capsule-label">{lang === 'ar' ? 'ليلي' : 'Dark'}</span>
+                </>
+              )}
+            </button>
+
+            <div className="capsule-divider" />
+
+            {/* Language Toggle (Arabic / English) */}
+            <button
+              className="nav-capsule-btn btn-lang"
+              onClick={toggleLang}
+              title="Switch Language / تغيير اللغة"
+            >
+              <Globe size={15} className="capsule-icon text-cyan-400" />
+              <span className="capsule-lang-tag">{lang === 'ar' ? 'EN' : 'عربي'}</span>
+            </button>
+          </div>
+
+          {/* زر تسجيل الدخول أو تسجيل الخروج للطلاب */}
+          {isTeacherMode ? (
+            <button 
+              className="btn-nav-auth btn-nav-back"
+              onClick={handleAuthAction}
+              title={t('backToMap')}
+            >
+              <BookOpen size={16} />
+              <span className="btn-nav-auth-text">{t('backToMap')}</span>
+            </button>
+          ) : isStudentLoggedIn ? (
+            <button 
+              className="btn-nav-auth btn-nav-logout"
+              onClick={handleAuthAction}
+              title={t('signOut')}
+            >
+              <LogOut size={16} />
+              <span className="btn-nav-auth-text">{lang === 'ar' ? 'تسجيل خروج' : 'Sign Out'}</span>
+            </button>
+          ) : (
+            <button 
+              className="btn-nav-auth btn-nav-login"
+              onClick={handleAuthAction}
+              title={t('signIn')}
+            >
+              <LogIn size={16} />
+              <span className="btn-nav-auth-text">{t('signIn')}</span>
+            </button>
+          )}
+
+          {/* Student Profile Trigger */}
+          {!isTeacherMode && currentStudent && (
+            <div 
+              className="user-profile-trigger"
+              onClick={() => {
+                playSound.click();
+                setActiveModal('profile');
+              }}
+              title={currentStudent.name}
+            >
+              <div className="avatar-ring-wrap">
+                <img 
+                  src={currentStudent.avatar} 
+                  alt={currentStudent.name} 
+                  className="user-avatar-img" 
+                />
+                <span className={`avatar-status-dot ${currentStudent.status === 'approved' ? 'dot-approved' : currentStudent.status === 'guest' ? 'dot-guest' : 'dot-pending'}`} />
+              </div>
+              <div className="user-profile-info">
+                <span className="user-profile-name">{currentStudent.name}</span>
+                <span 
+                  className="user-profile-status"
+                  style={{ color: currentStudent.status === 'approved' ? '#10b981' : currentStudent.status === 'guest' ? '#64748b' : '#f59e0b' }}
+                >
+                  {currentStudent.status === 'approved' 
+                    ? `✓ ${t('approvedStudent')}` 
+                    : currentStudent.status === 'guest'
+                      ? (lang === 'en' ? 'Visitor Mode' : 'تصفح كزائر')
+                      : `⏳ ${t('pendingStudent')}`}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -120,119 +236,6 @@ export const Navbar = () => {
           </div>
         </div>
       )}
-
-      {/* Right Controls: Unified Utilities Capsule, Teacher Button & Profile */}
-      <div className="navbar-controls-group">
-        {/* Segmented Utility Capsule (Theme, Lang, PWA) */}
-        <div className="nav-utilities-capsule">
-          {/* PWA Install Button */}
-          {canInstall && (
-            <button
-              className="nav-capsule-btn btn-pwa"
-              onClick={installApp}
-              title={t('installAppDesc')}
-            >
-              <Smartphone size={15} />
-              <span className="capsule-label">{t('installApp')}</span>
-            </button>
-          )}
-
-          {/* Theme Toggle (Light / Dark) */}
-          <button
-            className="nav-capsule-btn btn-theme"
-            onClick={toggleTheme}
-            title={theme === 'dark' ? t('lightMode') : t('darkMode')}
-          >
-            {theme === 'dark' ? (
-              <>
-                <Sun size={15} className="capsule-icon text-amber-400" />
-                <span className="capsule-label">{lang === 'ar' ? 'لايت' : 'Light'}</span>
-              </>
-            ) : (
-              <>
-                <Moon size={15} className="capsule-icon text-indigo-400" />
-                <span className="capsule-label">{lang === 'ar' ? 'ليلي' : 'Dark'}</span>
-              </>
-            )}
-          </button>
-
-          <div className="capsule-divider" />
-
-          {/* Language Toggle (Arabic / English) */}
-          <button
-            className="nav-capsule-btn btn-lang"
-            onClick={toggleLang}
-            title="Switch Language / تغيير اللغة"
-          >
-            <Globe size={15} className="capsule-icon text-cyan-400" />
-            <span className="capsule-lang-tag">{lang === 'ar' ? 'EN' : 'عربي'}</span>
-          </button>
-        </div>
-
-        {/* زر تسجيل الدخول أو تسجيل الخروج للطلاب */}
-        {isTeacherMode ? (
-          <button 
-            className="btn-nav-auth btn-nav-back"
-            onClick={handleAuthAction}
-            title={t('backToMap')}
-          >
-            <BookOpen size={16} />
-            <span className="btn-nav-auth-text">{t('backToMap')}</span>
-          </button>
-        ) : isStudentLoggedIn ? (
-          <button 
-            className="btn-nav-auth btn-nav-logout"
-            onClick={handleAuthAction}
-            title={t('signOut')}
-          >
-            <LogOut size={16} />
-            <span className="btn-nav-auth-text">{t('signOut')}</span>
-          </button>
-        ) : (
-          <button 
-            className="btn-nav-auth btn-nav-login"
-            onClick={handleAuthAction}
-            title={t('signIn')}
-          >
-            <LogIn size={16} />
-            <span className="btn-nav-auth-text">{t('signIn')}</span>
-          </button>
-        )}
-
-        {/* Student Profile Trigger */}
-        {!isTeacherMode && currentStudent && (
-          <div 
-            className="user-profile-trigger"
-            onClick={() => {
-              playSound.click();
-              setActiveModal('profile');
-            }}
-            title={currentStudent.name}
-          >
-            <div className="avatar-ring-wrap">
-              <img 
-                src={currentStudent.avatar} 
-                alt={currentStudent.name} 
-                className="user-avatar-img" 
-              />
-              <span className={`avatar-status-dot ${currentStudent.status === 'approved' ? 'dot-approved' : currentStudent.status === 'guest' ? 'dot-guest' : 'dot-pending'}`} />
-            </div>
-            <div className="user-profile-info">
-              <span className="user-profile-name">{currentStudent.name}</span>
-              <span 
-                className="user-profile-status"
-                style={{ color: currentStudent.status === 'approved' ? '#10b981' : currentStudent.status === 'guest' ? '#64748b' : '#f59e0b' }}
-              >
-                {currentStudent.status === 'approved' 
-                  ? `✓ ${t('approvedStudent')}` 
-                  : currentStudent.status === 'guest'
-                    ? (lang === 'en' ? 'Visitor Mode' : 'تصفح كزائر')
-                    : `⏳ ${t('pendingStudent')}`}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
     </header>
   );
 };
