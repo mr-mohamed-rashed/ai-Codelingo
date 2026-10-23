@@ -1,6 +1,6 @@
 /**
  * خريطة وفهارس المنهج الخفيفة (Lightweight Curriculum Metadata)
- * تحتوي على بيانات الفصول الـ 4 وقائمة معرفات وعقد المسار الـ 45 فقط (~18KB)
+ * تحتوي على بيانات الفصول الـ 4 وقائمة معرفات وعقد المسار الـ 49 المعتمدة
  * تتيح فتح الصفحة الرئيسية في 0 ثانية دون تحميل بنك الأسئلة والشروحات الكاملة مسبقاً
  */
 
@@ -71,6 +71,7 @@ export const ALL_CHUNK_IDS = [
   "ch1-l4-c1",
   "ch1-l4-c2",
   "ch1-l4-exam",
+  "ch1-chapter-exam",
   "ch2-l1-c1",
   "ch2-l1-c2",
   "ch2-l1-exam",
@@ -80,6 +81,7 @@ export const ALL_CHUNK_IDS = [
   "ch2-l3-c1",
   "ch2-l3-c2",
   "ch2-l3-exam",
+  "ch2-chapter-exam",
   "ch3-l1-c1",
   "ch3-l1-c2",
   "ch3-l1-exam",
@@ -89,6 +91,7 @@ export const ALL_CHUNK_IDS = [
   "ch3-l3-c1",
   "ch3-l3-c2",
   "ch3-l3-exam",
+  "ch3-chapter-exam",
   "ch4-l1-c1",
   "ch4-l1-c2",
   "ch4-l1-exam",
@@ -100,7 +103,8 @@ export const ALL_CHUNK_IDS = [
   "ch4-l3-exam",
   "ch4-l4-c1",
   "ch4-l4-c2",
-  "ch4-l4-exam"
+  "ch4-l4-exam",
+  "ch4-chapter-exam"
 ];
 
 export const PATH_NODES = [
@@ -312,6 +316,21 @@ export const PATH_NODES = [
     "starsReward": 3
   },
   {
+    "id": "ch1-chapter-exam",
+    "chapterId": 1,
+    "lessonId": "1-boss",
+    "chunkIndex": 99,
+    "chunkTitle": "👑 الاختبار الوزاري الشامل: وحدة تكنولوجيا المعلومات والمجتمع",
+    "enChunkTitle": "👑 Unit 1 Comprehensive Ministry Exam: IT & Society",
+    "lessonTitle": "👑 الامتحان الوزاري الشامل للوحدة الأولى",
+    "enLessonTitle": "👑 Unit 1 Comprehensive Ministry Exam",
+    "type": "lesson_exam",
+    "iconEmoji": "👑",
+    "xpReward": 200,
+    "starsReward": 5,
+    "isChapterExam": true
+  },
+  {
     "id": "ch2-l1-c1",
     "chapterId": 2,
     "lessonId": "2-1",
@@ -435,6 +454,21 @@ export const PATH_NODES = [
     "starsReward": 3
   },
   {
+    "id": "ch2-chapter-exam",
+    "chapterId": 2,
+    "lessonId": "2-boss",
+    "chunkIndex": 99,
+    "chunkTitle": "👑 الاختبار الوزاري لشهر أكتوبر: وحدة الأمن السيبراني (ص 35)",
+    "enChunkTitle": "👑 October Official Ministry Exam: Cybersecurity (p. 35)",
+    "lessonTitle": "👑 اختبار شهر أكتوبر الوزاري المعتمد: وحدة الأمن السيبراني",
+    "enLessonTitle": "👑 October Official Ministry Exam: Cybersecurity",
+    "type": "lesson_exam",
+    "iconEmoji": "👑",
+    "xpReward": 200,
+    "starsReward": 5,
+    "isChapterExam": true
+  },
+  {
     "id": "ch3-l1-c1",
     "chapterId": 3,
     "lessonId": "3-1",
@@ -556,6 +590,21 @@ export const PATH_NODES = [
     "type": "lesson_exam",
     "xpReward": 100,
     "starsReward": 3
+  },
+  {
+    "id": "ch3-chapter-exam",
+    "chapterId": 3,
+    "lessonId": "3-boss",
+    "chunkIndex": 99,
+    "chunkTitle": "👑 الاختبار الوزاري لشهر نوفمبر: وحدة تطبيقات الويب (ص 62)",
+    "enChunkTitle": "👑 November Official Ministry Exam: Web Applications (p. 62)",
+    "lessonTitle": "👑 اختبار شهر نوفمبر الوزاري المعتمد: وحدة تطبيقات الويب",
+    "enLessonTitle": "👑 November Official Ministry Exam: Web Applications",
+    "type": "lesson_exam",
+    "iconEmoji": "👑",
+    "xpReward": 200,
+    "starsReward": 5,
+    "isChapterExam": true
   },
   {
     "id": "ch4-l1-c1",
@@ -720,6 +769,21 @@ export const PATH_NODES = [
     "type": "lesson_exam",
     "xpReward": 150,
     "starsReward": 5
+  },
+  {
+    "id": "ch4-chapter-exam",
+    "chapterId": 4,
+    "lessonId": "4-boss",
+    "chunkIndex": 99,
+    "chunkTitle": "👑 الامتحان الوزاري الشامل للفصل الدراسي الأول (ص 84 - 87)",
+    "enChunkTitle": "👑 First Semester Grand Final Ministry Exam (p. 84 - 87)",
+    "lessonTitle": "👑 الامتحان الوزاري الشامل: الفصل الدراسي الأول كاملاً",
+    "enLessonTitle": "👑 First Semester Grand Final Ministry Exam",
+    "type": "lesson_exam",
+    "iconEmoji": "👑",
+    "xpReward": 300,
+    "starsReward": 5,
+    "isChapterExam": true
   }
 ];
 
@@ -730,7 +794,10 @@ export function getChapterIdFromChunkId(chunkId) {
 
 export function getLessonIdFromChunkId(chunkId) {
   const m = String(chunkId).match(/^ch(\d+)-l(\d+)/);
-  return m ? `${m[1]}-${m[2]}` : null;
+  if (m) return `${m[1]}-${m[2]}`;
+  const boss = String(chunkId).match(/^ch(\d+)-chapter-exam/);
+  if (boss) return `${boss[1]}-boss`;
+  return null;
 }
 
 export function getChunkNodeById(chunkId) {

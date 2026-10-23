@@ -241,23 +241,38 @@ export const DuolingoPath = () => {
                   currentStudent?.completedChunks?.includes(examChunk.id)
                 );
 
+                const isChapterBoss = firstChunk?.isChapterExam || String(lessonId).includes('boss');
+
                 return (
-                  <div key={lessonId} className="lesson-unit-block">
+                  <div key={lessonId} className={`lesson-unit-block ${isChapterBoss ? 'chapter-boss-unit-block' : ''}`}>
                     {/* شريط عنوان الدرس الفاصل الأنيق */}
-                    <div className="lesson-ribbon-bar">
+                    <div className={`lesson-ribbon-bar ${isChapterBoss ? 'boss-ribbon-bar' : ''}`}>
                       <div className="lesson-ribbon-info">
-                        <span className="lesson-pill-tag">{t('lesson')} {lessonId}</span>
+                        <span className={`lesson-pill-tag ${isChapterBoss ? 'boss-pill-tag' : ''}`}>
+                          {isChapterBoss ? (lang === 'en' ? '👑 Grand Exam' : '👑 الامتحان الوزاري الشامل') : `${t('lesson')} ${lessonId}`}
+                        </span>
                         <h3 className="lesson-ribbon-title">{lessonTitle}</h3>
                       </div>
                       <div className="lesson-ribbon-badge">
-                        <span>{regularChunks.length} {t('independentChunks')}</span>
+                        <span>
+                          {isChapterBoss 
+                            ? (lang === 'en' ? '👑 12 Official Questions' : '👑 12 سؤالاً وزارياً شاملاً') 
+                            : `${regularChunks.length} ${t('independentChunks')}`
+                          }
+                        </span>
                         {isExamCompleted ? (
                           <span className="lesson-ribbon-trophy-tag" title={t('lessonTrophyClaimed')}>
-                            <Trophy size={13} fill="#fbbf24" color="#d97706" />
-                            <span>{lang === 'en' ? 'Trophy Won' : 'تم حصد الكأس'}</span>
+                            {isChapterBoss ? (
+                              <Crown size={14} fill="#fbbf24" color="#d97706" />
+                            ) : (
+                              <Trophy size={13} fill="#fbbf24" color="#d97706" />
+                            )}
+                            <span>{isChapterBoss ? (lang === 'en' ? 'Crown Won' : 'حصد التاج الملكي') : (lang === 'en' ? 'Trophy Won' : 'تم حصد الكأس')}</span>
                           </span>
                         ) : (
-                          <span className="exam-indicator-badge">{t('fullExam')}</span>
+                          <span className={`exam-indicator-badge ${isChapterBoss ? 'boss-exam-badge' : ''}`}>
+                            {isChapterBoss ? (lang === 'en' ? 'Grand Boss' : 'تحدي الوحدة الأكبر') : t('fullExam')}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -285,7 +300,7 @@ export const DuolingoPath = () => {
                             id={`node-station-${chunk.id}`}
                             className={`duo-node-wrapper ${alignClass} ${
                               isCompleted ? 'node-completed' : isUnlocked ? 'node-active' : 'node-locked'
-                            } ${isExam ? 'exam-boss-node' : ''} ${isActiveStation ? 'node-is-current-turn' : ''} ${isHw ? 'node-is-homework' : ''}`}
+                            } ${isExam ? 'exam-boss-node' : ''} ${chunk.isChapterExam ? 'chapter-boss-node' : ''} ${isActiveStation ? 'node-is-current-turn' : ''} ${isHw ? 'node-is-homework' : ''}`}
                             onClick={() => handleNodeClick(chunk, isUnlocked, isCompleted)}
                           >
                             {/* شارة الإنجاز: مكتمل فقط دون كلمة واجب */}
@@ -313,11 +328,19 @@ export const DuolingoPath = () => {
                             </div>
 
                             <button 
-                              className={`duo-node-btn ${isExam ? 'boss-btn' : ''}`}
+                              className={`duo-node-btn ${isExam ? 'boss-btn' : ''} ${chunk.isChapterExam ? 'chapter-boss-btn' : ''}`}
                               title={isUnlocked ? `${chunkTitle}` : (lang === 'ar' ? 'هذه المرحلة مقفلة - يجب إكمال ما قبلها أولاً' : 'Locked Stage')}
                               aria-label={isUnlocked ? `${chunkTitle}` : (lang === 'ar' ? `مرحلة مقفلة: ${chunkTitle}` : `Locked Stage: ${chunkTitle}`)}
                             >
-                              {isExam ? (
+                              {chunk.isChapterExam ? (
+                                isCompleted ? (
+                                  <Crown size={40} color="#fbbf24" fill="#fbbf24" className="gold-trophy-pulse" />
+                                ) : isUnlocked ? (
+                                  <Crown size={38} color="#ffffff" className="crown-bounce" />
+                                ) : (
+                                  <Lock size={30} color="#94a3b8" />
+                                )
+                              ) : isExam ? (
                                 isCompleted ? (
                                   <Trophy size={36} color="#fbbf24" fill="#fbbf24" className="gold-trophy-pulse" />
                                 ) : isUnlocked ? (
@@ -359,17 +382,21 @@ export const DuolingoPath = () => {
 
                             {/* شارة كأس الإتقان الذهبي للاختبارات الشاملة المكتملة */}
                             {isCompleted && isExam && (
-                              <div className="node-trophy-gold-pill" title={lang === 'en' ? 'Lesson Mastery Trophy Awarded!' : 'كأس إتقان الدرس الذهبي!'}>
-                                <Trophy size={13} fill="#fbbf24" color="#d97706" />
-                                <span>{lang === 'en' ? 'Mastery Cup' : 'كأس الإتقان'}</span>
+                              <div className="node-trophy-gold-pill" title={chunk.isChapterExam ? (lang === 'en' ? 'Chapter Grand Crown Claimed!' : 'تم حصد تاج الوحدة الملكي!') : (lang === 'en' ? 'Lesson Mastery Trophy Awarded!' : 'كأس إتقان الدرس الذهبي!')}>
+                                {chunk.isChapterExam ? (
+                                  <Crown size={14} fill="#fbbf24" color="#d97706" />
+                                ) : (
+                                  <Trophy size={13} fill="#fbbf24" color="#d97706" />
+                                )}
+                                <span>{chunk.isChapterExam ? (lang === 'en' ? 'Royal Crown' : 'التاج الملكي') : (lang === 'en' ? 'Mastery Cup' : 'كأس الإتقان')}</span>
                               </div>
                             )}
 
                             {/* شارة عنوان المرحلة بالكامل دون أي اقتصاص */}
-                            <div className={`node-title-label ${isExam ? 'label-exam-boss' : ''}`}>
+                            <div className={`node-title-label ${isExam ? 'label-exam-boss' : ''} ${chunk.isChapterExam ? 'label-chapter-boss' : ''}`}>
                               {isExam ? (
                                 <div className="exam-label-inner">
-                                  <span className="exam-label-title">🏆 {chunkTitle}</span>
+                                  <span className="exam-label-title">{chunkTitle}</span>
                                   <span className="exam-label-reward">+{chunk.xpReward} XP • {chunk.starsReward} ⭐</span>
                                 </div>
                               ) : (
