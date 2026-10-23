@@ -1294,7 +1294,8 @@ export default function TeacherDashboard() {
                     <span>الروابط المعتمدة التي يجب أن تضعها في Google Cloud Console و Supabase:</span>
                   </div>
                   <div className="flex flex-wrap gap-2 pt-1 font-mono text-[11px]">
-                    <span className="bg-slate-900 px-2 py-1 rounded border border-slate-700 text-emerald-400">https://ai-codelingo.pages.dev</span>
+                    <span className="bg-slate-900 px-2 py-1 rounded border border-slate-700 text-emerald-400">https://ai-codelingo.vercel.app</span>
+                    <span className="bg-slate-900 px-2 py-1 rounded border border-slate-700 text-slate-400">https://ai-codelingo.pages.dev</span>
                     <span className="bg-slate-900 px-2 py-1 rounded border border-slate-700 text-blue-400">http://localhost:5173</span>
                     <span className="bg-slate-900 px-2 py-1 rounded border border-slate-700 text-purple-400">http://localhost:4173</span>
                   </div>

@@ -2,27 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://ai-codelingo.pages.dev/</loc>
+    <loc>https://ai-codelingo.vercel.app/</loc>
     <lastmod>2026-10-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://ai-codelingo.pages.dev/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://ai-codelingo.pages.dev/" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://ai-codelingo.vercel.app/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ai-codelingo.vercel.app/" />
   </url>
   <url>
-    <loc>https://ai-codelingo.pages.dev/privacy.html</loc>
+    <loc>https://ai-codelingo.vercel.app/privacy.html</loc>
     <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://ai-codelingo.pages.dev/terms.html</loc>
+    <loc>https://ai-codelingo.vercel.app/terms.html</loc>
     <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://ai-codelingo.pages.dev/data-deletion.html</loc>
+    <loc>https://ai-codelingo.vercel.app/data-deletion.html</loc>
     <lastmod>2026-10-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
