@@ -12,7 +12,7 @@ const getLocalizedChunk = (baseChunk, currentLang = 'ar') => {
   };
 };
 import { playSound } from '../utils/audioEngine';
-import { isSupabaseConfigured } from '../utils/supabaseClient';
+import { isSupabaseConfigured } from '../utils/supabaseConfig';
 
 const AppContext = createContext();
 // البريد الإلكتروني للماستر / السوبر أدمن الأساسي
@@ -691,12 +691,26 @@ export const AppProvider = ({ children }) => {
 
 
   // المزامنة التلقائية مع جلسة تسجيل الدخول السحابي (Google / Facebook / Phone عبر Supabase)
+  // يتم تأجيل التحميل الكسول لسوبابيز لأوقات الخمول لحماية سرعة الإقلاع الأولى 100%
   useEffect(() => {
     if (!isSupabaseConfigured) return;
 
     let subscription = null;
-    import('../utils/supabaseClient').then(({ supabase }) => {
-      const handleOAuthUser = async (user) => {
+    let timerId = null;
+    let idleId = null;
+    let isCancelled = false;
+
+    // فحص هل المستخدم عائد حالياً من عملية تسجيل دخول Google / OAuth عبر الرابط
+    const isReturningFromOAuth = typeof window !== 'undefined' && (
+      window.location.hash.includes('access_token') ||
+      window.location.search.includes('code')
+    );
+
+    const initCloudAuthAndSync = () => {
+      if (isCancelled) return;
+      import('../utils/supabaseClient').then(({ supabase }) => {
+        if (isCancelled) return;
+        const handleOAuthUser = async (user) => {
         if (!user) return;
         const email = (user.email || '').toLowerCase().trim();
 
@@ -809,9 +823,27 @@ export const AppProvider = ({ children }) => {
         }).catch(err => console.warn('Supabase fetch students note:', err));
       }).catch(() => {});
     }).catch(err => console.warn('Supabase dynamic load note:', err));
+    };
+
+    if (isReturningFromOAuth) {
+      // عائد من OAuth: تنفيذ فوري دون تأخير
+      initCloudAuthAndSync();
+    } else if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      // تأجيل التحميل الكسول حتى استقرار الرندرة الأولى تماماً
+      idleId = window.requestIdleCallback(() => {
+        timerId = setTimeout(initCloudAuthAndSync, 1200);
+      }, { timeout: 3500 });
+    } else {
+      timerId = setTimeout(initCloudAuthAndSync, 2000);
+    }
 
     return () => {
-      subscription?.unsubscribe();
+      isCancelled = true;
+      if (idleId && typeof window !== 'undefined' && window.cancelIdleCallback) {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timerId) clearTimeout(timerId);
+      if (subscription) subscription.unsubscribe();
     };
   }, [isSupabaseConfigured]);
 

@@ -88,13 +88,14 @@ export const LeaderboardPodium = () => {
         </div>
 
         {/* فلاتر المجموعات الدراسية */}
-        <div className="podium-group-filters">
+        <div className="podium-group-filters" role="group" aria-label={lang === 'en' ? 'Filter by Study Group' : 'تصفية مدرج الأوائل حسب المجموعة الدراسية'}>
           <button 
             className={`podium-filter-chip ${selectedGroupFilter === 'all' ? 'active' : ''}`}
             onClick={() => {
               setSelectedGroupFilter('all');
               playSound.click();
             }}
+            aria-label={lang === 'en' ? 'Show all platform students' : 'عرض ترتيب طلاب كل المنصة'}
           >
             <Users size={15} />
             <span>{lang === 'en' ? 'All Platform' : 'كل المنصة (العام)'}</span>
@@ -111,6 +112,7 @@ export const LeaderboardPodium = () => {
                 setSelectedGroupFilter(group.id);
                 playSound.click();
               }}
+              aria-label={lang === 'en' ? `Filter by ${group.name}` : `تصفية الترتيب حسب مجموعة ${group.name}`}
             >
               <School size={15} />
               <span>{group.name.split('-')[0].trim()}</span>

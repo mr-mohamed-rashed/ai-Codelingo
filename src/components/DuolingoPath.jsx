@@ -315,6 +315,7 @@ export const DuolingoPath = () => {
                             <button 
                               className={`duo-node-btn ${isExam ? 'boss-btn' : ''}`}
                               title={isUnlocked ? `${chunkTitle}` : (lang === 'ar' ? 'هذه المرحلة مقفلة - يجب إكمال ما قبلها أولاً' : 'Locked Stage')}
+                              aria-label={isUnlocked ? `${chunkTitle}` : (lang === 'ar' ? `مرحلة مقفلة: ${chunkTitle}` : `Locked Stage: ${chunkTitle}`)}
                             >
                               {isExam ? (
                                 isCompleted ? (

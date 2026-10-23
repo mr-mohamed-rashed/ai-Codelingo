@@ -79,6 +79,7 @@ export const Navbar = () => {
                 className="nav-capsule-btn btn-pwa"
                 onClick={installApp}
                 title={t('installAppDesc')}
+                aria-label={lang === 'ar' ? 'تثبيت منصة كودلينجو كتطبيق' : 'Install CodeLingo App'}
               >
                 <Smartphone size={15} />
                 <span className="capsule-label">{t('installApp')}</span>
@@ -90,15 +91,16 @@ export const Navbar = () => {
               className="nav-capsule-btn btn-theme"
               onClick={toggleTheme}
               title={theme === 'dark' ? t('lightMode') : t('darkMode')}
+              aria-label={theme === 'dark' ? 'التحويل إلى الوضع النهاري (Light Mode)' : 'التحويل إلى الوضع الليلي (Dark Mode)'}
             >
               {theme === 'dark' ? (
                 <>
-                  <Sun size={15} className="capsule-icon text-amber-400" />
+                  <Sun size={15} className="capsule-icon text-amber-500" />
                   <span className="capsule-label">{lang === 'ar' ? 'لايت' : 'Light'}</span>
                 </>
               ) : (
                 <>
-                  <Moon size={15} className="capsule-icon text-indigo-400" />
+                  <Moon size={15} className="capsule-icon text-indigo-600 dark:text-indigo-400" />
                   <span className="capsule-label">{lang === 'ar' ? 'ليلي' : 'Dark'}</span>
                 </>
               )}
@@ -110,9 +112,10 @@ export const Navbar = () => {
             <button
               className="nav-capsule-btn btn-lang"
               onClick={toggleLang}
-              title="Switch Language / تغيير اللغة"
+              title={lang === 'ar' ? 'تغيير اللغة إلى الإنجليزية' : 'Switch Language to Arabic'}
+              aria-label={lang === 'ar' ? 'تغيير لغة المنصة إلى الإنجليزية' : 'Switch Platform Language to Arabic'}
             >
-              <Globe size={15} className="capsule-icon text-cyan-400" />
+              <Globe size={15} className="capsule-icon text-cyan-600 dark:text-cyan-400" />
               <span className="capsule-lang-tag">{lang === 'ar' ? 'EN' : 'عربي'}</span>
             </button>
           </div>
@@ -123,6 +126,7 @@ export const Navbar = () => {
               className="btn-nav-auth btn-nav-back"
               onClick={handleAuthAction}
               title={t('backToMap')}
+              aria-label={t('backToMap')}
             >
               <BookOpen size={16} />
               <span className="btn-nav-auth-text">{t('backToMap')}</span>
@@ -132,6 +136,7 @@ export const Navbar = () => {
               className="btn-nav-auth btn-nav-logout"
               onClick={handleAuthAction}
               title={t('signOut')}
+              aria-label={lang === 'ar' ? 'تسجيل الخروج من الحساب' : 'Sign Out'}
             >
               <LogOut size={16} />
               <span className="btn-nav-auth-text">{lang === 'ar' ? 'تسجيل خروج' : 'Sign Out'}</span>
@@ -141,6 +146,7 @@ export const Navbar = () => {
               className="btn-nav-auth btn-nav-login"
               onClick={handleAuthAction}
               title={t('signIn')}
+              aria-label={lang === 'ar' ? 'تسجيل الدخول للمنصة' : 'Sign In'}
             >
               <LogIn size={16} />
               <span className="btn-nav-auth-text">{t('signIn')}</span>
@@ -151,16 +157,29 @@ export const Navbar = () => {
           {!isTeacherMode && currentStudent && (
             <div 
               className="user-profile-trigger"
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  playSound.click();
+                  setActiveModal('profile');
+                }
+              }}
               onClick={() => {
                 playSound.click();
                 setActiveModal('profile');
               }}
               title={currentStudent.name}
+              aria-label={lang === 'ar' ? `الملف الشخصي للطالب ${currentStudent.name}` : `Student Profile: ${currentStudent.name}`}
             >
               <div className="avatar-ring-wrap">
                 <img 
                   src={currentStudent.avatar} 
                   alt={currentStudent.name} 
+                  width={38}
+                  height={38}
+                  loading="lazy"
                   className="user-avatar-img" 
                 />
                 <span className={`avatar-status-dot ${currentStudent.status === 'approved' ? 'dot-approved' : currentStudent.status === 'guest' ? 'dot-guest' : 'dot-pending'}`} />
@@ -169,7 +188,7 @@ export const Navbar = () => {
                 <span className="user-profile-name">{currentStudent.name}</span>
                 <span 
                   className="user-profile-status"
-                  style={{ color: currentStudent.status === 'approved' ? '#10b981' : currentStudent.status === 'guest' ? '#64748b' : '#f59e0b' }}
+                  style={{ color: currentStudent.status === 'approved' ? '#047857' : currentStudent.status === 'guest' ? '#475569' : '#b45309' }}
                 >
                   {currentStudent.status === 'approved' 
                     ? `✓ ${t('approvedStudent')}` 
@@ -185,7 +204,7 @@ export const Navbar = () => {
 
       {/* روابط التنقل الرئيسية بين: الصفحة الرئيسية | صفحة المحتوى */}
       {!isTeacherMode && (
-        <nav className="nav-main-pages-links">
+        <nav className="nav-main-pages-links" aria-label={lang === 'ar' ? 'أقسام المنصة الرئيسية' : 'Main Navigation'}>
           <button 
             className={`nav-page-tab-btn ${currentPage === 'home' ? 'active' : ''}`}
             onClick={() => {
@@ -193,8 +212,9 @@ export const Navbar = () => {
               setCurrentPage('home');
             }}
             title={lang === 'ar' ? 'الصفحة الرئيسية ومدرج الأوائل' : 'Home Page & Podium'}
+            aria-label={lang === 'ar' ? 'الانتقال إلى الصفحة الرئيسية ومدرج الأوائل' : 'Go to Home Page and Leaderboard'}
           >
-            <Trophy size={16} className="text-amber-400" />
+            <Trophy size={16} className="text-amber-500" />
             <span>{lang === 'ar' ? 'الرئيسية 🏆' : 'Home 🏆'}</span>
           </button>
           
@@ -205,8 +225,9 @@ export const Navbar = () => {
               setCurrentPage('content');
             }}
             title={lang === 'ar' ? 'صفحة المحتوى ومسار الدروس' : 'Curriculum & Content Page'}
+            aria-label={lang === 'ar' ? 'الانتقال إلى صفحة المحتوى ومسار الدروس' : 'Go to Curriculum and Lessons Page'}
           >
-            <BookOpen size={16} className="text-indigo-400" />
+            <BookOpen size={16} className="text-indigo-600 dark:text-indigo-400" />
             <span>{lang === 'ar' ? 'صفحة المحتوى 📚' : 'Content 📚'}</span>
           </button>
         </nav>

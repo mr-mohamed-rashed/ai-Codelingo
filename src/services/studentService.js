@@ -7,7 +7,7 @@
  * 4. التحميل الكسول (Dynamic Import) لمكتبة Supabase للحفاظ على أداء المنصة 100%
  */
 
-import { isSupabaseConfigured } from '../utils/supabaseClient';
+import { isSupabaseConfigured } from '../utils/supabaseConfig';
 import { sanitizeText, sanitizePhone, sanitizeEmail, sanitizeStudentInput } from '../utils/security';
 export { isSupabaseConfigured };
 
