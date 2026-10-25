@@ -34,8 +34,21 @@ export function sanitizeText(input, maxLength = 200) {
  */
 export function sanitizePhone(phone) {
   if (!phone) return '';
-  // استخراج الأرقام فقط وقفلها على 11 رقماً بدقة
-  const cleaned = String(phone).replace(/[^0-9]/g, '').trim();
+  // استخراج الأرقام فقط
+  let cleaned = String(phone).replace(/[^0-9]/g, '').trim();
+
+  // معالجة كود الدولة الدولي لمصر (002 أو 20) وتحويله إلى الصيغة المحلية (01...)
+  if (cleaned.startsWith('002')) {
+    cleaned = cleaned.slice(3);
+  } else if (cleaned.startsWith('20') && cleaned.length >= 12) {
+    cleaned = '0' + cleaned.slice(2);
+  }
+
+  // إذا كان الرقم 10 أرقام ويبدأ بـ 10 أو 11 أو 12 أو 15، نضيف له الصفر في البداية
+  if (cleaned.length === 10 && (cleaned.startsWith('10') || cleaned.startsWith('11') || cleaned.startsWith('12') || cleaned.startsWith('15'))) {
+    cleaned = '0' + cleaned;
+  }
+
   return cleaned.slice(0, 11);
 }
 

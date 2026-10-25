@@ -2566,3 +2566,16 @@ body.theme-light .student-station-tracker-banner {
   background: linear-gradient(135deg, #eef2ff 0%, #f0f9ff 100%);
   border-color: #c7d2fe;
 }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

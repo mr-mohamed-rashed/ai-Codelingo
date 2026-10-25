@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS public.students (
   guardian_phone TEXT,
   avatar TEXT,
   provider TEXT DEFAULT 'google',
-  status TEXT DEFAULT 'approved', -- 'approved' أو 'pending'
+  status TEXT DEFAULT 'pending', -- 'approved' أو 'pending'
   is_master_teacher BOOLEAN DEFAULT FALSE,
   group_id TEXT,
   xp INTEGER DEFAULT 0,

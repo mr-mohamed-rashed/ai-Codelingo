@@ -501,7 +501,7 @@ export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
   // 1. فحص ما إذا كان الطالب مسجلاً مسبقاً في قاعدة بيانات Supabase
   let existingStudent = null;
   if (isSupabaseConfigured) {
-    if (cleanEmail) {
+    if (!existingStudent && cleanEmail) {
       existingStudent = await fetchStudentByEmail(cleanEmail);
     }
     if (!existingStudent && authUser.id) {
@@ -517,20 +517,39 @@ export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
         console.warn('⚠️ Error checking auth_user_id in Supabase:', e);
       }
     }
+    if (!existingStudent && cleanPhone) {
+      try {
+        const supabase = await getSupabaseClient();
+        const normalizedPhone = sanitizePhone(cleanPhone);
+        const { data } = await supabase
+          .from('students')
+          .select('*')
+          .eq('phone', normalizedPhone)
+          .maybeSingle();
+        if (data) existingStudent = mapDbStudentToApp(data);
+      } catch (e) {
+        console.warn('⚠️ Error checking phone in Supabase:', e);
+      }
+    }
   }
 
   // 2. إذا كان الطالب موجوداً مسبقاً في السيرفر: نحافظ على تقدمه وحالة اعتماده المسجلة في السيرفر
   if (existingStudent) {
+    // إذا لم يكن الطالب مسكناً في مجموعة، تظل حالته في الانتظار (pending) لحين تسكينه
+    const resolvedStatus = (existingStudent.groupId && existingStudent.status === 'approved') 
+      ? 'approved' 
+      : (existingStudent.status || 'pending');
+
     const updatedStudent = {
       ...existingStudent,
       authUserId: authUser.id || existingStudent.authUserId,
       name: (extractedName && extractedName !== 'طالب كودلينجو') ? extractedName : (existingStudent.name || extractedName),
       avatar: extractedAvatar || existingStudent.avatar,
       email: cleanEmail || existingStudent.email,
-      phone: cleanPhone || existingStudent.phone,
-      guardianPhone: guardianPhone || existingStudent.guardianPhone,
+      phone: sanitizePhone(cleanPhone) || existingStudent.phone,
+      guardianPhone: sanitizePhone(guardianPhone) || existingStudent.guardianPhone,
       provider: provider || existingStudent.provider,
-      status: existingStudent.status || 'pending',
+      status: resolvedStatus,
       groupId: existingStudent.groupId || null,
       isMasterTeacher: false
     };
@@ -561,8 +580,8 @@ export async function syncUserMetadataToStudentTable(authUser, extraData = {}) {
     authUserId: authUser.id,
     name: extractedName,
     email: cleanEmail || null,
-    phone: cleanPhone || null,
-    guardianPhone: guardianPhone || null,
+    phone: sanitizePhone(cleanPhone) || null,
+    guardianPhone: sanitizePhone(guardianPhone) || null,
     avatar: extractedAvatar,
     provider: provider,
     status: 'pending',

@@ -87,9 +87,39 @@ export default function TeacherDashboard() {
     addAdminAccount,
     deleteAdminAccount,
     logoutAdmin,
+    refreshStudentsFromCloud,
+    isSyncingStudents,
     lang,
     t
   } = useApp();
+
+  // مزامنة لحظية فورية مع قاعدة بيانات Supabase عند فتح اللوحة وتحديث الطلاب تلقائياً عند أي تسجيل جديد
+  React.useEffect(() => {
+    if (typeof refreshStudentsFromCloud === 'function') {
+      refreshStudentsFromCloud();
+    }
+
+    let channel = null;
+    import('../utils/supabaseClient').then(({ supabase, isSupabaseConfigured }) => {
+      if (!isSupabaseConfigured || !supabase) return;
+      channel = supabase
+        .channel('teacher_dashboard_students_sync')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'students' }, () => {
+          if (typeof refreshStudentsFromCloud === 'function') {
+            refreshStudentsFromCloud();
+          }
+        })
+        .subscribe();
+    }).catch(() => {});
+
+    return () => {
+      if (channel) {
+        import('../utils/supabaseClient').then(({ supabase }) => {
+          supabase.removeChannel(channel);
+        }).catch(() => {});
+      }
+    };
+  }, []);
 
   // مصفوفات آمنة مع استبعاد حساب المعلم نهائياً من أي جدول أو مجموعة أو مدرج للطلاب
   const safeGroups = useMemo(() => {
@@ -338,11 +368,14 @@ export default function TeacherDashboard() {
     }
   };
 
+  // تعريف الطالب في قائمة الانتظار: حالته معلقة (pending) أو لم يتم تسكينه بمجموعة بعد
+  const isStudentWaiting = (s) => Boolean(s && (s.status === 'pending' || !s.groupId));
+
   // إحصائيات عامة وفلاتر لوحة التحكم
   const totalGroups = safeGroups.length;
   const totalStudents = safeStudents.length;
-  const pendingStudents = safeStudents.filter(s => s?.status === 'pending');
-  const approvedStudents = safeStudents.filter(s => s?.status === 'approved');
+  const pendingStudents = safeStudents.filter(isStudentWaiting);
+  const approvedStudents = safeStudents.filter(s => s && s.status === 'approved' && s.groupId);
   const totalUnlockedAcrossGroups = Array.from(new Set(safeGroups.flatMap(g => (g?.unlockedChunks && Array.isArray(g.unlockedChunks)) ? g.unlockedChunks : []))).length;
 
   const filteredGroups = safeGroups.filter(g => 
@@ -355,10 +388,14 @@ export default function TeacherDashboard() {
     const matchesSearch = 
       (student.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (student.phone || '').includes(searchQuery) ||
+      (student.guardianPhone || '').includes(searchQuery) ||
       (student.email || '').toLowerCase().includes(searchQuery.toLowerCase());
     
-    if (filterStatus === 'all') return matchesSearch;
-    return matchesSearch && student.status === filterStatus;
+    if (!matchesSearch) return false;
+    if (filterStatus === 'all') return true;
+    if (filterStatus === 'pending') return isStudentWaiting(student);
+    if (filterStatus === 'approved') return Boolean(student.status === 'approved' && student.groupId);
+    return true;
   });
 
   return (
@@ -383,6 +420,22 @@ export default function TeacherDashboard() {
           </div>
 
           <div className="teacher-header-actions">
+            {/* زر تحديث ومزامنة البيانات السحابية فوراً */}
+            <button 
+              className="duo-btn duo-btn-secondary flex items-center gap-2"
+              onClick={() => {
+                playSound.click();
+                if (typeof refreshStudentsFromCloud === 'function') {
+                  refreshStudentsFromCloud();
+                }
+              }}
+              disabled={isSyncingStudents}
+              title={lang === 'en' ? 'Sync students list from cloud now' : 'تحديث قائمة الطلاب والمسجلين الجدد من السحابة فوراً'}
+            >
+              <RefreshCw size={17} className={isSyncingStudents ? 'animate-spin' : ''} />
+              <span>{isSyncingStudents ? (lang === 'en' ? 'Syncing...' : 'جاري التحديث...') : (lang === 'en' ? 'Sync Cloud' : 'تحديث القائمة اللحظي 🔄')}</span>
+            </button>
+
             {/* بطاقة تعريف المشرف / الأدمن الحالي مع زر تسجيل الخروج */}
             <div className="admin-user-hud-badge">
               <div className="admin-hud-avatar">
@@ -487,7 +540,7 @@ export default function TeacherDashboard() {
             }}
           >
             <Users size={20} />
-            <span>{t('tabStudents')} ({students.length})</span>
+            <span>{t('tabStudents')} ({safeStudents.length})</span>
             {pendingStudents.length > 0 && (
               <span className="tab-pending-badge">{pendingStudents.length}</span>
             )}
@@ -699,7 +752,7 @@ export default function TeacherDashboard() {
                   className={`filter-btn ${filterStatus === 'all' ? 'active' : ''}`}
                   onClick={() => setFilterStatus('all')}
                 >
-                  {lang === 'en' ? `All (${students.length})` : `جميع الطلاب (${students.length})`}
+                  {lang === 'en' ? `All (${safeStudents.length})` : `جميع الطلاب (${safeStudents.length})`}
                 </button>
                 <button 
                   className={`filter-btn ${filterStatus === 'pending' ? 'active-warning' : ''}`}
@@ -736,7 +789,7 @@ export default function TeacherDashboard() {
                     return (
                       <div 
                         key={student.id} 
-                        className={`student-row-card ${student.status === 'pending' ? 'row-pending' : ''} ${isSelectedForPreview ? 'row-active-user' : ''}`}
+                        className={`student-row-card ${isStudentWaiting(student) ? 'row-pending' : ''} ${isSelectedForPreview ? 'row-active-user' : ''}`}
                       >
                         <div className="student-profile-col">
                           <img 
@@ -747,10 +800,13 @@ export default function TeacherDashboard() {
                           <div className="student-text-details">
                             <div className="student-name-row">
                               <h4 className="student-full-name">{student.name}</h4>
-                              {student.status === 'pending' ? (
+                              {isStudentWaiting(student) ? (
                                 <span className="status-badge badge-pending">
                                   <Clock size={13} />
-                                  {lang === 'en' ? 'Pending Approval' : 'في انتظار الموافقة'}
+                                  {!student.groupId 
+                                    ? (lang === 'en' ? 'Waiting Group Assignment' : 'في انتظار التسكين بمجموعة ⏳')
+                                    : (lang === 'en' ? 'Pending Approval' : 'في انتظار الموافقة ⏳')
+                                  }
                                 </span>
                               ) : (
                                 <span className="status-badge badge-approved">
@@ -856,7 +912,7 @@ export default function TeacherDashboard() {
 
                         {/* أزرار الإجراءات الفردية */}
                         <div className="student-actions-col">
-                          {student.status === 'pending' ? (
+                          {isStudentWaiting(student) ? (
                             <button
                               className="duo-btn duo-btn-success text-sm py-2 px-3 flex items-center gap-1.5"
                               onClick={() => {

@@ -422,8 +422,17 @@ export const AppProvider = ({ children }) => {
     ) || null;
   }, [groups, currentStudent]);
 
-  // عدد الطلاب في انتظار الموافقة
-  const pendingStudentsCount = students.filter(s => s.status === 'pending').length;
+  // عدد الطلاب في انتظار الموافقة والتسكين بمجموعة
+  const pendingStudentsCount = useMemo(() => {
+    return students.filter(s => 
+      s && 
+      !isMasterTeacherEmail(s.email) && 
+      !s.isMasterTeacher && 
+      s.id !== 'std-master-teacher' &&
+      !s.name?.includes('محمد راشد') &&
+      (s.status === 'pending' || !s.groupId)
+    ).length;
+  }, [students]);
 
   /**
    * إنشاء مجموعة دراسية جديدة
@@ -492,7 +501,25 @@ export const AppProvider = ({ children }) => {
    * تعيين طالب لمجموعة دراسية محددة وحفظ التسكين سحابياً فوراً
    */
   const assignStudentToGroup = (studentId, groupId) => {
-    setStudents(prev => prev.map(s => s.id === studentId ? { ...s, groupId: groupId || null } : s));
+    const defaultStation = 'الدرس 1-1: المراحل الخمس التاريخية لتطور الحوسبة';
+    let targetStationToSave = defaultStation;
+
+    setStudents(prev => prev.map(s => {
+      if (s.id === studentId) {
+        targetStationToSave = s.currentStation && !s.currentStation.includes('انتظار')
+          ? s.currentStation 
+          : defaultStation;
+
+        return { 
+          ...s, 
+          groupId: groupId || null,
+          status: groupId ? 'approved' : 'pending',
+          currentStation: groupId ? targetStationToSave : 'في انتظار تصريح المعلم وتحديد المجموعة'
+        };
+      }
+      return s;
+    }));
+
     setGroups(prev => prev.map(g => {
       const studentSet = new Set(g.studentIds || []);
       if (g.id === groupId) {
@@ -503,10 +530,13 @@ export const AppProvider = ({ children }) => {
       return { ...g, studentIds: Array.from(studentSet) };
     }));
 
-    // حفظ التسكين سحابياً في جدول students في Supabase فوراً
+    // حفظ التسكين والاعتماد سحابياً في جدول students في Supabase فوراً
     import('../services/studentService').then(({ updateStudentInSupabase }) => {
-      updateStudentInSupabase(studentId, { groupId: groupId || null })
-        .catch(err => console.warn('Supabase assignStudentToGroup error:', err));
+      updateStudentInSupabase(studentId, { 
+        groupId: groupId || null,
+        status: groupId ? 'approved' : 'pending',
+        currentStation: groupId ? targetStationToSave : 'في انتظار تصريح المعلم وتحديد المجموعة'
+      }).catch(err => console.warn('Supabase assignStudentToGroup error:', err));
     }).catch(() => {});
 
     playSound.click();
@@ -863,6 +893,46 @@ export const AppProvider = ({ children }) => {
       if (subscription) subscription.unsubscribe();
     };
   }, [isSupabaseConfigured]);
+
+  // حالة تحديث ومزامنة قائمة الطلاب مع السحابة
+  const [isSyncingStudents, setIsSyncingStudents] = useState(false);
+
+  /**
+   * جلب وتحديث قائمة الطلاب فوراً من قاعدة بيانات Supabase السحابية
+   */
+  const refreshStudentsFromCloud = async () => {
+    if (!isSupabaseConfigured) return [];
+    setIsSyncingStudents(true);
+    try {
+      const { fetchAllStudentsFromSupabase, purgeTeacherFromStudentsTable } = await import('../services/studentService');
+      await purgeTeacherFromStudentsTable().catch(() => {});
+      const remoteStudents = await fetchAllStudentsFromSupabase();
+      if (Array.isArray(remoteStudents)) {
+        const validRemoteStudents = remoteStudents.filter(s => 
+          s && 
+          !isMasterTeacherEmail(s.email) && 
+          !s.isMasterTeacher && 
+          s.id !== 'std-master-teacher' &&
+          !s.name?.includes('محمد راشد')
+        );
+        setStudents(validRemoteStudents);
+        return validRemoteStudents;
+      }
+    } catch (err) {
+      console.warn('refreshStudentsFromCloud error:', err);
+    } finally {
+      setIsSyncingStudents(false);
+    }
+    return [];
+  };
+
+  // عند دخول وضع لوحة تحكم المعلم، يتم جلب أحدث بيانات الطلاب والطلبات فوراً
+  useEffect(() => {
+    if (isTeacherMode) {
+      refreshStudentsFromCloud().catch(() => {});
+    }
+  }, [isTeacherMode]);
+
 
   // مراقبة دورية وسريعة لحالة الطالب الحالي مع قاعدة البيانات السحابية (لسحب الاعتماد فوراً إذا حذفه المعلم)
   useEffect(() => {
@@ -1581,6 +1651,8 @@ export const AppProvider = ({ children }) => {
         currentTermTooltip,
         setCurrentTermTooltip,
         pendingStudentsCount,
+        refreshStudentsFromCloud,
+        isSyncingStudents,
         registerNewStudent,
         updateStudentProfile,
         updateStudentPhones,
