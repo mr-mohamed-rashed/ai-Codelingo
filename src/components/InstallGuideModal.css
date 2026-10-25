@@ -121,16 +121,16 @@
 }
 
 /* =========================================================
-   DIRECT APP INSTALLER MODAL (ACCURATE & FOOLPROOF)
+   PURE PROGRESS BAR INSTALLER CARD
    ========================================================= */
 .direct-pwa-installer-card {
-  max-width: 440px;
-  width: 92%;
+  max-width: 410px;
+  width: 90%;
   background: #0f172a;
   border: 1.5px solid rgba(99, 102, 241, 0.45);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 35px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(99, 102, 241, 0.3);
   border-radius: 24px;
-  padding: 26px 20px 22px;
+  padding: 28px 22px 24px;
   color: #f8fafc;
   text-align: center;
   position: relative;
@@ -150,9 +150,10 @@
 }
 
 .installer-icon-ring {
-  width: 68px;
-  height: 68px;
-  margin: 0 auto 14px;
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 16px;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -161,138 +162,107 @@
 .installer-app-img {
   width: 100%;
   height: 100%;
-  border-radius: 16px;
+  border-radius: 18px;
   object-fit: cover;
   box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
   border: 2px solid #818cf8;
+  z-index: 2;
+  position: relative;
+}
+
+.installer-pulse-glow {
+  position: absolute;
+  inset: -6px;
+  border-radius: 22px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, rgba(16, 185, 129, 0) 70%);
+  animation: pulseGlow 2s infinite ease-in-out;
+  z-index: 1;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
 }
 
 .installer-title {
   font-size: 1.25rem;
   font-weight: 800;
   color: #ffffff;
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   line-height: 1.3;
 }
 
 .installer-desc {
-  font-size: 0.84rem;
+  font-size: 0.85rem;
   color: #94a3b8;
-  margin: 0 0 16px;
+  margin: 0 0 20px;
   line-height: 1.5;
-}
-
-/* في حالة نجاح التثبيت الفعلي */
-.installer-success-view {
-  padding: 10px 0;
-}
-
-.success-icon-wrap {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 14px;
-  border-radius: 50%;
-  background: rgba(16, 185, 129, 0.15);
-  border: 2px solid #10b981;
+  min-height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* صندوق التثبيت المضمون */
-.guaranteed-install-box {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1.5px solid rgba(99, 102, 241, 0.3);
-  border-radius: 16px;
-  padding: 14px 16px;
-  margin-bottom: 16px;
-  text-align: right;
-}
-
-.install-box-header {
-  margin-bottom: 10px;
-}
-
-.box-badge {
-  display: inline-block;
-  background: rgba(16, 185, 129, 0.2);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  color: #34d399;
-  font-size: 0.72rem;
-  font-weight: 800;
-  padding: 2px 8px;
-  border-radius: 6px;
-  margin-bottom: 4px;
-}
-
-.install-box-header h4 {
-  font-size: 0.88rem;
-  font-weight: 800;
-  color: #ffffff;
-  margin: 0;
-}
-
-.direct-os-step {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
+/* شريط التحميل */
+.installer-progress-box {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
 }
 
-.step-num {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+.installer-progress-track {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.installer-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #06b6d4 50%, #6366f1 100%);
+  background-size: 200% 100%;
+  border-radius: 999px;
+  transition: width 0.25s ease-out;
+  animation: progressStripes 1.5s linear infinite;
+}
+
+.installer-progress-bar.bar-done {
   background: #10b981;
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 0.8rem;
+}
+
+@keyframes progressStripes {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+.installer-progress-meta {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #cbd5e1;
 }
 
-.step-content {
-  font-size: 0.82rem;
-  color: #e2e8f0;
-  line-height: 1.5;
-}
-
-.step-content strong {
+.installer-pct {
+  font-size: 0.9rem;
+  font-weight: 800;
   color: #38bdf8;
-  font-weight: 800;
-}
-
-.xiaomi-perm-notice {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  background: rgba(245, 158, 11, 0.12);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  border-radius: 10px;
-  padding: 8px 10px;
-  font-size: 0.74rem;
-  color: #fde68a;
-  line-height: 1.45;
-}
-
-.xiaomi-perm-notice strong {
-  color: #fbbf24;
-}
-
-.footer-actions-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 /* =========================================================
-   LIGHT THEME OVERRIDES (FOR HIGHEST READABILITY)
+   LIGHT THEME OVERRIDES
    ========================================================= */
 body.theme-light .mobile-pwa-bottom-bar,
 html[data-theme='light'] .mobile-pwa-bottom-bar {
@@ -332,35 +302,19 @@ body.theme-light .installer-desc {
   color: #475569;
 }
 
-body.theme-light .guaranteed-install-box {
+body.theme-light .installer-progress-box {
   background: #f8fafc;
-  border-color: #cbd5e1;
-}
-
-body.theme-light .install-box-header h4 {
-  color: #0f172a;
-}
-
-body.theme-light .direct-os-step {
-  background: #ffffff;
   border-color: #e2e8f0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
 }
 
-body.theme-light .step-content {
-  color: #334155;
+body.theme-light .installer-progress-track {
+  background: #e2e8f0;
 }
 
-body.theme-light .step-content strong {
+body.theme-light .installer-progress-meta {
+  color: #475569;
+}
+
+body.theme-light .installer-pct {
   color: #0284c7;
-}
-
-body.theme-light .xiaomi-perm-notice {
-  background: #fffbeb;
-  border-color: #fde68a;
-  color: #92400e;
-}
-
-body.theme-light .xiaomi-perm-notice strong {
-  color: #b45309;
 }
