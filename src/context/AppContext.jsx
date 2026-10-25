@@ -90,8 +90,6 @@ export const AppProvider = ({ children }) => {
     return 'ar'; // الأساسي الافتراضي عربي
   });
 
-  // PWA Install prompt event
-  const [installPrompt, setInstallPrompt] = useState(null);
 
   // Translation helper
   const t = (key) => {
@@ -129,27 +127,58 @@ export const AppProvider = ({ children }) => {
     window.navigator.standalone === true
   );
 
-  // Install PWA App
+  // Prompt PWA listener with early captured event from index.html
+  const [installPrompt, setInstallPrompt] = useState(() => {
+    return (typeof window !== 'undefined' && window.__codelingo_install_prompt) || null;
+  });
+
+  // Install PWA App directly
   const installApp = async () => {
-    if (installPrompt) {
-      installPrompt.prompt();
-      const { outcome } = await installPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setInstallPrompt(null);
+    const promptEvent = installPrompt || (typeof window !== 'undefined' ? window.__codelingo_install_prompt : null);
+    if (promptEvent) {
+      try {
+        promptEvent.prompt();
+        promptEvent.userChoice.then((choiceResult) => {
+          if (choiceResult && choiceResult.outcome === 'accepted') {
+            setInstallPrompt(null);
+            if (typeof window !== 'undefined') window.__codelingo_install_prompt = null;
+          }
+        }).catch(() => {});
+      } catch (err) {
+        console.log('Direct install trigger error:', err);
       }
-    } else {
-      setActiveModal('pwa_install_guide');
     }
+    // فتح شاشة التثبيت وشريط التحميل التلقائي
+    setActiveModal('pwa_install_guide');
   };
 
   // Effect for PWA install event listener
   useEffect(() => {
     const handleBeforeInstall = (e) => {
       e.preventDefault();
+      if (typeof window !== 'undefined') window.__codelingo_install_prompt = e;
       setInstallPrompt(e);
     };
+
+    const handlePromptReady = (e) => {
+      const p = e.detail || (typeof window !== 'undefined' && window.__codelingo_install_prompt);
+      if (p) setInstallPrompt(p);
+    };
+
+    const handleAppInstalled = () => {
+      setInstallPrompt(null);
+      if (typeof window !== 'undefined') window.__codelingo_install_prompt = null;
+    };
+
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+    window.addEventListener('codelingo_pwa_ready', handlePromptReady);
+    window.addEventListener('codelingo_pwa_installed', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+      window.removeEventListener('codelingo_pwa_ready', handlePromptReady);
+      window.removeEventListener('codelingo_pwa_installed', handleAppInstalled);
+    };
   }, []);
 
   // Effect for Theme and Language DOM updates with auto-save

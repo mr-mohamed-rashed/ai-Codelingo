@@ -28,14 +28,28 @@
     <link rel="canonical" href="https://ai-codelingo.vercel.app/" />
 
     <!-- Favicon & Touch Icons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="./icon-192.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
-    <link rel="shortcut icon" type="image/png" href="./icon-192.png" />
-    <link rel="apple-touch-icon" href="./icon-192.png" />
-    <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png" />
-    <link rel="apple-touch-icon" sizes="512x512" href="./icon-512.png" />
-    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" type="image/png" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- PWA Install Prompt Early Capture (Ensures prompt is never missed before React mounts) -->
+    <script>
+      window.__codelingo_install_prompt = null;
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        window.__codelingo_install_prompt = e;
+        window.dispatchEvent(new CustomEvent('codelingo_pwa_ready', { detail: e }));
+      });
+      window.addEventListener('appinstalled', function() {
+        window.__codelingo_install_prompt = null;
+        window.dispatchEvent(new CustomEvent('codelingo_pwa_installed'));
+      });
+    </script>
 
     <!-- Theme Color & Mobile App Meta -->
     <meta name="theme-color" content="#4f46e5" />
@@ -269,7 +283,7 @@
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js').catch(err => {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(err => {
             console.log('SW registration note:', err);
           });
         });
