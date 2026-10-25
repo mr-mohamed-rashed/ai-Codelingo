@@ -2530,18 +2530,18 @@ export default function TeacherDashboard() {
                         {/* مجموع الدرجات والإتقان */}
                         <div className="student-scores-cell">
                           <span className="cell-sublabel">{lang === 'en' ? 'Mastery & Scores:' : 'الدرجات والإتقان:'}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="score-badge xp-badge">
-                              <Flame size={13} className="text-amber-500" />
-                              {student.xp} XP
+                          <div className="scores-badges-wrap">
+                            <span className="score-badge xp-badge" title={lang === 'en' ? 'XP Points' : 'نقاط الخبرة XP'}>
+                              <Flame size={12} className="text-amber-500" />
+                              <span dir="ltr" className="score-num-text">{student.xp || 0} XP</span>
                             </span>
-                            <span className="score-badge star-badge">
-                              <Star size={13} className="text-yellow-400 fill-yellow-400" />
-                              {student.stars}
+                            <span className="score-badge star-badge" title={lang === 'en' ? 'Stars' : 'النجوم المكتسبة ⭐'}>
+                              <Star size={12} className="text-yellow-400 fill-yellow-400" />
+                              <span className="score-num-text">{student.stars || 0}</span>
                             </span>
-                            <span className="score-badge chunk-badge">
-                              <BookOpen size={13} className="text-emerald-500" />
-                              {completedCount} فقرة
+                            <span className="score-badge chunk-badge" title={lang === 'en' ? 'Completed Topics' : 'الفقرات المكتملة من المنهج (من أصل 49)'}>
+                              <BookOpen size={12} className="text-emerald-500" />
+                              <span className="score-num-text">{completedCount}/49</span>
                             </span>
                           </div>
                         </div>
@@ -2564,8 +2564,40 @@ export default function TeacherDashboard() {
                           )}
                         </div>
 
+                        {/* نقل المجموعة أو إخراج الطالب للانتظار */}
+                        <div className="student-transfer-cell">
+                          <span className="cell-sublabel">{lang === 'en' ? 'Group Transfer:' : 'المجموعة / نقل الطالب:'}</span>
+                          <select
+                            className="review-group-select"
+                            value={student.groupId || ''}
+                            onChange={(e) => {
+                              const targetVal = e.target.value;
+                              if (!targetVal) {
+                                if (window.confirm(lang === 'en' 
+                                  ? `Remove "${student.name}" from this group and return to waiting list?` 
+                                  : `هل تريد إخراج الطالب "${student.name}" من هذه المجموعة وإعادته لقائمة الانتظار؟`)) {
+                                  assignStudentToGroup(student.id, null);
+                                }
+                              } else {
+                                assignStudentToGroup(student.id, targetVal);
+                              }
+                            }}
+                            title={lang === 'en' ? 'Transfer student to another group or return to waiting list' : 'نقل الطالب لمجموعة أخرى أو إخراجه لقائمة الانتظار'}
+                          >
+                            <option value={selectedGroupForReview.id}>المجموعة: {selectedGroupForReview.name}</option>
+                            <optgroup label={lang === 'en' ? 'Move to group:' : 'نقل إلى مجموعة أخرى:'}>
+                              {safeGroups.filter(g => g.id !== selectedGroupForReview.id).map(g => (
+                                <option key={g.id} value={g.id}>➡️ {g.name}</option>
+                              ))}
+                            </optgroup>
+                            <optgroup label={lang === 'en' ? 'Unassign:' : 'إلغاء التسكين:'}>
+                              <option value="">🚪 إخراج لقائمة الانتظار (بدون مجموعة)</option>
+                            </optgroup>
+                          </select>
+                        </div>
+
                         {/* أزرار الإجراءات للطلاب في المجموعة */}
-                        <div className="student-actions-cell flex items-center gap-2">
+                        <div className="student-actions-cell flex items-center gap-1.5">
                           <button
                             className="duo-btn text-xs py-2 px-3 flex items-center gap-1.5"
                             style={{ 
@@ -2587,7 +2619,23 @@ export default function TeacherDashboard() {
                           </button>
 
                           <button
-                            className="duo-btn duo-btn-danger text-xs py-2 px-2.5 flex items-center gap-1"
+                            className="duo-btn duo-btn-secondary text-xs py-2 px-2.5 flex items-center gap-1"
+                            onClick={() => {
+                              const confirmMsg = lang === 'en'
+                                ? `Remove student "${student.name}" from this group and return to waiting list?`
+                                : `هل تريد إخراج الطالب "${student.name}" من مجموعة "${selectedGroupForReview.name}" وإعادته لقائمة الانتظار؟`;
+                              if (window.confirm(confirmMsg)) {
+                                assignStudentToGroup(student.id, null);
+                              }
+                            }}
+                            title={lang === 'en' ? 'Remove from group to waiting list' : 'إخراج من المجموعة إلى قائمة الانتظار'}
+                          >
+                            <LogOut size={13} />
+                            <span>{lang === 'en' ? 'Exit Group' : 'خروج'}</span>
+                          </button>
+
+                          <button
+                            className="duo-btn duo-btn-danger text-xs py-2 px-2 flex items-center gap-1"
                             onClick={() => {
                               const confirmMsg = lang === 'en'
                                 ? `Are you sure you want to delete student "${student.name}"?`

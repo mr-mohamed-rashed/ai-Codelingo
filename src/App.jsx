@@ -366,8 +366,8 @@ function MainAppContent() {
               </picture>
             </div>
             <div className="mobile-pwa-text">
-              <strong className="mobile-pwa-title">تطبيق كودلينجو الرسمي 📲</strong>
-              <span className="mobile-pwa-sub">ثبّته لشاشتك الرئيسية لوصول أسرع</span>
+              <strong className="mobile-pwa-title">تطبيق كودلينجو 📲</strong>
+              <span className="mobile-pwa-sub">تثبيت للشاشة الرئيسية</span>
             </div>
           </div>
           <div className="mobile-pwa-actions">

@@ -3,22 +3,22 @@
    ========================================================= */
 .mobile-pwa-bottom-bar {
   position: fixed;
-  bottom: 16px;
-  left: 14px;
-  right: 14px;
+  bottom: 14px;
+  left: 12px;
+  right: 12px;
   margin: 0 auto;
   max-width: 480px;
-  background: rgba(15, 23, 42, 0.94);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1.5px solid rgba(99, 102, 241, 0.45);
   border-radius: 18px;
-  padding: 10px 14px;
+  padding: 8px 12px;
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55), 0 0 20px rgba(99, 102, 241, 0.25);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   z-index: 999;
   animation: slideUpPwa 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -43,9 +43,9 @@
 }
 
 .mobile-pwa-badge {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   overflow: hidden;
   border: 1.5px solid #818cf8;
   flex-shrink: 0;
@@ -62,10 +62,11 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  line-height: 1.25;
 }
 
 .mobile-pwa-title {
-  font-size: 0.86rem;
+  font-size: 0.88rem;
   font-weight: 800;
   color: #ffffff;
   white-space: nowrap;
@@ -74,8 +75,8 @@
 }
 
 .mobile-pwa-sub {
-  font-size: 0.72rem;
-  color: #94a3b8;
+  font-size: 0.74rem;
+  color: #cbd5e1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -84,15 +85,14 @@
 .mobile-pwa-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
 .mobile-pwa-btn {
-  min-height: 48px !important;
-  min-width: 80px !important;
-  padding: 10px 20px !important;
-  font-size: 0.95rem !important;
+  min-height: 40px !important;
+  padding: 8px 16px !important;
+  font-size: 0.92rem !important;
   font-weight: 800 !important;
   border-radius: 12px !important;
   white-space: nowrap;
@@ -105,16 +105,16 @@
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: #cbd5e1;
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
-  min-height: 48px;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
+  font-size: 1rem;
   padding: 0;
   margin: 0;
   transition: all 0.2s ease;
@@ -123,12 +123,310 @@
 .mobile-pwa-close-btn:hover {
   background: rgba(255, 255, 255, 0.25);
   color: #ffffff;
-  transform: scale(1.06);
+  transform: scale(1.05);
 }
 
+/* =========================================================
+   PWA INSTALL MODAL CARD & PROGRESS & STEPS
+   ========================================================= */
+.pwa-install-modal-card {
+  background: #0f172a;
+  border: 1.5px solid rgba(99, 102, 241, 0.4);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 35px rgba(99, 102, 241, 0.2);
+  border-radius: 24px;
+  padding: 24px 20px;
+  color: #f8fafc;
+}
+
+.pwa-main-icon-wrap {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(16, 185, 129, 0.25) 100%);
+  border: 1.5px solid rgba(99, 102, 241, 0.5);
+  color: #818cf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+}
+
+.pwa-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  color: #a5b4fc;
+  font-size: 0.76rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.pwa-modal-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+
+.pwa-modal-subtitle {
+  font-size: 0.84rem;
+  color: #94a3b8;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+/* تنبيه المتصفح الداخلي (واتساب/فيسبوك) */
+.in-app-browser-alert {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1.5px solid rgba(245, 158, 11, 0.35);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  text-align: right;
+}
+
+.alert-text-col strong {
+  display: block;
+  font-size: 0.86rem;
+  color: #fbbf24;
+  margin-bottom: 4px;
+}
+
+.alert-text-col p {
+  font-size: 0.78rem;
+  color: #fde68a;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* صندوق التثبيت التفاعلي */
+.pwa-install-action-box {
+  margin-bottom: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.pwa-action-btn {
+  border-radius: 14px !important;
+  font-size: 0.98rem !important;
+}
+
+/* شريط التقدم */
+.pwa-progress-container {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pwa-progress-bar-bg {
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.pwa-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #06b6d4, #6366f1);
+  background-size: 200% 100%;
+  animation: moveGradient 1.5s linear infinite;
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
+@keyframes moveGradient {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+.pwa-progress-status-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.pwa-manual-guide-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #34d399;
+}
+
+.pwa-success-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  border-radius: 14px;
+  padding: 14px;
+  text-align: right;
+}
+
+.pwa-success-message h4 {
+  margin: 0 0 2px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #34d399;
+}
+
+.pwa-success-message p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #a7f3d0;
+}
+
+/* تبديل النظام: أندرويد أو آيفون */
+.platform-toggle-row {
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 4px;
+  border-radius: 14px;
+  margin-bottom: 14px;
+}
+
+.platform-toggle-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-weight: 800;
+  font-size: 0.84rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.platform-toggle-btn.active-android {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.platform-toggle-btn.active-ios {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* بطاقات خطوات التثبيت */
+.install-steps-container {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1.5px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 18px;
+}
+
+.install-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.install-step-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 10px 12px;
+  text-align: right;
+  transition: all 0.2s ease;
+}
+
+.install-step-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.step-badge-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.step-badge-num.num-android {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.step-badge-num.num-ios {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+}
+
+.step-text-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-highlight {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin-bottom: 2px;
+}
+
+.step-desc {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.step-desc strong {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.pwa-modal-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* =========================================================
+   LIGHT THEME OVERRIDES (FOR ZERO CONTRAST ISSUES)
+   ========================================================= */
 body.theme-light .mobile-pwa-bottom-bar,
 html[data-theme='light'] .mobile-pwa-bottom-bar {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.96);
   border-color: rgba(99, 102, 241, 0.35);
   box-shadow: 0 12px 35px rgba(15, 23, 42, 0.15), 0 0 20px rgba(99, 102, 241, 0.1);
 }
@@ -147,4 +445,89 @@ body.theme-light .mobile-pwa-close-btn,
 html[data-theme='light'] .mobile-pwa-close-btn {
   background: rgba(0, 0, 0, 0.06);
   color: #64748b;
+}
+
+body.theme-light .pwa-install-modal-card {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.2), 0 0 25px rgba(99, 102, 241, 0.1);
+  color: #0f172a;
+}
+
+body.theme-light .pwa-main-icon-wrap {
+  background: linear-gradient(135deg, #eef2ff 0%, #ecfdf5 100%);
+  border-color: #c7d2fe;
+  color: #4f46e5;
+}
+
+body.theme-light .pwa-tag-pill {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #4338ca;
+}
+
+body.theme-light .pwa-modal-title {
+  color: #0f172a;
+}
+
+body.theme-light .pwa-modal-subtitle {
+  color: #475569;
+}
+
+body.theme-light .in-app-browser-alert {
+  background: #fffbeb;
+  border-color: #fde68a;
+}
+
+body.theme-light .alert-text-col strong {
+  color: #b45309;
+}
+
+body.theme-light .alert-text-col p {
+  color: #92400e;
+}
+
+body.theme-light .pwa-install-action-box {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+body.theme-light .pwa-progress-bar-bg {
+  background: #e2e8f0;
+}
+
+body.theme-light .pwa-progress-status-text {
+  color: #475569;
+}
+
+body.theme-light .platform-toggle-row {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+body.theme-light .platform-toggle-btn {
+  color: #64748b;
+}
+
+body.theme-light .install-steps-container {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+body.theme-light .install-step-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+body.theme-light .step-highlight {
+  color: #0f172a;
+}
+
+body.theme-light .step-desc {
+  color: #334155;
+}
+
+body.theme-light .step-desc strong {
+  color: #0f172a;
 }
