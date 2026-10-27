@@ -955,7 +955,33 @@ export const AppProvider = ({ children }) => {
     return [];
   };
 
-  // عند دخول وضع لوحة تحكم المعلم، يتم جلب أحدث بيانات الطلاب والطلبات فوراً
+  // مزامنة فورية ومستمرة لقائمة الطلاب من قاعدة بيانات Supabase السحابية للجميع (الرئيسية، مدرج الشرف، ولوحة التحكم)
+  useEffect(() => {
+    // 1. جلب فوري عند فتح المنصة على أي جهاز سواء ويب أو تطبيق
+    refreshStudentsFromCloud().catch(() => {});
+
+    // 2. اشتراك سحابي لحظي (Realtime) ليعكس أي تسجيل جديد أو تعديل درجات فوراً
+    let channel = null;
+    import('../utils/supabaseClient').then(({ supabase, isSupabaseConfigured }) => {
+      if (!isSupabaseConfigured || !supabase) return;
+      channel = supabase
+        .channel('global_students_realtime_sync')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'students' }, () => {
+          refreshStudentsFromCloud().catch(() => {});
+        })
+        .subscribe();
+    }).catch(() => {});
+
+    return () => {
+      if (channel) {
+        import('../utils/supabaseClient').then(({ supabase }) => {
+          if (supabase) supabase.removeChannel(channel);
+        }).catch(() => {});
+      }
+    };
+  }, []);
+
+  // عند دخول وضع لوحة تحكم المعلم، يتم التأكد من جلب أحدث بيانات الطلاب فوراً
   useEffect(() => {
     if (isTeacherMode) {
       refreshStudentsFromCloud().catch(() => {});

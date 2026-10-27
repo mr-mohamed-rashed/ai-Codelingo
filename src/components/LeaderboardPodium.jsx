@@ -27,7 +27,7 @@ export const LeaderboardPodium = () => {
   const rankedStudents = useMemo(() => {
     let list = students.filter(s => 
       s && 
-      s.status === 'approved' &&
+      s.status !== 'blocked' &&
       !s.isMasterTeacher &&
       !isMasterTeacherEmail(s.email) &&
       s.id !== 'std-master-teacher' &&
