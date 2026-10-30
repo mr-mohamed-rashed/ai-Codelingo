@@ -237,18 +237,40 @@ export async function updateStudentInSupabase(studentId, updates = {}) {
 }
 
 /**
- * حذف حساب طالب نهائياً من قاعدة بيانات Supabase (بالمعرف أو بالإيميل)
+ * حذف حساب طالب نهائياً من قاعدة بيانات Supabase (بالمعرف، أو بالإيميل، أو برقم الهاتف، أو بمعرف Auth)
  */
-export async function deleteStudentFromSupabase(studentId, studentEmail) {
-  if (!isSupabaseConfigured || (!studentId && !studentEmail)) return false;
+export async function deleteStudentFromSupabase(idOrObj, optionalEmail = null) {
+  if (!isSupabaseConfigured) return false;
+
+  let id = null;
+  let email = null;
+  let phone = null;
+  let authUserId = null;
+
+  if (typeof idOrObj === 'object' && idOrObj !== null) {
+    id = idOrObj.id;
+    email = idOrObj.email;
+    phone = idOrObj.phone;
+    authUserId = idOrObj.authUserId || idOrObj.auth_user_id;
+  } else {
+    id = idOrObj;
+    email = optionalEmail;
+  }
 
   try {
     const supabase = await getSupabaseClient();
-    if (studentId) {
-      await supabase.from('students').delete().eq('id', studentId);
+    if (id) {
+      await supabase.from('students').delete().eq('id', id);
     }
-    if (studentEmail && studentEmail.trim()) {
-      await supabase.from('students').delete().ilike('email', studentEmail.trim().toLowerCase());
+    if (email && String(email).trim()) {
+      await supabase.from('students').delete().ilike('email', String(email).trim().toLowerCase());
+    }
+    if (phone && String(phone).trim()) {
+      const cleanP = String(phone).trim().replace(/[^0-9]/g, '');
+      await supabase.from('students').delete().or(`phone.eq.${cleanP},phone.eq.2${cleanP},phone.eq.+2${cleanP}`);
+    }
+    if (authUserId) {
+      await supabase.from('students').delete().eq('auth_user_id', authUserId);
     }
     return true;
   } catch (err) {

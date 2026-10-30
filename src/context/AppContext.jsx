@@ -1218,14 +1218,25 @@ export const AppProvider = ({ children }) => {
   /**
    * حذف حساب الطالب نهائياً من المنصة وإزالته من المجموعات والتخزين وقاعدة البيانات
    */
-  const deleteStudent = (studentId) => {
-    if (!studentId) return;
+  const deleteStudent = async (studentIdOrObj) => {
+    if (!studentIdOrObj) return;
 
-    const targetStudent = students.find(s => s.id === studentId);
+    const studentId = typeof studentIdOrObj === 'object' ? studentIdOrObj.id : studentIdOrObj;
+    const targetStudent = typeof studentIdOrObj === 'object' 
+      ? studentIdOrObj 
+      : students.find(s => s.id === studentId);
+
     const targetEmail = targetStudent?.email;
+    const targetPhone = targetStudent?.phone;
+    const targetAuthId = targetStudent?.authUserId;
 
-    // 1. إزالة الطالب من القائمة المحلية فوراً
-    setStudents(prev => prev.filter(s => s.id !== studentId && (!targetEmail || s.email?.toLowerCase() !== targetEmail.toLowerCase())));
+    // 1. إزالة الطالب نهائياً من القائمة المحلية فوراً
+    setStudents(prev => prev.filter(s => {
+      if (studentId && s.id === studentId) return false;
+      if (targetEmail && s.email && s.email.toLowerCase() === targetEmail.toLowerCase()) return false;
+      if (targetPhone && s.phone && s.phone === targetPhone) return false;
+      return true;
+    }));
 
     // 2. إزالة الطالب من كافة المجموعات الدراسية
     setGroups(prev => prev.map(g => ({
@@ -1233,26 +1244,26 @@ export const AppProvider = ({ children }) => {
       studentIds: (g.studentIds || []).filter(id => id !== studentId)
     })));
 
-    // 3. إذا كان هذا الطالب هو المسجل دخوله حالياً في هذا المتصفح، سحب اعتماده فوراً
+    // 3. إذا كان هذا الحساب مسجل كطالب حالي، إنهاء جلسته
     if (currentStudentId === studentId || (targetEmail && currentStudent?.email?.toLowerCase() === targetEmail.toLowerCase())) {
-      console.log('Current student was deleted by teacher, resetting to pending');
-      if (currentStudent) {
-        const revokedStudent = {
-          ...currentStudent,
-          status: 'pending',
-          groupId: null,
-          isMasterTeacher: false,
-          allowedCurriculum: { chapters: [], lessons: [], chunks: [] }
-        };
-        setStudents(prev => [revokedStudent, ...prev.filter(s => s.id !== studentId)]);
-      }
+      setCurrentStudentId(null);
+      localStorage.removeItem('codelingo_current_student_id');
     }
 
-    // 4. حذف سحابي فوري من Supabase السحابية بالإيميل والمعرّف
-    import('../services/studentService').then(({ deleteStudentFromSupabase }) => {
-      deleteStudentFromSupabase(studentId, targetEmail)
-        .catch(err => console.warn('Supabase deleteStudent error:', err));
-    }).catch(() => {});
+    // 4. حذف سحابي فوري وشامل من Supabase السحابية
+    try {
+      const { deleteStudentFromSupabase } = await import('../services/studentService');
+      await deleteStudentFromSupabase({
+        id: studentId,
+        email: targetEmail,
+        phone: targetPhone,
+        authUserId: targetAuthId
+      });
+      // إعادة مزامنة سريعة لضمان تطابق القائمة تماماً
+      await refreshStudentsFromCloud();
+    } catch (err) {
+      console.warn('Supabase deleteStudent error:', err);
+    }
 
     playSound.wrong();
   };

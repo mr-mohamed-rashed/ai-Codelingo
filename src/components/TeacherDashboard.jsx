@@ -968,12 +968,12 @@ export default function TeacherDashboard() {
                           {/* زر حذف حساب الطالب نهائياً */}
                           <button
                             className="duo-btn duo-btn-danger text-sm py-2 px-3 flex items-center gap-1.5"
-                            onClick={() => {
+                            onClick={async () => {
                               const confirmMsg = lang === 'en'
                                 ? `Are you sure you want to permanently delete student "${student.name}"? This action cannot be undone.`
-                                : `هل أنت متأكد من مسح حساب الطالب "${student.name}" نهائياً من المنصة؟ سيتم حذف جميع بياناته وتقدمه.`;
+                                : `هل أنت متأكد من مسح حساب الطالب "${student.name}" نهائياً من المنصة؟ سيتم حذف جميع بياناته.`;
                               if (window.confirm(confirmMsg)) {
-                                deleteStudent(student.id);
+                                await deleteStudent(student);
                               }
                             }}
                             title={lang === 'en' ? 'Permanently delete student account' : 'مسح حساب الطالب نهائياً من المنصة'}
@@ -2636,12 +2636,12 @@ export default function TeacherDashboard() {
 
                           <button
                             className="duo-btn duo-btn-danger text-xs py-2 px-2 flex items-center gap-1"
-                            onClick={() => {
+                            onClick={async () => {
                               const confirmMsg = lang === 'en'
                                 ? `Are you sure you want to delete student "${student.name}"?`
                                 : `هل تريد مسح حساب الطالب "${student.name}" نهائياً من المنصة؟`;
                               if (window.confirm(confirmMsg)) {
-                                deleteStudent(student.id);
+                                await deleteStudent(student);
                               }
                             }}
                             title={lang === 'en' ? 'Delete student' : 'مسح حساب الطالب'}
