@@ -287,14 +287,26 @@ export default function AuthModal({ initialMode = 'register' }) {
     try {
       if (isSupabaseConfigured) {
         if (authMode === 'register') {
-          // إنشاء حساب جديد بالبريد
-          const { user } = await signUpWithEmailPassword(email, password, {
-            name: formData.name.trim() || email.split('@')[0],
-            guardianPhone: formData.guardianPhone.trim(),
-            phone: formData.phone.trim(),
-            avatar: formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(formData.name || email)}`
-          });
-          await handleAuthCompletion(user || { id: `usr-${Date.now()}`, email, user_metadata: { full_name: formData.name } }, { provider: 'email' });
+          // إنشاء حساب جديد بالبريد (مع محاولة تسجيل الدخول التلقائي إن كان مسجلاً مسبقاً)
+          let authUser = null;
+          try {
+            const res = await signUpWithEmailPassword(email, password, {
+              name: formData.name.trim() || email.split('@')[0],
+              guardianPhone: formData.guardianPhone.trim(),
+              phone: formData.phone.trim(),
+              avatar: formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(formData.name || email)}`
+            });
+            authUser = res.user;
+          } catch (signUpErr) {
+            const msg = String(signUpErr.message || '').toLowerCase();
+            if (msg.includes('already registered') || msg.includes('user_already_exists')) {
+              const res = await signInWithEmailPassword(email, password);
+              authUser = res.user;
+            } else {
+              throw signUpErr;
+            }
+          }
+          await handleAuthCompletion(authUser || { id: `usr-${Date.now()}`, email, user_metadata: { full_name: formData.name } }, { provider: 'email' });
         } else {
           // تسجيل دخول بالبريد
           const { user } = await signInWithEmailPassword(email, password);
@@ -326,7 +338,14 @@ export default function AuthModal({ initialMode = 'register' }) {
       }
     } catch (err) {
       console.warn('Email Auth Error:', err);
-      setErrorMessage(err.message || 'فشل تسجيل الدخول بالبريد الإلكتروني');
+      const msg = String(err.message || '').toLowerCase();
+      if (msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
+        setErrorMessage('⚠️ كلمة المرور غير صحيحة أو البريد غير مسجل، يرجى التأكد وإعادة المحاولة.');
+      } else if (msg.includes('already registered') || msg.includes('user_already_exists')) {
+        setErrorMessage('⚠️ هذا البريد مسجل مسبقاً! اضغط على "تسجيل الدخول" واكتب كلمة المرور.');
+      } else {
+        setErrorMessage(err.message || 'فشل تسجيل الدخول بالبريد الإلكتروني');
+      }
       playSound.wrong();
     } finally {
       setIsLoading(false);
@@ -389,13 +408,26 @@ export default function AuthModal({ initialMode = 'register' }) {
             return;
           }
 
+          let authUser = null;
           if (authMode === 'register') {
-            const { user } = await signUpWithPhonePassword(phone, password, {
-              name: formData.name.trim() || 'طالب كودلينجو',
-              guardianPhone: formData.guardianPhone.trim(),
-              avatar: formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(phone)}`
-            });
-            await handleAuthCompletion(user, { provider: 'phone', phone });
+            try {
+              const res = await signUpWithPhonePassword(phone, password, {
+                name: formData.name.trim() || 'طالب كودلينجو',
+                guardianPhone: formData.guardianPhone.trim(),
+                avatar: formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(phone)}`
+              });
+              authUser = res.user;
+            } catch (signUpErr) {
+              const msg = String(signUpErr.message || '').toLowerCase();
+              if (msg.includes('already registered') || msg.includes('user_already_exists')) {
+                // مسجل مسبقاً: نسجل دخوله تلقائياً بكلمة المرور
+                const res = await signInWithPhonePassword(phone, password);
+                authUser = res.user;
+              } else {
+                throw signUpErr;
+              }
+            }
+            await handleAuthCompletion(authUser, { provider: 'phone', phone });
           } else {
             const { user } = await signInWithPhonePassword(phone, password);
             await handleAuthCompletion(user, { provider: 'phone', phone });
@@ -427,7 +459,16 @@ export default function AuthModal({ initialMode = 'register' }) {
       }
     } catch (err) {
       console.warn('Phone Auth Error:', err);
-      setErrorMessage(err.message || 'حدث خطأ أثناء المصادقة برقم الهاتف');
+      const msg = String(err.message || '').toLowerCase();
+      if (msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
+        setErrorMessage('⚠️ كلمة المرور غير صحيحة أو هذا الرقم غير مسجل. يرجى التأكد وإعادة المحاولة.');
+      } else if (msg.includes('already registered') || msg.includes('user_already_exists')) {
+        setErrorMessage('⚠️ هذا الرقم مسجل بالفعل مسبقاً! اضغط على "تسجيل الدخول" واكتب كلمة المرور.');
+      } else if (msg.includes('unsupported') || msg.includes('sms')) {
+        setErrorMessage('⚠️ يرجى استخدام نمط كلمة المرور أو التسجيل السريع بحساب Google.');
+      } else {
+        setErrorMessage(err.message || 'حدث خطأ أثناء المصادقة برقم الهاتف');
+      }
       playSound.wrong();
     } finally {
       setIsLoading(false);
