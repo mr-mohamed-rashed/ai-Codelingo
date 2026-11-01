@@ -196,55 +196,21 @@ export const AppProvider = ({ children }) => {
     document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
   }, [lang]);
 
-  // حفظ واسترجاع بيانات الطلاب من التخزين المحلي (نسخة نظيفة خالية تماماً من حساب المعلم أو الحسابات الوهمية)
-  const [students, setStudents] = useState(() => {
-    try {
-      const saved = localStorage.getItem('codelingo_students_clean_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          // استبعاد أي حسابات تجريبية قديمة أو حساب الأستاذ محمد راشد نهائياً من الطلاب
-          return parsed.filter(s => 
-            s && 
-            !String(s.id).startsWith('std-00') && 
-            s.id !== 'std-master-teacher' && 
-            !isMasterTeacherEmail(s.email) && 
-            !s.isMasterTeacher &&
-            !s.name?.includes('محمد راشد')
-          );
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return INITIAL_STUDENTS;
-  });
+  // قائمة الطلاب السحابية (المصدر الوحيد للحقيقة هو Supabase)
+  const [students, setStudents] = useState(INITIAL_STUDENTS);
 
-  // حفظ واسترجاع بيانات المجموعات الدراسية (مع استبعاد أي وجود لحساب المعلم فيها)
-  const [groups, setGroups] = useState(() => {
+  // قائمة المجموعات السحابية (المصدر الوحيد للحقيقة هو Supabase)
+  const [groups, setGroups] = useState(INITIAL_GROUPS);
+
+  // تنظيف أي بقايا تخزين محلي قديم لضمان عدم عودة أي حسابات ملغاة أو مجموعات قديمة
+  useEffect(() => {
     try {
-      const saved = localStorage.getItem('codelingo_groups_clean_v1');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map(g => ({
-            ...g,
-            studentIds: (g.studentIds || []).filter(id => id !== 'std-master-teacher')
-          }));
-        }
-      }
+      localStorage.removeItem('codelingo_students_clean_v1');
+      localStorage.removeItem('codelingo_groups_clean_v1');
+      localStorage.removeItem('codelingo_students');
+      localStorage.removeItem('codelingo_groups');
     } catch (e) {}
-    return INITIAL_GROUPS;
-  });
-
-  useEffect(() => {
-    localStorage.setItem('codelingo_groups_clean_v1', JSON.stringify(groups));
-  }, [groups]);
-
-  // تحديث التخزين المحلي عند تغيير بيانات الطلاب
-  useEffect(() => {
-    localStorage.setItem('codelingo_students_clean_v1', JSON.stringify(students));
-  }, [students]);
+  }, []);
 
   // الطالب الحالي المسجل دخوله
   const [currentStudentId, setCurrentStudentId] = useState(() => {
@@ -464,22 +430,30 @@ export const AppProvider = ({ children }) => {
   }, [students]);
 
   /**
-   * إنشاء مجموعة دراسية جديدة
+   * إنشاء مجموعة دراسية جديدة ومزامنتها سحابياً في Supabase فوراً
    */
-  const createGroup = ({ name, schedule, location, color = "#6366f1", studentIds = [], homeworkNote = "" }) => {
+  const createGroup = async ({ name, schedule, location, color = "#6366f1", studentIds = [], homeworkNote = "" }) => {
     const newGroup = {
-      id: `grp-${Date.now().toString().slice(-4)}`,
-      name,
+      id: `grp-${Date.now().toString().slice(-6)}`,
+      name: (name || 'مجموعة دراسية').trim(),
       schedule,
       location,
       color,
       studentIds,
-      unlockedChunks: ["ch1-l1-c1"],
-      homeworkChunks: ["ch1-l1-c1"],
-      homeworkNote: homeworkNote || "واجب الحصة: استيعاب المفاهيم ومراجعة الشرح وحل الأسئلة بنسبة 90% فأعلى."
+      unlockedChunks: ["ch1-l1-c1", "ch1-l1-c2", "ch1-l1-c3", "ch1-l1-c4", "ch1-l1-exam"],
+      homeworkChunks: ["ch1-l1-c2", "ch1-l1-c3"],
+      homeworkNote: homeworkNote || "واجب الحصة الأولى: استيعاب المفاهيم ومراجعة الشرح وحل الأسئلة بنسبة 90% فأعلى."
     };
 
-    setGroups(prev => [newGroup, ...prev]);
+    setGroups(prev => [newGroup, ...prev.filter(g => g.id !== newGroup.id)]);
+
+    // مزامنة فورية في جدول groups في Supabase
+    try {
+      const { syncGroupWithSupabase } = await import('../services/groupService');
+      await syncGroupWithSupabase(newGroup);
+    } catch (e) {
+      console.warn('syncGroupWithSupabase error:', e);
+    }
 
     if (studentIds.length > 0) {
       setStudents(prev => prev.map(s => {
@@ -495,13 +469,24 @@ export const AppProvider = ({ children }) => {
   };
 
   /**
-   * تعديل بيانات مجموعة
+   * تعديل بيانات مجموعة ومزامنتها سحابياً في Supabase فوراً
    */
-  const updateGroup = (groupId, updatedFields) => {
+  const updateGroup = async (groupId, updatedFields) => {
+    let targetGroup = null;
     setGroups(prev => prev.map(g => {
       if (g.id !== groupId) return g;
-      return { ...g, ...updatedFields };
+      targetGroup = { ...g, ...updatedFields };
+      return targetGroup;
     }));
+
+    if (targetGroup) {
+      try {
+        const { syncGroupWithSupabase } = await import('../services/groupService');
+        await syncGroupWithSupabase(targetGroup);
+      } catch (e) {
+        console.warn('syncGroupWithSupabase error:', e);
+      }
+    }
 
     if (updatedFields.studentIds) {
       setStudents(prev => prev.map(s => {
@@ -518,11 +503,19 @@ export const AppProvider = ({ children }) => {
   };
 
   /**
-   * حذف مجموعة
+   * حذف مجموعة نهائياً من Supabase وإعادة الطلاب المسكنين فيها للعام
    */
-  const deleteGroup = (groupId) => {
+  const deleteGroup = async (groupId) => {
     setGroups(prev => prev.filter(g => g.id !== groupId));
-    setStudents(prev => prev.map(s => s.groupId === groupId ? { ...s, groupId: null } : s));
+    setStudents(prev => prev.map(s => s.groupId === groupId ? { ...s, groupId: null, status: 'pending' } : s));
+
+    try {
+      const { deleteGroupFromSupabase } = await import('../services/groupService');
+      await deleteGroupFromSupabase(groupId);
+    } catch (e) {
+      console.warn('deleteGroupFromSupabase error:', e);
+    }
+
     playSound.wrong();
   };
 
@@ -530,7 +523,9 @@ export const AppProvider = ({ children }) => {
    * تعيين طالب لمجموعة دراسية محددة وحفظ التسكين سحابياً فوراً
    */
   const assignStudentToGroup = (studentId, groupId) => {
-    const defaultStation = 'الدرس 1-1: المراحل الخمس التاريخية لتطور الحوسبة';
+    const targetGroup = groups.find(g => g.id === groupId);
+    const groupName = targetGroup ? targetGroup.name : '';
+    const defaultStation = groupName ? `طالب معتمد في ${groupName}` : 'الدرس 1-1: المراحل الخمس التاريخية لتطور الحوسبة';
     let targetStationToSave = defaultStation;
 
     setStudents(prev => prev.map(s => {
@@ -560,12 +555,9 @@ export const AppProvider = ({ children }) => {
     }));
 
     // حفظ التسكين والاعتماد سحابياً في جدول students في Supabase فوراً
-    import('../services/studentService').then(({ updateStudentInSupabase }) => {
-      updateStudentInSupabase(studentId, { 
-        groupId: groupId || null,
-        status: groupId ? 'approved' : 'pending',
-        currentStation: groupId ? targetStationToSave : 'في انتظار تصريح المعلم وتحديد المجموعة'
-      }).catch(err => console.warn('Supabase assignStudentToGroup error:', err));
+    import('../services/groupService').then(({ assignStudentToGroupInSupabase }) => {
+      assignStudentToGroupInSupabase(studentId, groupId, groupName)
+        .catch(err => console.warn('Supabase assignStudentToGroup error:', err));
     }).catch(() => {});
 
     playSound.click();
@@ -575,6 +567,7 @@ export const AppProvider = ({ children }) => {
    * تبديل إتاحة فقرة للمجموعة (مشروحة ومفتوحة / واجب منزلي)
    */
   const toggleGroupChunk = (groupId, chunkId, isHomework = false) => {
+    let targetGroup = null;
     setGroups(prev => prev.map(g => {
       if (g.id !== groupId) return g;
 
@@ -597,12 +590,20 @@ export const AppProvider = ({ children }) => {
         }
       }
 
-      return {
+      targetGroup = {
         ...g,
         unlockedChunks: unlocked,
         homeworkChunks: homework
       };
+      return targetGroup;
     }));
+
+    if (targetGroup) {
+      import('../services/groupService').then(({ syncGroupWithSupabase }) => {
+        syncGroupWithSupabase(targetGroup).catch(() => {});
+      }).catch(() => {});
+    }
+
     playSound.click();
   };
 
@@ -611,6 +612,7 @@ export const AppProvider = ({ children }) => {
    */
   const unlockEntireChapterForGroup = (groupId, chapterId, asHomework = false) => {
     const chunkIds = ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${chapterId}-`));
+    let targetGroup = null;
 
     setGroups(prev => prev.map(g => {
       if (g.id !== groupId) return g;
@@ -619,12 +621,20 @@ export const AppProvider = ({ children }) => {
         ? Array.from(new Set([...(g.homeworkChunks || []), ...chunkIds]))
         : (g.homeworkChunks || []);
 
-      return {
+      targetGroup = {
         ...g,
         unlockedChunks: updatedUnlocked,
         homeworkChunks: updatedHomework
       };
+      return targetGroup;
     }));
+
+    if (targetGroup) {
+      import('../services/groupService').then(({ syncGroupWithSupabase }) => {
+        syncGroupWithSupabase(targetGroup).catch(() => {});
+      }).catch(() => {});
+    }
+
     playSound.levelUp();
   };
 
@@ -633,15 +643,24 @@ export const AppProvider = ({ children }) => {
    */
   const lockEntireChapterForGroup = (groupId, chapterId) => {
     const chunkIds = new Set(ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${chapterId}-`)));
+    let targetGroup = null;
 
     setGroups(prev => prev.map(g => {
       if (g.id !== groupId) return g;
-      return {
+      targetGroup = {
         ...g,
         unlockedChunks: (g.unlockedChunks || []).filter(id => !chunkIds.has(id)),
         homeworkChunks: (g.homeworkChunks || []).filter(id => !chunkIds.has(id))
       };
+      return targetGroup;
     }));
+
+    if (targetGroup) {
+      import('../services/groupService').then(({ syncGroupWithSupabase }) => {
+        syncGroupWithSupabase(targetGroup).catch(() => {});
+      }).catch(() => {});
+    }
+
     playSound.click();
   };
 
@@ -651,15 +670,24 @@ export const AppProvider = ({ children }) => {
   const unlockEntireLessonForGroup = (groupId, lessonId) => {
     const [ch, l] = lessonId.split('-');
     const chunkIds = ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${ch}-l${l}-`));
+    let targetGroup = null;
 
     setGroups(prev => prev.map(g => {
       if (g.id !== groupId) return g;
       const updatedUnlocked = Array.from(new Set([...(g.unlockedChunks || []), ...chunkIds]));
-      return {
+      targetGroup = {
         ...g,
         unlockedChunks: updatedUnlocked
       };
+      return targetGroup;
     }));
+
+    if (targetGroup) {
+      import('../services/groupService').then(({ syncGroupWithSupabase }) => {
+        syncGroupWithSupabase(targetGroup).catch(() => {});
+      }).catch(() => {});
+    }
+
     playSound.levelUp();
   };
 
@@ -669,15 +697,24 @@ export const AppProvider = ({ children }) => {
   const lockEntireLessonForGroup = (groupId, lessonId) => {
     const [ch, l] = lessonId.split('-');
     const chunkIds = new Set(ALL_CHUNK_IDS.filter(id => id.startsWith(`ch${ch}-l${l}-`)));
+    let targetGroup = null;
 
     setGroups(prev => prev.map(g => {
       if (g.id !== groupId) return g;
-      return {
+      targetGroup = {
         ...g,
         unlockedChunks: (g.unlockedChunks || []).filter(id => !chunkIds.has(id)),
         homeworkChunks: (g.homeworkChunks || []).filter(id => !chunkIds.has(id))
       };
+      return targetGroup;
     }));
+
+    if (targetGroup) {
+      import('../services/groupService').then(({ syncGroupWithSupabase }) => {
+        syncGroupWithSupabase(targetGroup).catch(() => {});
+      }).catch(() => {});
+    }
+
     playSound.click();
   };
 
@@ -685,7 +722,18 @@ export const AppProvider = ({ children }) => {
    * تحديث ملاحظات وتوجيهات الواجب المنزلي للمجموعة
    */
   const updateGroupHomeworkNote = (groupId, note) => {
-    setGroups(prev => prev.map(g => g.id === groupId ? { ...g, homeworkNote: note } : g));
+    let targetGroup = null;
+    setGroups(prev => prev.map(g => {
+      if (g.id !== groupId) return g;
+      targetGroup = { ...g, homeworkNote: note };
+      return targetGroup;
+    }));
+
+    if (targetGroup) {
+      import('../services/groupService').then(({ syncGroupWithSupabase }) => {
+        syncGroupWithSupabase(targetGroup).catch(() => {});
+      }).catch(() => {});
+    }
   };
 
   /**
@@ -855,18 +903,10 @@ export const AppProvider = ({ children }) => {
               );
 
               if (!matched) {
-                // الطالب تم حذفه من قاعدة البيانات من قِبل المعلم!
-                console.log('Student was deleted by teacher, resetting to pending approval.');
-                if (currentStudent) {
-                  const pendingStudent = {
-                    ...currentStudent,
-                    status: 'pending',
-                    groupId: null,
-                    isMasterTeacher: false,
-                    allowedCurriculum: { chapters: [], lessons: [], chunks: [] }
-                  };
-                  setStudents(prev => [pendingStudent, ...prev.filter(s => s.id !== pendingStudent.id)]);
-                }
+                // الطالب تم حذفه من قاعدة البيانات من قِبل المعلم! إنهاء الجلسة فوراً
+                console.log('Student was deleted from database, ending session.');
+                setCurrentStudentId(null);
+                localStorage.removeItem('codelingo_current_student_id');
               } else if (matched.status !== 'approved' || !matched.groupId) {
                 // الطالب موجود لكن حالته معلقة أو غير مسكن
                 setStudents(prev => prev.map(s => s.id === matched.id ? { 
@@ -955,19 +995,41 @@ export const AppProvider = ({ children }) => {
     return [];
   };
 
-  // مزامنة فورية ومستمرة لقائمة الطلاب من قاعدة بيانات Supabase السحابية للجميع (الرئيسية، مدرج الشرف، ولوحة التحكم)
+  /**
+   * جلب وتحديث قائمة المجموعات فوراً من قاعدة بيانات Supabase السحابية
+   */
+  const refreshGroupsFromCloud = async () => {
+    if (!isSupabaseConfigured) return [];
+    try {
+      const { fetchGroupsFromSupabase } = await import('../services/groupService');
+      const remoteGroups = await fetchGroupsFromSupabase();
+      if (Array.isArray(remoteGroups) && remoteGroups.length > 0) {
+        setGroups(remoteGroups);
+        return remoteGroups;
+      }
+    } catch (err) {
+      console.warn('refreshGroupsFromCloud note:', err);
+    }
+    return [];
+  };
+
+  // مزامنة فورية ومستمرة لقائمة الطلاب والمجموعات من قاعدة بيانات Supabase السحابية للجميع
   useEffect(() => {
     // 1. جلب فوري عند فتح المنصة على أي جهاز سواء ويب أو تطبيق
     refreshStudentsFromCloud().catch(() => {});
+    refreshGroupsFromCloud().catch(() => {});
 
-    // 2. اشتراك سحابي لحظي (Realtime) ليعكس أي تسجيل جديد أو تعديل درجات فوراً
+    // 2. اشتراك سحابي لحظي (Realtime) ليعكس أي تسجيل جديد أو تعديل درجات أو مجموعات فوراً
     let channel = null;
     import('../utils/supabaseClient').then(({ supabase, isSupabaseConfigured }) => {
       if (!isSupabaseConfigured || !supabase) return;
       channel = supabase
-        .channel('global_students_realtime_sync')
+        .channel('global_cloud_realtime_sync')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'students' }, () => {
           refreshStudentsFromCloud().catch(() => {});
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'groups' }, () => {
+          refreshGroupsFromCloud().catch(() => {});
         })
         .subscribe();
     }).catch(() => {});
@@ -981,10 +1043,11 @@ export const AppProvider = ({ children }) => {
     };
   }, []);
 
-  // عند دخول وضع لوحة تحكم المعلم، يتم التأكد من جلب أحدث بيانات الطلاب فوراً
+  // عند دخول وضع لوحة تحكم المعلم، يتم التأكد من جلب أحدث بيانات الطلاب والمجموعات فوراً
   useEffect(() => {
     if (isTeacherMode) {
       refreshStudentsFromCloud().catch(() => {});
+      refreshGroupsFromCloud().catch(() => {});
     }
   }, [isTeacherMode]);
 
@@ -1015,18 +1078,11 @@ export const AppProvider = ({ children }) => {
         }
 
         if (!remoteMatch) {
-          // تم مسح الطالب من قِبل الأستاذ! سحب الاعتماد والتسكين وإغلاق المنهج فوراً
-          setStudents(prev => prev.map(s => {
-            if (s.id === currentStudentId || (s.email && currentStudent?.email && s.email.toLowerCase() === currentStudent.email.toLowerCase())) {
-              return {
-                ...s,
-                status: 'pending',
-                groupId: null,
-                allowedCurriculum: { chapters: [], lessons: [], chunks: [] }
-              };
-            }
-            return s;
-          }));
+          // تم مسح الطالب من قِبل الأستاذ! إنهاء الجلسة فوراً وإزالته من القائمة
+          console.log('Student no longer exists in Supabase, clearing session.');
+          setCurrentStudentId(null);
+          localStorage.removeItem('codelingo_current_student_id');
+          setStudents(prev => prev.filter(s => s.id !== currentStudentId));
         } else if (remoteMatch.status !== 'approved' || !remoteMatch.groupId) {
           // تم سحب اعتماد الطالب أو إلغاء تسكينه
           setStudents(prev => prev.map(s => {
