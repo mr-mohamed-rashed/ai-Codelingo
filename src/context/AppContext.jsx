@@ -942,19 +942,8 @@ export const AppProvider = ({ children }) => {
       if (timerId) clearTimeout(timerId);
     };
 
-    if (isReturningFromOAuth) {
-      // عائد من OAuth: تنفيذ فوري دون تأخير
-      triggerSync();
-    } else {
-      // بدء المزامنة فور أول تفاعل بشري حقيقي (لمس الشاشة أو سكرول) أو بعد 6 ثوانٍ
-      if (typeof window !== 'undefined') {
-        window.addEventListener('pointerdown', triggerSync, { once: true, passive: true });
-        window.addEventListener('touchstart', triggerSync, { once: true, passive: true });
-        window.addEventListener('scroll', triggerSync, { once: true, passive: true });
-        window.addEventListener('keydown', triggerSync, { once: true, passive: true });
-      }
-      timerId = setTimeout(triggerSync, 6000);
-    }
+    // تنفيذ المزامنة فور فتح الصفحة مباشرة دون أي تأخير
+    triggerSync();
 
     return () => {
       isCancelled = true;
@@ -974,7 +963,8 @@ export const AppProvider = ({ children }) => {
     setIsSyncingStudents(true);
     try {
       const { fetchAllStudentsFromSupabase, purgeTeacherFromStudentsTable } = await import('../services/studentService');
-      await purgeTeacherFromStudentsTable().catch(() => {});
+      // تشغيل تنظيف حساب المعلم في الخلفية دون تعطيل جلب الطلاب
+      purgeTeacherFromStudentsTable().catch(() => {});
       const remoteStudents = await fetchAllStudentsFromSupabase();
       if (Array.isArray(remoteStudents)) {
         const validRemoteStudents = remoteStudents.filter(s => 
