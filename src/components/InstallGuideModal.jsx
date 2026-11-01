@@ -118,8 +118,8 @@ export default function InstallGuideModal() {
               playSound.click();
             }}
           >
-            <Smartphone size={16} />
-            <span>أندرويد 🤖</span>
+            <Smartphone size={15} />
+            <span>أندرويد</span>
           </button>
 
           <button
@@ -130,10 +130,10 @@ export default function InstallGuideModal() {
               playSound.click();
             }}
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.84c.62-.75 1.04-1.8 0.93-2.84-.9.04-1.99.6-2.64 1.35-.58.65-1.09 1.72-.95 2.74 1 .08 2.03-.51 2.66-1.25z"/>
             </svg>
-            <span>آيفون 🍏</span>
+            <span>آيفون</span>
           </button>
 
           <button
@@ -144,8 +144,8 @@ export default function InstallGuideModal() {
               playSound.click();
             }}
           >
-            <Monitor size={16} />
-            <span>كمبيوتر 💻</span>
+            <Monitor size={15} />
+            <span>كمبيوتر</span>
           </button>
         </div>
 
@@ -176,6 +176,26 @@ export default function InstallGuideModal() {
               </div>
             )}
 
+            {/* رفع زر نسخ الرابط في أعلى اللوحة */}
+            <div className="smart-elevated-copy-box">
+              <button
+                type="button"
+                className="smart-copy-link-btn elevated-highlight"
+                onClick={handleCopyLink}
+              >
+                {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                <span>{copied ? '✓ تم نسخ الرابط! افتحه في Chrome' : 'نسخ رابط المنصة لفتحه في Google Chrome 📋'}</span>
+              </button>
+            </div>
+
+            {/* تنبيه خاص لهواتف شاومي وفيفو */}
+            <div className="smart-xiaomi-vivo-notice">
+              <AlertCircle size={15} className="text-amber-400 flex-shrink-0" />
+              <span>
+                <b>لهواتف شاومي وفيفو:</b> افتح المنصة في متصفح <b>Google Chrome</b> لضمان ظهور خيار التثبيت مباشرة.
+              </span>
+            </div>
+
             {/* الدليل المصور الشامل لهواتف شاومي وفيفو وكل أجهزة أندرويد */}
             <div className="smart-steps-container">
               <div className="smart-step-item">
@@ -189,7 +209,7 @@ export default function InstallGuideModal() {
               <div className="smart-step-item">
                 <div className="smart-step-num">2</div>
                 <div className="smart-step-info">
-                  <strong>اختر "تثبيت التطبيق" أو "إضافة للشاشة الرئيسية"</strong>
+                  <strong>اختر "تثبيت التطبيق" أو "إضافة للشاشة"</strong>
                   <span>اضغط على خيار <PlusSquare size={14} className="inline text-emerald-400" /> <b>تثبيت التطبيق</b> (Add to Home screen).</span>
                 </div>
               </div>
@@ -198,27 +218,10 @@ export default function InstallGuideModal() {
                 <div className="smart-step-num">3</div>
                 <div className="smart-step-info">
                   <strong>تأكيد التثبيت</strong>
-                  <span>اضغط <b>"تثبيت"</b> وسينزل التطبيق فوراً على شاشتك مثل أي تطبيق عادي!</span>
+                  <span>اضغط <b>"تثبيت"</b> وسينزل التطبيق فوراً على شاشة هاتفك الرئيسية!</span>
                 </div>
               </div>
             </div>
-
-            {/* تنبيه خاص لهواتف شاومي وفيفو */}
-            <div className="smart-xiaomi-vivo-notice">
-              <AlertCircle size={16} className="text-amber-400 flex-shrink-0" />
-              <span>
-                <b>لهواتف شاومي وفيفو:</b> يفضل فتح المنصة في متصفح <b>Google Chrome</b> لضمان ظهور خيار التثبيت مباشرة بدون أذونات المتصفحات المعقدة.
-              </span>
-            </div>
-
-            <button
-              type="button"
-              className="smart-copy-link-btn"
-              onClick={handleCopyLink}
-            >
-              {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
-              <span>{copied ? 'تم نسخ الرابط بنجاح! افتحه في Google Chrome 📋' : 'نسخ رابط المنصة لفتحه في Google Chrome 📋'}</span>
-            </button>
           </div>
         )}
 
@@ -227,6 +230,21 @@ export default function InstallGuideModal() {
             ========================================================================= */}
         {deviceTab === 'ios' && (
           <div className="smart-installer-panel">
+            {/* رفع زر نسخ الرابط في أعلى لوحة الآيفون لتسهيل فتحه في سفاري */}
+            <div className="smart-elevated-copy-box">
+              <button
+                type="button"
+                className="smart-copy-link-btn elevated-highlight"
+                onClick={handleCopyLink}
+              >
+                {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                <span>{copied ? '✓ تم نسخ الرابط! الصقه في Safari' : 'نسخ رابط المنصة لفتحه في متصفح Safari 📋'}</span>
+              </button>
+              <span className="smart-copy-hint">
+                💡 إذا كنت تفتح المنصة من داخل واتساب أو فيسبوك، انسخ الرابط وافتحه في متصفح <b>Safari</b> لتثبيت التطبيق.
+              </span>
+            </div>
+
             <div className="smart-steps-container">
               <div className="smart-step-item">
                 <div className="smart-step-num">1</div>
@@ -260,15 +278,6 @@ export default function InstallGuideModal() {
                 </div>
               </div>
             </div>
-
-            <button
-              type="button"
-              className="smart-copy-link-btn"
-              onClick={handleCopyLink}
-            >
-              {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
-              <span>{copied ? 'تم نسخ الرابط! افتحه في Safari 📋' : 'نسخ الرابط لفتحه في متصفح Safari 📋'}</span>
-            </button>
           </div>
         )}
 

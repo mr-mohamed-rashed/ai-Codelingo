@@ -347,7 +347,51 @@ function MainAppContent() {
         {activeModal === 'pwa_install_guide' && <InstallGuideModal />}
       </Suspense>
 
-
+      {/* شريط دعوة تثبيت المنصة المنبثق على الموبايل */}
+      {canInstall && !isStandalone && !dismissPwaBanner && (
+        <aside className="mobile-pwa-bottom-bar" aria-label="تثبيت التطبيق">
+          <div className="mobile-pwa-content">
+            <div className="mobile-pwa-badge">
+              <picture>
+                <source srcSet={`${import.meta.env.BASE_URL}icon-192.webp`} type="image/webp" />
+                <img 
+                  src={`${import.meta.env.BASE_URL}icon-192.png`} 
+                  alt="App Icon" 
+                  width="44"
+                  height="44"
+                  className="mobile-pwa-img" 
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
+            </div>
+            <div className="mobile-pwa-text">
+              <strong className="mobile-pwa-title">تطبيق كودلينجو 📲</strong>
+              <span className="mobile-pwa-sub">تثبيت للشاشة الرئيسية</span>
+            </div>
+          </div>
+          <div className="mobile-pwa-actions">
+            <button 
+              type="button" 
+              className="duo-btn duo-btn-success mobile-pwa-btn"
+              onClick={installApp}
+              id="btn-install-pwa-banner"
+            >
+              تثبيت
+            </button>
+            <button 
+              type="button" 
+              className="mobile-pwa-close-btn"
+              onClick={() => setDismissPwaBanner(true)}
+              title="إغلاق"
+              aria-label="إغلاق شريط تثبيت التطبيق"
+              id="btn-close-pwa-banner"
+            >
+              ✕
+            </button>
+          </div>
+        </aside>
+      )}
     </div>
   );
 }

@@ -138,17 +138,17 @@ export const AppProvider = ({ children }) => {
     if (promptEvent) {
       try {
         promptEvent.prompt();
-        promptEvent.userChoice.then((choiceResult) => {
-          if (choiceResult && choiceResult.outcome === 'accepted') {
-            setInstallPrompt(null);
-            if (typeof window !== 'undefined') window.__codelingo_install_prompt = null;
-          }
-        }).catch(() => {});
+        const choiceResult = await promptEvent.userChoice;
+        if (choiceResult && choiceResult.outcome === 'accepted') {
+          setInstallPrompt(null);
+          if (typeof window !== 'undefined') window.__codelingo_install_prompt = null;
+          return; // تم التثبيت المباشر بنجاح دون الحاجة لفتح أي نافذة
+        }
       } catch (err) {
         console.log('Direct install trigger error:', err);
       }
     }
-    // فتح شاشة التثبيت وشريط التحميل التلقائي
+    // في حال عدم توفر التثبيت المباشر (مثل متصفح Safari على آيفون أو متصفحات شاومي وفيفو الداخلية) تفتح نافذة الإرشادات
     setActiveModal('pwa_install_guide');
   };
 
