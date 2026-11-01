@@ -31,6 +31,7 @@ export function mapDbStudentToApp(dbRecord) {
     phone: dbRecord.phone || '',
     guardianPhone: dbRecord.guardian_phone || '',
     avatar: dbRecord.avatar || '',
+    gender: dbRecord.gender || null,
     provider: dbRecord.provider || 'google',
     status: dbRecord.status || 'pending',
     isMasterTeacher: Boolean(dbRecord.is_master_teacher),
@@ -206,6 +207,7 @@ export async function updateStudentInSupabase(studentId, updates = {}) {
     if (updates.name !== undefined) payload.name = sanitizeText(updates.name, 80);
     if (updates.phone !== undefined) payload.phone = sanitizePhone(updates.phone) || null;
     if (updates.guardianPhone !== undefined) payload.guardian_phone = sanitizePhone(updates.guardianPhone) || null;
+    if (updates.gender !== undefined) payload.gender = updates.gender;
     if (updates.avatar !== undefined) payload.avatar = updates.avatar;
     if (updates.authUserId !== undefined) payload.auth_user_id = updates.authUserId;
     if (updates.xp !== undefined) payload.xp = Number(updates.xp);
@@ -218,12 +220,24 @@ export async function updateStudentInSupabase(studentId, updates = {}) {
     if (updates.allowedCurriculum !== undefined) payload.allowed_curriculum = updates.allowedCurriculum;
     payload.updated_at = new Date().toISOString();
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('students')
       .update(payload)
       .eq('id', studentId)
       .select()
       .maybeSingle();
+
+    if (error && (error.code === '42703' || String(error.message).toLowerCase().includes('gender'))) {
+      delete payload.gender;
+      const retry = await supabase
+        .from('students')
+        .update(payload)
+        .eq('id', studentId)
+        .select()
+        .maybeSingle();
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       console.warn('⚠️ updateStudentInSupabase note:', error.message);

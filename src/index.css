@@ -2886,8 +2886,9 @@ body.theme-light .trophy-banner-text p {
 }
 
 .runners-table-header {
-  display: grid;
-  grid-template-columns: 2fr 1.5fr 1.5fr;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 12px 18px;
   background: rgba(255, 255, 255, 0.03);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -2902,12 +2903,13 @@ body.theme-light .trophy-banner-text p {
 }
 
 .runner-row-item {
-  display: grid;
-  grid-template-columns: 2fr 1.5fr 1.5fr;
+  display: flex;
   align-items: center;
-  padding: 12px 18px;
+  justify-content: space-between;
+  padding: 10px 18px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   transition: background 0.15s ease;
+  gap: 12px;
 }
 
 .runner-row-item:last-child {
@@ -2927,6 +2929,8 @@ body.theme-light .trophy-banner-text p {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 1;
+  min-width: 0;
 }
 
 .runner-rank-badge {
@@ -2934,6 +2938,7 @@ body.theme-light .trophy-banner-text p {
   font-weight: 800;
   color: #94a3b8;
   min-width: 28px;
+  flex-shrink: 0;
 }
 
 .runner-avatar {
@@ -2942,33 +2947,57 @@ body.theme-light .trophy-banner-text p {
   border-radius: 50%;
   border: 1.5px solid rgba(255, 255, 255, 0.15);
   background: #1e293b;
+  flex-shrink: 0;
+}
+
+.runner-info-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.runner-name-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }
 
 .runner-name {
   font-size: 0.9rem;
   font-weight: 700;
   color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
 }
 
 .current-user-tag {
   font-size: 0.72rem;
   color: #818cf8;
   font-weight: 700;
-  margin-right: 6px;
+  flex-shrink: 0;
 }
 
 .runner-group-badge {
-  display: inline-block;
-  font-size: 0.76rem;
-  padding: 3px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.70rem;
+  font-weight: 700;
+  padding: 1.5px 8px;
   border-radius: 999px;
-  border: 1px solid;
-  color: #cbd5e1;
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px;
+  max-width: 160px;
+}
+
+.runner-group-icon {
+  flex-shrink: 0;
 }
 
 .runner-stats-flex {
@@ -3401,49 +3430,79 @@ body.theme-light .trophy-banner-text p {
   }
 
   .runner-row-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 10px;
-    gap: 6px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 8px 10px !important;
+    gap: 8px !important;
+  }
+
+  .runner-profile-cell {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  .runner-rank-badge {
+    font-size: 0.78rem !important;
+    min-width: 24px !important;
+  }
+
+  .runner-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .runner-info-stack {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    min-width: 0 !important;
+  }
+
+  .runner-name-line {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+  }
+
+  .runner-name {
+    font-size: 0.82rem !important;
+    font-weight: 800 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 130px !important;
   }
 
   .runner-group-badge {
-    display: inline-block !important;
-    font-size: 0.64rem !important;
-    padding: 2px 6px !important;
-    max-width: 85px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+    font-size: 0.62rem !important;
+    padding: 1px 6px !important;
+    border-radius: 999px !important;
+    max-width: 120px !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
   }
 
-  .runner-profile-cell {
-    flex: 1;
-    min-width: 0;
-    gap: 8px;
-  }
-
-  .runner-avatar {
-    width: 32px;
-    height: 32px;
-  }
-
-  .runner-name {
-    font-size: 0.82rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 120px;
-  }
-
-  .runner-group-badge {
-    display: none;
+  .runner-group-icon {
+    width: 10px !important;
+    height: 10px !important;
   }
 
   .runner-score-cell {
-    flex-shrink: 0;
-    font-size: 0.76rem;
+    flex-shrink: 0 !important;
+    font-size: 0.74rem !important;
+  }
+
+  .runner-stats-flex {
+    gap: 8px !important;
   }
 
   /* الفوتر الأكاديمي على الموبايل */

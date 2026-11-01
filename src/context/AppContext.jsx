@@ -1089,7 +1089,7 @@ export const AppProvider = ({ children }) => {
   /**
    * تحديث وتثبيت أرقام هواتف الطالب وولي الأمر في ملفه الأكاديمي وسحابياً لمرة واحدة
    */
-  const updateStudentPhones = async (studentId, { phone, guardianPhone, name }) => {
+  const updateStudentPhones = async (studentId, { phone, guardianPhone, name, gender, avatar }) => {
     const cleanPhone = phone ? phone.trim() : '';
     const cleanGuardian = guardianPhone ? guardianPhone.trim() : '';
     const cleanName = name ? name.trim() : undefined;
@@ -1101,6 +1101,8 @@ export const AppProvider = ({ children }) => {
         ...(cleanName ? { name: cleanName } : {}),
         phone: cleanPhone,
         guardianPhone: cleanGuardian,
+        ...(gender ? { gender } : {}),
+        ...(avatar ? { avatar } : {}),
         hasCompletedInitialPhoneSetup: true
       };
     }));
@@ -1115,7 +1117,9 @@ export const AppProvider = ({ children }) => {
       await updateStudentInSupabase(studentId, {
         ...(cleanName ? { name: cleanName } : {}),
         phone: cleanPhone,
-        guardianPhone: cleanGuardian
+        guardianPhone: cleanGuardian,
+        ...(gender ? { gender } : {}),
+        ...(avatar ? { avatar } : {})
       });
     } catch (err) {
       console.warn('updateStudentPhones Supabase note:', err);

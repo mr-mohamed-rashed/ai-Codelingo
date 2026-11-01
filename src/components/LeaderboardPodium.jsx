@@ -341,8 +341,7 @@ export const LeaderboardPodium = () => {
       {remainingStudents.length > 0 && (
         <div className="leaderboard-runners-table">
           <div className="runners-table-header">
-            <span>{lang === 'en' ? 'Rank & Student' : 'الترتيب والطالب'}</span>
-            <span>{lang === 'en' ? 'Group' : 'المجموعة الدراسية'}</span>
+            <span>{lang === 'en' ? 'Rank, Student & Group' : 'الترتيب، الطالب والمجموعة الدراسية'}</span>
             <span>{lang === 'en' ? 'Mastery Score' : 'مجموع النقاط والإتقان'}</span>
           </div>
 
@@ -359,20 +358,28 @@ export const LeaderboardPodium = () => {
                   <div className="runner-profile-cell">
                     <span className="runner-rank-badge">#{rankNum}</span>
                     <img src={std.avatar} alt={std.name} className="runner-avatar" />
-                    <div>
-                      <span className="runner-name">{std.name}</span>
-                      {isCurrentUser && (
-                        <span className="current-user-tag">
-                          {lang === 'en' ? '(You)' : '(حسابك)'}
-                        </span>
-                      )}
+                    <div className="runner-info-stack">
+                      <div className="runner-name-line">
+                        <span className="runner-name" title={std.name}>{std.name}</span>
+                        {isCurrentUser && (
+                          <span className="current-user-tag">
+                            {lang === 'en' ? '(You)' : '(حسابك)'}
+                          </span>
+                        )}
+                      </div>
+                      <span 
+                        className="runner-group-badge" 
+                        style={{ 
+                          borderColor: std.groupColor ? `${std.groupColor}44` : 'rgba(255,255,255,0.12)',
+                          color: std.groupColor || '#cbd5e1',
+                          background: std.groupColor ? `${std.groupColor}18` : 'rgba(255,255,255,0.04)'
+                        }}
+                        title={std.groupName}
+                      >
+                        <School size={11} className="runner-group-icon" />
+                        <span>{std.groupName}</span>
+                      </span>
                     </div>
-                  </div>
-
-                  <div className="runner-group-cell">
-                    <span className="runner-group-badge" style={{ borderColor: std.groupColor }}>
-                      {std.groupName}
-                    </span>
                   </div>
 
                   <div className="runner-score-cell">
