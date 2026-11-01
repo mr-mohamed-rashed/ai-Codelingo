@@ -18,7 +18,7 @@ export const Navbar = () => {
     toggleLang,
     t,
     canInstall,
-    installApp,
+    openInstallGuide,
     currentPage,
     setCurrentPage
   } = useApp();
@@ -71,14 +71,14 @@ export const Navbar = () => {
 
         {/* Right Controls: Unified Utilities Capsule, Teacher Button & Profile */}
         <div className="navbar-controls-group">
-          {/* PWA Install Button - بارز وكبير ومكتوب عليه بوضوح */}
+          {/* PWA Install Button - الزرار الثابت للإرشادات والتعليمات */}
           {canInstall && (
             <button
               id="btn-pwa-install-nav"
               className="nav-btn-pwa-prominent"
-              onClick={installApp}
+              onClick={openInstallGuide}
               title={t('installAppDesc')}
-              aria-label={lang === 'ar' ? 'تثبيت منصة كودلينجو كتطبيق' : 'Install CodeLingo App'}
+              aria-label={lang === 'ar' ? 'إرشادات تثبيت منصة كودلينجو' : 'CodeLingo Install Guide'}
             >
               <Smartphone size={16} className="btn-pwa-icon" />
               <span className="btn-pwa-label">{lang === 'ar' ? 'تثبيت التطبيق 📲' : 'Install App 📲'}</span>

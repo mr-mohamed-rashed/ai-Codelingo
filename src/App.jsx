@@ -25,6 +25,7 @@ const TeacherLoginModal = lazy(() => import('./components/TeacherLoginModal'));
 const PrivacyPolicyModal = lazy(() => import('./components/PrivacyPolicyModal'));
 const TermsOfUseModal = lazy(() => import('./components/TermsOfUseModal'));
 const InstallGuideModal = lazy(() => import('./components/InstallGuideModal'));
+const DirectPwaInstallerModal = lazy(() => import('./components/DirectPwaInstallerModal'));
 const InitialPhoneSetupModal = lazy(() => import('./components/InitialPhoneSetupModal'));
 const StudentProfileModal = lazy(() => import('./components/StudentProfileModal'));
 
@@ -96,7 +97,8 @@ function MainAppContent() {
     t,
     canInstall,
     isStandalone,
-    installApp
+    installApp,
+    installAppDirect
   } = useApp();
 
   const [dismissPwaBanner, setDismissPwaBanner] = React.useState(false);
@@ -345,6 +347,7 @@ function MainAppContent() {
         {activeModal === 'privacy_policy' && <PrivacyPolicyModal />}
         {activeModal === 'terms_of_use' && <TermsOfUseModal />}
         {activeModal === 'pwa_install_guide' && <InstallGuideModal />}
+        {activeModal === 'pwa_direct_installer' && <DirectPwaInstallerModal />}
       </Suspense>
 
       {/* شريط دعوة تثبيت المنصة المنبثق على الموبايل */}
@@ -374,7 +377,7 @@ function MainAppContent() {
             <button 
               type="button" 
               className="duo-btn duo-btn-success mobile-pwa-btn"
-              onClick={installApp}
+              onClick={installAppDirect}
               id="btn-install-pwa-banner"
             >
               تثبيت

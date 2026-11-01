@@ -132,25 +132,17 @@ export const AppProvider = ({ children }) => {
     return (typeof window !== 'undefined' && window.__codelingo_install_prompt) || null;
   });
 
-  // Install PWA App directly
-  const installApp = async () => {
-    const promptEvent = installPrompt || (typeof window !== 'undefined' ? window.__codelingo_install_prompt : null);
-    if (promptEvent) {
-      try {
-        promptEvent.prompt();
-        const choiceResult = await promptEvent.userChoice;
-        if (choiceResult && choiceResult.outcome === 'accepted') {
-          setInstallPrompt(null);
-          if (typeof window !== 'undefined') window.__codelingo_install_prompt = null;
-          return; // تم التثبيت المباشر بنجاح دون الحاجة لفتح أي نافذة
-        }
-      } catch (err) {
-        console.log('Direct install trigger error:', err);
-      }
-    }
-    // في حال عدم توفر التثبيت المباشر (مثل متصفح Safari على آيفون أو متصفحات شاومي وفيفو الداخلية) تفتح نافذة الإرشادات
+  // 1. التثبيت المباشر بشريط التحميل والأنيميشن التفاعلي (للزّر المنبثق)
+  const installAppDirect = () => {
+    setActiveModal('pwa_direct_installer');
+  };
+
+  // 2. دليل وإرشادات التثبيت خطوة بخطوة للأنظمة المختلفة (للزّر الثابت)
+  const openInstallGuide = () => {
     setActiveModal('pwa_install_guide');
   };
+
+  const installApp = installAppDirect;
 
   // Effect for PWA install event listener
   useEffect(() => {
@@ -1796,6 +1788,8 @@ export const AppProvider = ({ children }) => {
         currentPage,
         setCurrentPage,
         installApp,
+        installAppDirect,
+        openInstallGuide,
         installPrompt,
         isStandalone,
         canInstall: !isStandalone
