@@ -640,11 +640,7 @@ export default function AuthModal({ initialMode = 'register' }) {
               </form>
             )}
 
-            {/* إشعار أمان المنصة */}
-            <div className="auth-security-notice mt-2">
-              <ShieldCheck size={16} className="text-emerald-500 flex-shrink-0" />
-              <span>المصادقة سحابية مؤمنة ومربوطة مباشرة بقاعدة بيانات Supabase</span>
-            </div>
+
           </div>
         )}
       </div>
