@@ -1,5 +1,5 @@
 // Service Worker for Progressive Web App (PWA) - CodeLingo Platform
-const CACHE_NAME = 'codelingo-cache-v7';
+const CACHE_NAME = 'codelingo-cache-v8';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

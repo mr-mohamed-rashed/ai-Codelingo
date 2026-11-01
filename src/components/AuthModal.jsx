@@ -56,6 +56,7 @@ export default function AuthModal({ initialMode = 'register' }) {
 
   // إظهار وإخفاء كلمات المرور
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // بيانات النموذج
   const isActualStudent = isStudentLoggedIn && currentStudent && currentStudent.status !== 'guest';
@@ -63,6 +64,7 @@ export default function AuthModal({ initialMode = 'register' }) {
     name: isActualStudent ? (currentStudent.name || '') : '',
     email: isActualStudent ? (currentStudent.email || '') : '',
     password: '',
+    confirmPassword: '',
     avatar: isActualStudent ? (currentStudent.avatar || '') : '',
   });
 
@@ -190,6 +192,19 @@ export default function AuthModal({ initialMode = 'register' }) {
     if (!password || password.length < 6) {
       setErrorMessage('كلمة المرور يجب أن لا تقل عن 6 أحرف أو أرقام');
       return;
+    }
+
+    // التحقق من تطابق كلمتي المرور في حالة إنشاء حساب جديد
+    if (authMode === 'register') {
+      const confirmPass = (formData.confirmPassword || '').trim();
+      if (!confirmPass) {
+        setErrorMessage('⚠️ يرجى تأكيد كلمة المرور');
+        return;
+      }
+      if (password !== confirmPass) {
+        setErrorMessage('⚠️ كلمتا المرور غير متطابقتين، يرجى التأكد وإعادة المحاولة');
+        return;
+      }
     }
 
     // فحص حساب الأستاذ الماستر
@@ -624,6 +639,30 @@ export default function AuthModal({ initialMode = 'register' }) {
                     </button>
                   </div>
                 </div>
+
+                {authMode === 'register' && (
+                  <div className="form-field text-right">
+                    <label className="field-label">تأكيد كلمة المرور (Confirm Password) *</label>
+                    <div className="input-with-icon">
+                      <Lock size={18} className="field-icon" />
+                      <input 
+                        type={showConfirmPassword ? 'text' : 'password'} 
+                        placeholder="••••••••"
+                        value={formData.confirmPassword || ''}
+                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="btn-toggle-input-eye"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        title={showConfirmPassword ? 'إخفاء' : 'إظهار'}
+                      >
+                        {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 <button 
                   type="submit" 
