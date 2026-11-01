@@ -87,37 +87,49 @@ export const LeaderboardPodium = () => {
           </div>
         </div>
 
-        {/* فلاتر المجموعات الدراسية */}
-        <div className="podium-group-filters" role="group" aria-label={lang === 'en' ? 'Filter by Study Group' : 'تصفية مدرج الأوائل حسب المجموعة الدراسية'}>
-          <button 
-            className={`podium-filter-chip ${selectedGroupFilter === 'all' ? 'active' : ''}`}
-            onClick={() => {
-              setSelectedGroupFilter('all');
-              playSound.click();
-            }}
-            aria-label={lang === 'en' ? 'Show all platform students' : 'عرض ترتيب طلاب كل المنصة'}
-          >
-            <Users size={15} />
-            <span>{lang === 'en' ? 'All Platform' : 'كل المنصة (العام)'}</span>
-          </button>
-
-          {groups.map(group => (
+        {/* فلاتر المجموعات الدراسية بتصميم كبسولات متجاوبة وأنيقة */}
+        <div className="podium-filters-container">
+          <div className="podium-group-filters" role="tablist" aria-label={lang === 'en' ? 'Filter by Study Group' : 'تصفية مدرج الأوائل حسب المجموعة الدراسية'}>
             <button 
-              key={group.id}
-              className={`podium-filter-chip ${selectedGroupFilter === group.id ? 'active' : ''}`}
-              style={{
-                borderColor: selectedGroupFilter === group.id ? group.color : undefined
-              }}
+              role="tab"
+              aria-selected={selectedGroupFilter === 'all'}
+              className={`podium-filter-chip ${selectedGroupFilter === 'all' ? 'active' : ''}`}
               onClick={() => {
-                setSelectedGroupFilter(group.id);
+                setSelectedGroupFilter('all');
                 playSound.click();
               }}
-              aria-label={lang === 'en' ? `Filter by ${group.name}` : `تصفية الترتيب حسب مجموعة ${group.name}`}
+              aria-label={lang === 'en' ? 'Show all platform students' : 'عرض ترتيب طلاب كل المنصة'}
             >
-              <School size={15} />
-              <span>{group.name.split('-')[0].trim()}</span>
+              <Users size={15} />
+              <span>{lang === 'en' ? 'All Platform' : 'كل المنصة (العام)'}</span>
             </button>
-          ))}
+
+            {groups.map(group => {
+              const isSelected = selectedGroupFilter === group.id;
+              return (
+                <button 
+                  key={group.id}
+                  role="tab"
+                  aria-selected={isSelected}
+                  className={`podium-filter-chip ${isSelected ? 'active' : ''}`}
+                  style={{
+                    borderColor: isSelected ? (group.color || '#6366f1') : undefined,
+                    background: isSelected ? `linear-gradient(135deg, ${group.color || '#6366f1'}33, ${group.color || '#6366f1'}66)` : undefined,
+                    boxShadow: isSelected ? `0 4px 14px ${group.color || '#6366f1'}40` : undefined,
+                    color: isSelected ? '#ffffff' : undefined
+                  }}
+                  onClick={() => {
+                    setSelectedGroupFilter(group.id);
+                    playSound.click();
+                  }}
+                  aria-label={lang === 'en' ? `Filter by ${group.name}` : `تصفية الترتيب حسب مجموعة ${group.name}`}
+                >
+                  <School size={15} style={{ color: isSelected ? '#ffffff' : (group.color || '#818cf8') }} />
+                  <span>{group.name.split('-')[0].trim()}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -141,8 +153,16 @@ export const LeaderboardPodium = () => {
                   <span>🥈</span>
                 </div>
               </div>
-              <h3 className="podium-student-name">{secondPlace.name}</h3>
-              <span className="podium-group-tag" style={{ color: secondPlace.groupColor }}>
+              <h3 className="podium-student-name" title={secondPlace.name}>{secondPlace.name}</h3>
+              <span 
+                className="podium-group-tag" 
+                style={{ 
+                  color: secondPlace.groupColor || '#94a3b8',
+                  borderColor: secondPlace.groupColor ? `${secondPlace.groupColor}44` : undefined,
+                  background: secondPlace.groupColor ? `${secondPlace.groupColor}18` : undefined
+                }}
+                title={secondPlace.groupName}
+              >
                 {secondPlace.groupName}
               </span>
               <div className="podium-score-pill">
@@ -197,8 +217,16 @@ export const LeaderboardPodium = () => {
                   <span>🥇</span>
                 </div>
               </div>
-              <h3 className="podium-student-name champion-name">{firstPlace.name}</h3>
-              <span className="podium-group-tag" style={{ color: firstPlace.groupColor }}>
+              <h3 className="podium-student-name champion-name" title={firstPlace.name}>{firstPlace.name}</h3>
+              <span 
+                className="podium-group-tag" 
+                style={{ 
+                  color: firstPlace.groupColor || '#f59e0b',
+                  borderColor: firstPlace.groupColor ? `${firstPlace.groupColor}44` : undefined,
+                  background: firstPlace.groupColor ? `${firstPlace.groupColor}18` : undefined
+                }}
+                title={firstPlace.groupName}
+              >
                 {firstPlace.groupName}
               </span>
               <div className="podium-score-pill champion-score-pill">
@@ -255,8 +283,16 @@ export const LeaderboardPodium = () => {
                   <span>🥉</span>
                 </div>
               </div>
-              <h3 className="podium-student-name">{thirdPlace.name}</h3>
-              <span className="podium-group-tag" style={{ color: thirdPlace.groupColor }}>
+              <h3 className="podium-student-name" title={thirdPlace.name}>{thirdPlace.name}</h3>
+              <span 
+                className="podium-group-tag" 
+                style={{ 
+                  color: thirdPlace.groupColor || '#d97706',
+                  borderColor: thirdPlace.groupColor ? `${thirdPlace.groupColor}44` : undefined,
+                  background: thirdPlace.groupColor ? `${thirdPlace.groupColor}18` : undefined
+                }}
+                title={thirdPlace.groupName}
+              >
                 {thirdPlace.groupName}
               </span>
               <div className="podium-score-pill">

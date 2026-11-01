@@ -2585,6 +2585,13 @@ body.theme-light .trophy-banner-text p {
   max-width: 500px;
 }
 
+.podium-filters-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 6px;
+}
+
 .podium-group-filters {
   display: flex;
   flex-wrap: wrap;
@@ -2741,7 +2748,15 @@ body.theme-light .trophy-banner-text p {
   font-size: 0.72rem;
   font-weight: 700;
   margin-bottom: 5px;
-  display: block;
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
 }
 
 .podium-score-pill {
@@ -3189,102 +3204,195 @@ body.theme-light .trophy-banner-text p {
     line-height: 1.45;
   }
 
-  .podium-group-filters {
-    display: flex;
-    overflow-x: auto;
+  .podium-filters-container {
     width: 100%;
-    justify-content: flex-start;
-    padding-bottom: 6px;
-    gap: 6px;
+    overflow: hidden;
+    padding: 2px 0 6px;
+    box-sizing: border-box;
+  }
+
+  .podium-group-filters {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    justify-content: flex-start !important;
+    padding: 4px 6px !important;
+    gap: 8px !important;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    background: rgba(15, 23, 42, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 999px !important;
   }
 
   .podium-group-filters::-webkit-scrollbar {
-    display: none;
+    display: none !important;
   }
 
   .podium-filter-chip {
-    flex-shrink: 0;
-    padding: 5px 10px;
-    font-size: 0.72rem;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    min-height: 38px !important;
+    padding: 6px 14px !important;
+    font-size: 0.78rem !important;
+    border-radius: 999px !important;
+    gap: 6px !important;
   }
 
   .podium-stage-container {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    gap: 4px;
-    padding-top: 24px;
-    justify-content: space-evenly;
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 32px auto 14px !important;
+    padding: 0 !important;
   }
 
   .podium-slot {
-    flex: 1;
-    min-width: 0;
-    max-width: 32%;
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: 33.33% !important;
+    padding: 0 2px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
   }
 
-  .podium-avatar {
-    width: 44px;
-    height: 44px;
-  }
-
-  .champion-avatar {
-    width: 56px;
-    height: 56px;
+  .podium-slot.is-champion {
+    transform: translateY(-4px) !important;
+    z-index: 2 !important;
   }
 
   .podium-crown-aura {
-    top: -24px;
+    top: -24px !important;
   }
 
-  .pillar-gold {
-    height: 110px;
+  .podium-crown-aura svg,
+  .podium-crown-icon {
+    width: 24px !important;
+    height: 24px !important;
   }
 
-  .pillar-silver {
-    height: 85px;
+  .podium-avatar-wrap {
+    margin-bottom: 6px !important;
   }
 
-  .pillar-bronze {
-    height: 65px;
+  .podium-avatar {
+    width: 44px !important;
+    height: 44px !important;
+    border-width: 2px !important;
   }
 
-  .pillar-rank-num {
-    font-size: 1.45rem;
+  .champion-avatar {
+    width: 56px !important;
+    height: 56px !important;
+    border-width: 2.5px !important;
   }
 
-  .pillar-label {
-    font-size: 0.68rem;
+  .podium-medal-badge {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 0.72rem !important;
+    bottom: -2px !important;
+    right: -2px !important;
+    border-width: 1.5px !important;
   }
 
   .podium-student-name {
-    font-size: 0.82rem;
-    max-width: 100%;
-    white-space: normal;
-    line-height: 1.3;
-    word-break: normal;
+    font-size: 0.76rem !important;
+    font-weight: 800 !important;
+    color: #f8fafc !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-align: center !important;
+    margin: 0 0 3px 0 !important;
+    padding: 0 2px !important;
+    line-height: 1.25 !important;
+    box-sizing: border-box !important;
   }
 
   .champion-name {
-    font-size: 0.92rem;
-    max-width: 100%;
-    white-space: normal;
-    line-height: 1.3;
+    font-size: 0.84rem !important;
+    color: #fef08a !important;
   }
 
   .podium-group-tag {
-    font-size: 0.62rem;
-    max-width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: inline-block !important;
+    font-size: 0.60rem !important;
+    font-weight: 700 !important;
+    padding: 1.5px 6px !important;
+    border-radius: 999px !important;
+    max-width: 95% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin: 0 auto 4px !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
   }
 
   .podium-score-pill {
-    font-size: 0.66rem;
-    padding: 2px 4px;
+    font-size: 0.60rem !important;
+    font-weight: 800 !important;
+    padding: 2px 5px !important;
+    gap: 3px !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    border-radius: 999px !important;
+  }
+
+  .podium-score-pill svg {
+    width: 10px !important;
+    height: 10px !important;
+  }
+
+  .champion-ribbon {
+    font-size: 0.60rem !important;
+    font-weight: 800 !important;
+    margin-top: 3px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+    text-align: center !important;
+  }
+
+  .podium-pillar {
+    border-radius: 10px 10px 4px 4px !important;
+  }
+
+  .pillar-gold {
+    height: 82px !important;
+  }
+
+  .pillar-silver {
+    height: 62px !important;
+  }
+
+  .pillar-bronze {
+    height: 46px !important;
+  }
+
+  .pillar-rank-num {
+    font-size: 1.35rem !important;
+  }
+
+  .pillar-label,
+  .pillar-rank-label {
+    font-size: 0.60rem !important;
+    margin-top: 1px !important;
   }
 
   /* جدول المتفوقين في الترتيب (المركز الرابع فما بعد) */
@@ -3296,8 +3404,18 @@ body.theme-light .trophy-banner-text p {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 12px;
-    gap: 8px;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .runner-group-badge {
+    display: inline-block !important;
+    font-size: 0.64rem !important;
+    padding: 2px 6px !important;
+    max-width: 85px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
 
   .runner-profile-cell {
@@ -3521,24 +3639,54 @@ body.theme-light .trophy-banner-text p {
   }
 
   .podium-stage-container {
-    gap: 3px;
-    padding-top: 18px;
+    gap: 2px !important;
+    margin: 26px auto 10px !important;
+    padding-top: 16px !important;
+  }
+
+  .podium-avatar {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .champion-avatar {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .podium-student-name {
+    font-size: 0.72rem !important;
+  }
+
+  .champion-name {
+    font-size: 0.78rem !important;
+  }
+
+  .podium-group-tag {
+    font-size: 0.58rem !important;
+    padding: 1px 5px !important;
+    max-width: 90% !important;
+  }
+
+  .podium-score-pill {
+    font-size: 0.56rem !important;
+    padding: 1.5px 4px !important;
   }
 
   .pillar-gold {
-    height: 95px;
+    height: 74px !important;
   }
 
   .pillar-silver {
-    height: 75px;
+    height: 56px !important;
   }
 
   .pillar-bronze {
-    height: 58px;
+    height: 40px !important;
   }
 
   .pillar-rank-num {
-    font-size: 1.25rem;
+    font-size: 1.20rem !important;
   }
 
   .node-row-left { transform: translateX(10px); }
