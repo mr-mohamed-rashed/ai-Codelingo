@@ -1,141 +1,28 @@
 /* =========================================================
-   FLOATING MOBILE PWA INSTALL BANNER (BOTTOM)
+   SMART UNIVERSAL INSTALLER MODAL (ANDROID • IPHONE • PC)
    ========================================================= */
-.mobile-pwa-bottom-bar {
-  position: fixed;
-  bottom: 14px;
-  left: 12px;
-  right: 12px;
-  margin: 0 auto;
+
+.smart-installer-modal-card {
   max-width: 480px;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1.5px solid rgba(99, 102, 241, 0.45);
-  border-radius: 18px;
-  padding: 8px 12px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55), 0 0 20px rgba(99, 102, 241, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  z-index: 999;
-  animation: slideUpPwa 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes slideUpPwa {
-  from {
-    transform: translateY(100px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.mobile-pwa-content {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 0;
-}
-
-.mobile-pwa-badge {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1.5px solid #818cf8;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
-}
-
-.mobile-pwa-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.mobile-pwa-text {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  line-height: 1.25;
-}
-
-.mobile-pwa-title {
-  font-size: 0.88rem;
-  font-weight: 800;
-  color: #ffffff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.mobile-pwa-sub {
-  font-size: 0.74rem;
-  color: #cbd5e1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.mobile-pwa-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
-.mobile-pwa-btn {
-  min-height: 40px !important;
-  padding: 8px 16px !important;
-  font-size: 0.92rem !important;
-  font-weight: 800 !important;
-  border-radius: 12px !important;
-  white-space: nowrap;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.mobile-pwa-close-btn {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #cbd5e1;
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  min-height: 38px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  padding: 0;
-  margin: 0;
-  transition: all 0.2s ease;
-}
-
-/* =========================================================
-   PURE PROGRESS BAR INSTALLER CARD
-   ========================================================= */
-.direct-pwa-installer-card {
-  max-width: 410px;
-  width: 90%;
+  width: 92%;
   background: #0f172a;
   border: 1.5px solid rgba(99, 102, 241, 0.45);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(99, 102, 241, 0.25);
   border-radius: 24px;
-  padding: 28px 22px 24px;
+  padding: 26px 20px 22px;
   color: #f8fafc;
   text-align: center;
   position: relative;
   overflow: hidden;
-  animation: popInInstaller 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: popInInstaller 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.theme-light .smart-installer-modal-card,
+html[data-theme='light'] .smart-installer-modal-card {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
 }
 
 @keyframes popInInstaller {
@@ -149,172 +36,320 @@
   }
 }
 
-.installer-icon-ring {
-  width: 74px;
-  height: 74px;
-  margin: 0 auto 16px;
+/* الرأس والأيقونة */
+.smart-installer-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.smart-installer-app-icon {
+  width: 68px;
+  height: 68px;
+  margin: 0 auto 12px;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.installer-app-img {
+.smart-installer-img {
   width: 100%;
   height: 100%;
   border-radius: 18px;
   object-fit: cover;
   box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
   border: 2px solid #818cf8;
-  z-index: 2;
-  position: relative;
 }
 
-.installer-pulse-glow {
+.smart-installer-badge-sparkle {
   position: absolute;
-  inset: -6px;
-  border-radius: 22px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, rgba(16, 185, 129, 0) 70%);
-  animation: pulseGlow 2s infinite ease-in-out;
-  z-index: 1;
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.6;
-  }
-  50% {
-    transform: scale(1.15);
-    opacity: 1;
-  }
-}
-
-.installer-title {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #ffffff;
-  margin: 0 0 8px;
-  line-height: 1.3;
-}
-
-.installer-desc {
-  font-size: 0.85rem;
-  color: #94a3b8;
-  margin: 0 0 20px;
-  line-height: 1.5;
-  min-height: 38px;
+  top: -4px;
+  right: -4px;
+  background: #1e1b4b;
+  border: 1.5px solid #fbbf24;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.5);
 }
 
-/* شريط التحميل */
-.installer-progress-box {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 14px 16px;
-  margin-bottom: 8px;
+.smart-installer-title {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #ffffff;
+  margin: 0 0 6px;
+  line-height: 1.3;
 }
 
-.installer-progress-track {
-  width: 100%;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  overflow: hidden;
-  margin-bottom: 8px;
-  position: relative;
-}
-
-.installer-progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #10b981 0%, #06b6d4 50%, #6366f1 100%);
-  background-size: 200% 100%;
-  border-radius: 999px;
-  transition: width 0.25s ease-out;
-  animation: progressStripes 1.5s linear infinite;
-}
-
-.installer-progress-bar.bar-done {
-  background: #10b981;
-}
-
-@keyframes progressStripes {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 200% 0%; }
-}
-
-.installer-progress-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #cbd5e1;
-}
-
-.installer-pct {
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: #38bdf8;
-}
-
-/* =========================================================
-   LIGHT THEME OVERRIDES
-   ========================================================= */
-body.theme-light .mobile-pwa-bottom-bar,
-html[data-theme='light'] .mobile-pwa-bottom-bar {
-  background: rgba(255, 255, 255, 0.96);
-  border-color: rgba(99, 102, 241, 0.35);
-  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.15), 0 0 20px rgba(99, 102, 241, 0.1);
-}
-
-body.theme-light .mobile-pwa-title,
-html[data-theme='light'] .mobile-pwa-title {
+body.theme-light .smart-installer-title,
+html[data-theme='light'] .smart-installer-title {
   color: #0f172a;
 }
 
-body.theme-light .mobile-pwa-sub,
-html[data-theme='light'] .mobile-pwa-sub {
-  color: #475569;
+.smart-installer-subtitle {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.5;
+  padding: 0 10px;
 }
 
-body.theme-light .mobile-pwa-close-btn,
-html[data-theme='light'] .mobile-pwa-close-btn {
-  background: rgba(0, 0, 0, 0.06);
+body.theme-light .smart-installer-subtitle,
+html[data-theme='light'] .smart-installer-subtitle {
   color: #64748b;
 }
 
-body.theme-light .direct-pwa-installer-card {
-  background: #ffffff;
-  border-color: #cbd5e1;
-  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.2), 0 0 25px rgba(99, 102, 241, 0.12);
-  color: #0f172a;
+/* ألسنة التبديل بين الأجهزة */
+.smart-installer-tabs-nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 16px;
 }
 
-body.theme-light .installer-title {
-  color: #0f172a;
+body.theme-light .smart-installer-tabs-nav,
+html[data-theme='light'] .smart-installer-tabs-nav {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
 }
 
-body.theme-light .installer-desc {
-  color: #475569;
+.smart-tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 4px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-family: var(--font-arabic);
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
-body.theme-light .installer-progress-box {
+body.theme-light .smart-tab-btn,
+html[data-theme='light'] .smart-tab-btn {
+  color: #64748b;
+}
+
+.smart-tab-btn.active {
+  background: #4f46e5;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+/* بطاقة التثبيت المباشر */
+.smart-native-prompt-card {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1.5px solid rgba(16, 185, 129, 0.35);
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.smart-main-install-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.95rem !important;
+  font-weight: 900 !important;
+  padding: 12px 18px !important;
+  border-radius: 14px !important;
+  min-height: 48px !important;
+}
+
+.smart-hint-text {
+  font-size: 0.72rem;
+  color: #34d399;
+  font-weight: 700;
+}
+
+.smart-success-box {
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid #10b981;
+  color: #6ee7b7;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* خطوات التثبيت */
+.smart-steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: right;
+  margin-bottom: 14px;
+}
+
+.smart-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 10px 14px;
+  transition: all 0.2s ease;
+}
+
+body.theme-light .smart-step-item,
+html[data-theme='light'] .smart-step-item {
   background: #f8fafc;
   border-color: #e2e8f0;
 }
 
-body.theme-light .installer-progress-track {
+.smart-step-item:hover {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+.smart-step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #4f46e5;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.smart-step-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #cbd5e1;
+}
+
+body.theme-light .smart-step-info,
+html[data-theme='light'] .smart-step-info {
+  color: #334155;
+}
+
+.smart-step-info strong {
+  color: #ffffff;
+  font-size: 0.88rem;
+}
+
+body.theme-light .smart-step-info strong,
+html[data-theme='light'] .smart-step-info strong {
+  color: #0f172a;
+}
+
+/* تنبيه شاومي وفيفو */
+.smart-xiaomi-vivo-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 0.78rem;
+  color: #fde68a;
+  text-align: right;
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+
+body.theme-light .smart-xiaomi-vivo-notice,
+html[data-theme='light'] .smart-xiaomi-vivo-notice {
+  background: #fef3c7;
+  border-color: #f59e0b;
+  color: #92400e;
+}
+
+/* زر نسخ الرابط */
+.smart-copy-link-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: #e2e8f0;
+  font-family: var(--font-arabic);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+body.theme-light .smart-copy-link-btn,
+html[data-theme='light'] .smart-copy-link-btn {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+.smart-copy-link-btn:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: #6366f1;
+  color: #ffffff;
+}
+
+body.theme-light .smart-copy-link-btn:hover,
+html[data-theme='light'] .smart-copy-link-btn:hover {
   background: #e2e8f0;
+  color: #0f172a;
 }
 
-body.theme-light .installer-progress-meta {
-  color: #475569;
-}
+@media (max-width: 480px) {
+  .smart-installer-modal-card {
+    padding: 22px 14px 18px !important;
+    border-radius: 20px !important;
+  }
 
-body.theme-light .installer-pct {
-  color: #0284c7;
+  .smart-installer-title {
+    font-size: 1.15rem !important;
+  }
+
+  .smart-tab-btn {
+    font-size: 0.76rem !important;
+    padding: 7px 2px !important;
+    gap: 4px !important;
+  }
+
+  .smart-step-item {
+    padding: 8px 10px !important;
+    gap: 10px !important;
+  }
+
+  .smart-step-info {
+    font-size: 0.78rem !important;
+  }
+
+  .smart-step-info strong {
+    font-size: 0.82rem !important;
+  }
 }
