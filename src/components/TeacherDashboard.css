@@ -69,15 +69,25 @@
   position: relative;
   width: 320px;
 }
+.search-input-wrap .search-icon {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+  z-index: 2;
+}
 .search-input-wrap input {
   width: 100%;
   background: rgba(15, 23, 42, 0.8);
   border: 1px solid var(--border-glass);
   border-radius: var(--radius-sm);
-  padding: 8px 14px 8px 36px;
+  padding: 10px 42px 10px 14px;
   color: #fff;
   font-family: var(--font-arabic);
   font-size: 0.85rem;
+  box-sizing: border-box;
 }
 .search-input-wrap input:focus {
   outline: none;
@@ -295,6 +305,12 @@ input:checked + .slider:before {
   font-weight: 900;
   padding: 2px 7px;
   border-radius: 999px;
+}
+.tab-label-desktop {
+  display: inline;
+}
+.tab-label-mobile {
+  display: none;
 }
 
 /* Groups Toolbar & Section */
@@ -1609,38 +1625,70 @@ input:checked + .slider-purple {
     word-break: break-word !important;
   }
 
-  /* ألسنة التبويب */
+  /* ألسنة التبويب على الموبايل (منع تداخل النصوص تماماً) */
+  .tab-label-desktop {
+    display: none !important;
+  }
+  .tab-label-mobile {
+    display: inline !important;
+  }
+
   .teacher-tabs-nav {
     display: flex !important;
     flex-direction: row !important;
-    gap: 4px !important;
-    padding: 4px !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    padding: 5px !important;
+    background: rgba(15, 23, 42, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: var(--radius-md) !important;
     width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+
+  .teacher-tabs-nav::-webkit-scrollbar {
+    display: none !important;
   }
 
   .teacher-tab-btn {
-    padding: 10px 6px !important;
-    font-size: 0.78rem !important;
-    gap: 4px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px 8px !important;
+    font-size: 0.82rem !important;
+    font-weight: 800 !important;
+    gap: 5px !important;
     white-space: nowrap !important;
     flex: 1 1 0 !important;
     min-width: 0 !important;
     box-sizing: border-box !important;
+    border-radius: var(--radius-sm) !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .teacher-tab-btn span {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    font-size: 0.80rem !important;
+    font-weight: 800 !important;
   }
 
   .teacher-tab-btn svg {
-    width: 16px !important;
-    height: 16px !important;
+    width: 17px !important;
+    height: 17px !important;
     flex-shrink: 0 !important;
   }
 
   .tab-pending-badge {
     font-size: 0.65rem !important;
     padding: 1px 5px !important;
+    flex-shrink: 0 !important;
   }
 
   /* شريط البحث والأزرار */
@@ -1652,10 +1700,33 @@ input:checked + .slider-purple {
     box-sizing: border-box !important;
   }
 
-  .groups-toolbar-row .search-input-wrap {
+  .groups-toolbar-row .search-input-wrap,
+  .students-filter-bar .search-input-wrap {
     width: 100% !important;
     min-width: 0 !important;
     flex: unset !important;
+    position: relative !important;
+  }
+
+  .groups-toolbar-row .search-input-wrap .search-icon,
+  .students-filter-bar .search-input-wrap .search-icon {
+    position: absolute !important;
+    top: 50% !important;
+    right: 14px !important;
+    left: auto !important;
+    transform: translateY(-50%) !important;
+    color: #94a3b8 !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+
+  .groups-toolbar-row .search-input-wrap input,
+  .students-filter-bar .search-input-wrap input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 12px 42px 12px 14px !important;
+    text-align: right !important;
+    font-size: 0.85rem !important;
   }
 
   .groups-toolbar-row .duo-btn {
@@ -1871,8 +1942,16 @@ input:checked + .slider-purple {
   .stat-value {
     font-size: 1.15rem !important;
   }
+  .teacher-tab-btn {
+    padding: 8px 6px !important;
+    gap: 4px !important;
+  }
   .teacher-tab-btn span {
-    font-size: 0.72rem !important;
+    font-size: 0.74rem !important;
+  }
+  .teacher-tab-btn svg {
+    width: 15px !important;
+    height: 15px !important;
   }
   .group-actions-row {
     grid-template-columns: 1fr !important;

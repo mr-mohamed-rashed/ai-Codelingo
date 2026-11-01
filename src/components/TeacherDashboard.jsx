@@ -520,27 +520,33 @@ export default function TeacherDashboard() {
         </div>
 
         {/* التبويب الرئيسي: المجموعات والواجبات | الطلاب والاشتراكات */}
-        <div className="teacher-tabs-nav">
+        <div className="teacher-tabs-nav" role="tablist" aria-label={lang === 'en' ? 'Teacher Dashboard Navigation' : 'أقسام لوحة التحكم للمعلم'}>
           <button 
+            role="tab"
+            aria-selected={activeTab === 'groups'}
             className={`teacher-tab-btn ${activeTab === 'groups' ? 'active' : ''}`}
             onClick={() => {
               setActiveTab('groups');
               playSound.click();
             }}
           >
-            <School size={20} />
-            <span>{t('tabGroups')} ({groups.length})</span>
+            <School size={18} />
+            <span className="tab-label-desktop">{t('tabGroups')} ({groups.length})</span>
+            <span className="tab-label-mobile">{lang === 'en' ? 'Groups' : 'المجموعات'} ({groups.length})</span>
           </button>
 
           <button 
+            role="tab"
+            aria-selected={activeTab === 'students'}
             className={`teacher-tab-btn ${activeTab === 'students' ? 'active' : ''}`}
             onClick={() => {
               setActiveTab('students');
               playSound.click();
             }}
           >
-            <Users size={20} />
-            <span>{t('tabStudents')} ({safeStudents.length})</span>
+            <Users size={18} />
+            <span className="tab-label-desktop">{t('tabStudents')} ({safeStudents.length})</span>
+            <span className="tab-label-mobile">{lang === 'en' ? 'Students' : 'الطلاب'} ({safeStudents.length})</span>
             {pendingStudents.length > 0 && (
               <span className="tab-pending-badge">{pendingStudents.length}</span>
             )}
@@ -548,14 +554,17 @@ export default function TeacherDashboard() {
 
           {isSuperAdmin && (
             <button 
+              role="tab"
+              aria-selected={activeTab === 'admins'}
               className={`teacher-tab-btn ${activeTab === 'admins' ? 'active' : ''}`}
               onClick={() => {
                 setActiveTab('admins');
                 playSound.click();
               }}
             >
-              <Crown size={20} className="text-amber-400" />
-              <span>{lang === 'en' ? 'Admins & Staff' : 'إدارة المشرفين والأدمن'} ({admins.length})</span>
+              <Crown size={18} className="text-amber-400" />
+              <span className="tab-label-desktop">{lang === 'en' ? 'Admins & Staff' : 'إدارة المشرفين والأدمن'} ({admins.length})</span>
+              <span className="tab-label-mobile">{lang === 'en' ? 'Staff' : 'المشرفين'} ({admins.length})</span>
             </button>
           )}
         </div>
