@@ -71,21 +71,22 @@ export const Navbar = () => {
 
         {/* Right Controls: Unified Utilities Capsule, Teacher Button & Profile */}
         <div className="navbar-controls-group">
-          {/* Segmented Utility Capsule (Theme, Lang, PWA) */}
-          <div className="nav-utilities-capsule">
-            {/* PWA Install Button */}
-            {canInstall && (
-              <button
-                className="nav-capsule-btn btn-pwa"
-                onClick={installApp}
-                title={t('installAppDesc')}
-                aria-label={lang === 'ar' ? 'تثبيت منصة كودلينجو كتطبيق' : 'Install CodeLingo App'}
-              >
-                <Smartphone size={15} />
-                <span className="capsule-label">{t('installApp')}</span>
-              </button>
-            )}
+          {/* PWA Install Button - بارز وكبير ومكتوب عليه بوضوح */}
+          {canInstall && (
+            <button
+              id="btn-pwa-install-nav"
+              className="nav-btn-pwa-prominent"
+              onClick={installApp}
+              title={t('installAppDesc')}
+              aria-label={lang === 'ar' ? 'تثبيت منصة كودلينجو كتطبيق' : 'Install CodeLingo App'}
+            >
+              <Smartphone size={16} className="btn-pwa-icon" />
+              <span className="btn-pwa-label">{lang === 'ar' ? 'تثبيت التطبيق 📲' : 'Install App 📲'}</span>
+            </button>
+          )}
 
+          {/* Segmented Utility Capsule (Theme, Lang) */}
+          <div className="nav-utilities-capsule">
             {/* Theme Toggle (Light / Dark) */}
             <button
               className="nav-capsule-btn btn-theme"
@@ -123,6 +124,7 @@ export const Navbar = () => {
           {/* زر تسجيل الدخول أو تسجيل الخروج للطلاب */}
           {isTeacherMode ? (
             <button 
+              id="btn-nav-back"
               className="btn-nav-auth btn-nav-back"
               onClick={handleAuthAction}
               title={t('backToMap')}
@@ -133,16 +135,18 @@ export const Navbar = () => {
             </button>
           ) : isStudentLoggedIn ? (
             <button 
+              id="btn-nav-logout"
               className="btn-nav-auth btn-nav-logout"
               onClick={handleAuthAction}
               title={t('signOut')}
               aria-label={lang === 'ar' ? 'تسجيل الخروج من الحساب' : 'Sign Out'}
             >
-              <LogOut size={16} />
+              <LogOut size={15} className="btn-logout-icon" />
               <span className="btn-nav-auth-text">{lang === 'ar' ? 'تسجيل خروج' : 'Sign Out'}</span>
             </button>
           ) : (
             <button 
+              id="btn-nav-login"
               className="btn-nav-auth btn-nav-login"
               onClick={handleAuthAction}
               title={t('signIn')}
