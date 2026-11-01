@@ -3,41 +3,28 @@ import './AuthModal.css';
 import { 
   Mail, 
   User, 
-  Phone, 
   Sparkles, 
   LogIn, 
   UserPlus, 
   Lock, 
-  Smartphone, 
   ShieldCheck, 
-  HeartHandshake, 
   Eye, 
   EyeOff, 
   CheckCircle,
   KeyRound,
-  ArrowRight,
-  Globe,
-  Share2
+  ArrowRight
 } from 'lucide-react';
 import { useApp, isMasterTeacherEmail } from '../context/AppContext';
 import { playSound } from '../utils/audioEngine';
-import { supabase, isSupabaseConfigured, saveSupabaseCredentials } from '../utils/supabaseClient';
+import { supabase, isSupabaseConfigured } from '../utils/supabaseClient';
 import {
-  signInWithGoogleOAuth,
-  signInWithFacebookOAuth,
   signInWithEmailPassword,
   signUpWithEmailPassword,
-  signInWithPhonePassword,
-  signUpWithPhonePassword,
-  sendPhoneOtp,
-  verifyPhoneOtp,
   syncUserMetadataToStudentTable
 } from '../services/studentService';
 import { 
   getGoogleClientId, 
-  getFacebookAppId, 
   signInWithGoogleIdentity, 
-  signInWithFacebookSDK, 
   saveSocialKeys 
 } from '../services/socialAuthService';
 
@@ -59,13 +46,8 @@ export default function AuthModal({ initialMode = 'register' }) {
     initialMode === 'login' ? 'login' : 'register'
   );
 
-  // طريقة المصادقة المختارة من الـ 4 طرق: 'google' | 'facebook' | 'email' | 'phone'
+  // طريقة المصادقة المختارة: 'google' (الافتراضية) أو 'email'
   const [authMethod, setAuthMethod] = useState('google');
-
-  // نمط المصادقة بالهاتف: 'password' (كلمة مرور) أو 'otp' (رمز تحقق SMS)
-  const [phoneAuthSubtype, setPhoneAuthSubtype] = useState('password');
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpCode, setOtpCode] = useState('');
 
   // حالة التحميل والرسائل
   const [isLoading, setIsLoading] = useState(false);
@@ -80,21 +62,14 @@ export default function AuthModal({ initialMode = 'register' }) {
   const [formData, setFormData] = useState({
     name: isActualStudent ? (currentStudent.name || '') : '',
     email: isActualStudent ? (currentStudent.email || '') : '',
-    phone: isActualStudent ? (currentStudent.phone || '') : '',
-    guardianPhone: isActualStudent ? (currentStudent.guardianPhone || '') : '',
     password: '',
     avatar: isActualStudent ? (currentStudent.avatar || '') : '',
   });
 
-
-
   const [showGoogleKeyModal, setShowGoogleKeyModal] = useState(false);
   const [inputGoogleClientId, setInputGoogleClientId] = useState(() => getGoogleClientId());
 
-  const [showFacebookKeyModal, setShowFacebookKeyModal] = useState(false);
-  const [inputFbAppId, setInputFbAppId] = useState(() => getFacebookAppId());
-
-  // نموذج محلي سريع في حالة عدم ضبط Supabase محلياً
+  // نموذج محلي سريع في حالة الطوارئ
   const [showQuickLocalPicker, setShowQuickLocalPicker] = useState(false);
   const [quickPickerName, setQuickPickerName] = useState('');
   const [quickPickerEmail, setQuickPickerEmail] = useState('');
@@ -106,8 +81,6 @@ export default function AuthModal({ initialMode = 'register' }) {
         ...prev,
         name: currentStudent.name || prev.name,
         email: currentStudent.email || prev.email,
-        phone: currentStudent.phone || prev.phone,
-        guardianPhone: currentStudent.guardianPhone || prev.guardianPhone,
         avatar: currentStudent.avatar || prev.avatar
       }));
     }
@@ -122,8 +95,6 @@ export default function AuthModal({ initialMode = 'register' }) {
       // مزامنة الميتاداتا وحفظها في جدول students في Supabase (Upsert تلقائي وفوري)
       const syncedStudent = await syncUserMetadataToStudentTable(authUser, {
         name: extraProfile.name || formData.name,
-        guardianPhone: extraProfile.guardianPhone || formData.guardianPhone,
-        phone: extraProfile.phone || formData.phone,
         email: extraProfile.email || formData.email,
         avatar: extraProfile.avatar || formData.avatar,
         provider: extraProfile.provider || authMethod
@@ -132,7 +103,6 @@ export default function AuthModal({ initialMode = 'register' }) {
       // تسجيله في ذاكرة التطبيق المحلية فوراً مع الحفاظ التام على حالة الاعتماد والمجموعة
       let localStd = students.find(s => 
         (syncedStudent?.email && s.email && s.email.toLowerCase() === syncedStudent.email.toLowerCase()) ||
-        (syncedStudent?.phone && s.phone === syncedStudent.phone) ||
         (syncedStudent?.id && s.id === syncedStudent.id)
       );
 
@@ -146,8 +116,6 @@ export default function AuthModal({ initialMode = 'register' }) {
           localStd = registerNewStudent({
             name: formData.name || 'طالب كودلينجو',
             email: formData.email,
-            phone: formData.phone,
-            guardianPhone: formData.guardianPhone,
             avatar: formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${Date.now()}`,
             provider: extraProfile.provider || authMethod
           });
@@ -200,37 +168,12 @@ export default function AuthModal({ initialMode = 'register' }) {
     } catch (err) {
       console.warn('Supabase Google OAuth error:', err);
       setIsLoading(false);
-      setErrorMessage(err.message || 'تعذر الاتصال بـ Supabase Google OAuth.');
+      setErrorMessage(err.message || 'تعذر الاتصال بخدمة Google. يرجى تجربة التسجيل بالبريد الإلكتروني.');
     }
   };
 
   /**
-   * 2. خيار Facebook OAuth الرسمي عبر Supabase
-   */
-  const handleFacebookSubmit = async () => {
-    playSound.click();
-    setErrorMessage('');
-    setIsLoading(true);
-
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'facebook',
-        options: {
-          redirectTo: window.location.origin
-        }
-      });
-
-      if (error) throw error;
-      return data;
-    } catch (err) {
-      console.warn('Supabase Facebook OAuth error:', err);
-      setIsLoading(false);
-      setErrorMessage(err.message || 'تعذر الاتصال بـ Supabase Facebook OAuth.');
-    }
-  };
-
-  /**
-   * 3. خيار البريد الإلكتروني (Email & Password)
+   * 2. خيار البريد الإلكتروني (Email & Password)
    */
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -240,34 +183,13 @@ export default function AuthModal({ initialMode = 'register' }) {
     const password = formData.password.trim();
 
     if (!email || !email.includes('@')) {
-      setErrorMessage('يرجى إدخال بريد إلكتروني صحيح');
+      setErrorMessage('يرجى إدخال بريد إلكتروني صحيح (مثال: name@gmail.com)');
       return;
     }
 
     if (!password || password.length < 6) {
       setErrorMessage('كلمة المرور يجب أن لا تقل عن 6 أحرف أو أرقام');
       return;
-    }
-
-    // التحقق من رقم الطالب وولي الأمر في حالة إنشاء حساب جديد
-    if (authMode === 'register') {
-      const cleanStudent = (formData.phone || '').trim().replace(/[^0-9]/g, '').slice(0, 11);
-      const cleanGuardian = (formData.guardianPhone || '').trim().replace(/[^0-9]/g, '').slice(0, 11);
-
-      if (cleanStudent && (cleanStudent.length !== 11 || !cleanStudent.startsWith('01'))) {
-        setErrorMessage('⚠️ رقم هاتف الطالب يجب أن يتكون من 11 رقماً ويبدأ بـ 01 (مثال: 01012345678)');
-        return;
-      }
-
-      if (!cleanGuardian || cleanGuardian.length !== 11 || !cleanGuardian.startsWith('01')) {
-        setErrorMessage('⚠️ رقم ولي الأمر مطلوب إجباري ويتكون من 11 رقماً ويبدأ بـ 01');
-        return;
-      }
-
-      if (cleanStudent && cleanStudent === cleanGuardian) {
-        setErrorMessage('⚠️ عذراً، رقم ولي الأمر يجب أن يكون مختلفاً تماماً عن رقم هاتف الطالب');
-        return;
-      }
     }
 
     // فحص حساب الأستاذ الماستر
@@ -292,8 +214,6 @@ export default function AuthModal({ initialMode = 'register' }) {
           try {
             const res = await signUpWithEmailPassword(email, password, {
               name: formData.name.trim() || email.split('@')[0],
-              guardianPhone: formData.guardianPhone.trim(),
-              phone: formData.phone.trim(),
               avatar: formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(formData.name || email)}`
             });
             authUser = res.user;
@@ -318,8 +238,6 @@ export default function AuthModal({ initialMode = 'register' }) {
           const newStudent = registerNewStudent({
             name: formData.name.trim() || email.split('@')[0],
             email: email,
-            phone: formData.phone.trim(),
-            guardianPhone: formData.guardianPhone.trim(),
             avatar: formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(formData.name || email)}`,
             provider: 'email'
           });
@@ -345,129 +263,6 @@ export default function AuthModal({ initialMode = 'register' }) {
         setErrorMessage('⚠️ هذا البريد مسجل مسبقاً! اضغط على "تسجيل الدخول" واكتب كلمة المرور.');
       } else {
         setErrorMessage(err.message || 'فشل تسجيل الدخول بالبريد الإلكتروني');
-      }
-      playSound.wrong();
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * 4. خيار رقم الهاتف (Phone & Password / OTP)
-   */
-  const handlePhoneSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMessage('');
-    setSuccessMessage('');
-    const phone = (formData.phone || '').trim().replace(/[^0-9]/g, '').slice(0, 11);
-    const guardian = (formData.guardianPhone || '').trim().replace(/[^0-9]/g, '').slice(0, 11);
-
-    if (!phone || phone.length !== 11 || !phone.startsWith('01')) {
-      setErrorMessage('⚠️ رقم هاتف الطالب يجب أن يتكون من 11 رقماً ويبدأ بـ 01 (مثال: 01012345678)');
-      return;
-    }
-
-    if (authMode === 'register') {
-      if (!guardian || guardian.length !== 11 || !guardian.startsWith('01')) {
-        setErrorMessage('⚠️ رقم ولي الأمر مطلوب إجباري ويتكون من 11 رقماً ويبدأ بـ 01');
-        return;
-      }
-      if (phone === guardian) {
-        setErrorMessage('⚠️ عذراً، رقم ولي الأمر يجب أن يكون مختلفاً تماماً عن رقم هاتف الطالب');
-        return;
-      }
-    }
-
-    setIsLoading(true);
-
-    try {
-      if (isSupabaseConfigured) {
-        if (phoneAuthSubtype === 'otp') {
-          // مسار رمز التأكيد OTP
-          if (!otpSent) {
-            await sendPhoneOtp(phone);
-            setOtpSent(true);
-            setSuccessMessage(`تم إرسال رمز التأكيد SMS إلى الرقم ${phone}`);
-            setIsLoading(false);
-            return;
-          } else {
-            if (!otpCode || otpCode.length < 4) {
-              setErrorMessage('يرجى إدخال رمز التأكيد المستلم المكون من 6 أرقام');
-              setIsLoading(false);
-              return;
-            }
-            const { user } = await verifyPhoneOtp(phone, otpCode);
-            await handleAuthCompletion(user, { provider: 'phone', phone });
-          }
-        } else {
-          // مسار كلمة المرور
-          const password = formData.password.trim();
-          if (!password || password.length < 6) {
-            setErrorMessage('كلمة المرور يجب أن لا تقل عن 6 أحرف أو أرقام');
-            setIsLoading(false);
-            return;
-          }
-
-          let authUser = null;
-          if (authMode === 'register') {
-            try {
-              const res = await signUpWithPhonePassword(phone, password, {
-                name: formData.name.trim() || 'طالب كودلينجو',
-                guardianPhone: formData.guardianPhone.trim(),
-                avatar: formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(phone)}`
-              });
-              authUser = res.user;
-            } catch (signUpErr) {
-              const msg = String(signUpErr.message || '').toLowerCase();
-              if (msg.includes('already registered') || msg.includes('user_already_exists')) {
-                // مسجل مسبقاً: نسجل دخوله تلقائياً بكلمة المرور
-                const res = await signInWithPhonePassword(phone, password);
-                authUser = res.user;
-              } else {
-                throw signUpErr;
-              }
-            }
-            await handleAuthCompletion(authUser, { provider: 'phone', phone });
-          } else {
-            const { user } = await signInWithPhonePassword(phone, password);
-            await handleAuthCompletion(user, { provider: 'phone', phone });
-          }
-        }
-      } else {
-        // وضع العمل المحلي الآمن برقم الهاتف
-        if (authMode === 'register') {
-          const newStudent = registerNewStudent({
-            name: formData.name.trim() || 'طالب كودلينجو',
-            phone: phone,
-            guardianPhone: formData.guardianPhone.trim(),
-            email: formData.email.trim() || `${phone}@codelingo.edu`,
-            avatar: formData.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(phone)}`,
-            provider: 'phone'
-          });
-          setCurrentStudentId(newStudent.id);
-        } else {
-          const existing = students.find(s => s.phone && s.phone.trim() === phone);
-          if (existing) {
-            setCurrentStudentId(existing.id);
-          } else {
-            throw new Error('لم يتم العثور على حساب مسجل بهذا الرقم. اضغط على "إنشاء حساب جديد" للتسجيل فوراً');
-          }
-        }
-        playSound.levelUp();
-        setActiveModal(null);
-        setCurrentPage('home');
-      }
-    } catch (err) {
-      console.warn('Phone Auth Error:', err);
-      const msg = String(err.message || '').toLowerCase();
-      if (msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
-        setErrorMessage('⚠️ كلمة المرور غير صحيحة أو هذا الرقم غير مسجل. يرجى التأكد وإعادة المحاولة.');
-      } else if (msg.includes('already registered') || msg.includes('user_already_exists')) {
-        setErrorMessage('⚠️ هذا الرقم مسجل بالفعل مسبقاً! اضغط على "تسجيل الدخول" واكتب كلمة المرور.');
-      } else if (msg.includes('unsupported') || msg.includes('sms')) {
-        setErrorMessage('⚠️ يرجى استخدام نمط كلمة المرور أو التسجيل السريع بحساب Google.');
-      } else {
-        setErrorMessage(err.message || 'حدث خطأ أثناء المصادقة برقم الهاتف');
       }
       playSound.wrong();
     } finally {
@@ -547,9 +342,6 @@ export default function AuthModal({ initialMode = 'register' }) {
                     required
                   />
                 </div>
-                <span className="text-[11px] text-slate-500 block mt-1">
-                  💡 يتم حفظه في متصفحك مرة واحدة فقط، وسيفتح فوراً نافذة Google لاختيار الحساب.
-                </span>
               </div>
 
               <div className="auth-actions-row flex-col gap-2">
@@ -580,103 +372,6 @@ export default function AuthModal({ initialMode = 'register' }) {
                     type="button" 
                     className="duo-btn duo-btn-secondary auth-btn-back flex-1"
                     onClick={() => setShowGoogleKeyModal(false)}
-                  >
-                    رجوع
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        ) : showFacebookKeyModal ? (
-          /* =========================================================================
-              نافذة إدخال وتفعيل Facebook App ID
-              ========================================================================= */
-          <div className="auth-step-container">
-            <div className="auth-icon-badge">
-              <svg width="34" height="34" viewBox="0 0 24 24" fill="#1877f2">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-              </svg>
-            </div>
-
-            <h2 className="auth-title">المتابعة المباشرة بحساب Facebook</h2>
-            <p className="auth-subtitle">
-              لسحب اسمك وصورتك من Facebook تلقائياً، أدخل معرّف التطبيق (Facebook App ID):
-            </p>
-
-            {errorMessage && (
-              <div className="auth-error-banner w-full mb-3">
-                {errorMessage}
-              </div>
-            )}
-
-            <form 
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const aid = inputFbAppId.trim();
-                if (!aid) {
-                  setErrorMessage('يرجى إدخال Facebook App ID');
-                  return;
-                }
-                saveSocialKeys({ facebookAppId: aid });
-                setShowFacebookKeyModal(false);
-                setIsLoading(true);
-                setErrorMessage('');
-                try {
-                  const { user, profile } = await signInWithFacebookSDK(aid);
-                  await handleAuthCompletion(user, profile);
-                } catch (err) {
-                  console.warn('Facebook Auth Error:', err);
-                  setIsLoading(false);
-                  setShowFacebookKeyModal(true);
-                  setErrorMessage(err.message || 'تعذر إتمام تسجيل الدخول بـ Facebook');
-                }
-              }}
-              className="auth-form-stack"
-            >
-              <div className="form-field text-right">
-                <label className="field-label">معرّف تطبيق فيسبوك (Facebook App ID) *</label>
-                <div className="input-with-icon">
-                  <KeyRound size={18} className="field-icon" />
-                  <input 
-                    type="text" 
-                    placeholder="مثال: 123456789012345"
-                    value={inputFbAppId}
-                    onChange={(e) => setInputFbAppId(e.target.value)}
-                    dir="ltr"
-                    className="font-mono text-xs"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="auth-actions-row flex-col gap-2">
-                <button type="submit" className="duo-btn duo-btn-success auth-btn-main w-full" disabled={isLoading}>
-                  {isLoading ? 'جارٍ الاتصال بـ Facebook... ⏳' : 'حفظ وفتح نافذة Facebook فوراً 🚀'}
-                </button>
-
-                <div className="flex gap-2 w-full">
-                  <button 
-                    type="button" 
-                    className="duo-btn duo-btn-secondary auth-btn-back flex-1"
-                    onClick={() => {
-                      const mockFbUser = {
-                        id: `fb-${Date.now().toString().slice(-6)}`,
-                        email: `student.fb.${Math.floor(1000 + Math.random() * 9000)}@facebook.com`,
-                        user_metadata: {
-                          full_name: 'طالب فيسبوك التجريبي',
-                          avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=FBStudent`
-                        },
-                        app_metadata: { provider: 'facebook' }
-                      };
-                      handleAuthCompletion(mockFbUser, { name: 'طالب فيسبوك التجريبي', provider: 'facebook' });
-                    }}
-                  >
-                    دخول تجريبي سريع
-                  </button>
-                  <button 
-                    type="button" 
-                    className="duo-btn duo-btn-secondary auth-btn-back flex-1"
-                    onClick={() => setShowFacebookKeyModal(false)}
                   >
                     رجوع
                   </button>
@@ -727,7 +422,7 @@ export default function AuthModal({ initialMode = 'register' }) {
           </div>
         ) : (
           /* =========================================================================
-              الواجهة الرئيسية الشاملة: 4 خيارات مصادقة معتمدة من Supabase
+              الواجهة المعتمدة: خيار Google السريع + خيار البريد الإلكتروني فقط
               ========================================================================= */
           <div className="auth-step-container">
             {/* الشعار الترحيبي ورأس النافذة */}
@@ -777,7 +472,7 @@ export default function AuthModal({ initialMode = 'register' }) {
               </button>
             </div>
 
-            {/* الألسنة الأربعة لطرق المصادقة (4 Authentication Options) */}
+            {/* الألسنة لطرق المصادقة (Google & Email فقط) */}
             <div className="auth-methods-segmented-tabs" role="tablist">
               <button
                 type="button"
@@ -787,31 +482,15 @@ export default function AuthModal({ initialMode = 'register' }) {
                   setErrorMessage('');
                   playSound.click();
                 }}
-                title="المصادقة بحساب Google"
+                title="المصادقة السريعة بحساب Google"
               >
-                <svg width="17" height="17" viewBox="0 0 24 24">
+                <svg width="18" height="18" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                 </svg>
-                <span>Google</span>
-              </button>
-
-              <button
-                type="button"
-                className={`auth-method-chip ${authMethod === 'facebook' ? 'active' : ''}`}
-                onClick={() => {
-                  setAuthMethod('facebook');
-                  setErrorMessage('');
-                  playSound.click();
-                }}
-                title="المصادقة بحساب Facebook"
-              >
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="#1877f2">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-                <span>Facebook</span>
+                <span>Google (الموصى به ⚡)</span>
               </button>
 
               <button
@@ -825,21 +504,7 @@ export default function AuthModal({ initialMode = 'register' }) {
                 title="المصادقة بالبريد الإلكتروني"
               >
                 <Mail size={16} className="text-amber-400" />
-                <span>البريد</span>
-              </button>
-
-              <button
-                type="button"
-                className={`auth-method-chip ${authMethod === 'phone' ? 'active' : ''}`}
-                onClick={() => {
-                  setAuthMethod('phone');
-                  setErrorMessage('');
-                  playSound.click();
-                }}
-                title="المصادقة برقم الهاتف"
-              >
-                <Smartphone size={16} className="text-emerald-400" />
-                <span>الهاتف</span>
+                <span>البريد الإلكتروني</span>
               </button>
             </div>
 
@@ -856,21 +521,21 @@ export default function AuthModal({ initialMode = 'register' }) {
             )}
 
             {/* =========================================================================
-                الطريقة 1: خيار Google
+                الطريقة 1: خيار Google السريع (الأسهل والأضمن للجميع)
                 ========================================================================= */}
             {authMethod === 'google' && (
-              <div className="auth-method-content-panel">
+              <div className="auth-method-content-panel w-full">
                 <p className="auth-panel-hint">
                   {authMode === 'register' 
-                    ? 'تسجيل سريع وفوري عبر حساب Google؛ سيتم سحب اسمك وصورتك الشخصية تلقائياً دون الحاجة لكتابة بيانات.'
-                    : 'سجل دخولك بنقرة واحدة عبر حساب Google المرتبط بمتابعة درجاتك في المنصة.'
+                    ? '🚀 تسجيل فوري وسريع بضغطة واحدة بحساب Google الخاص بك، بدون تعقيد أو الحاجة لكتابة وحفظ كلمات مرور.'
+                    : '🔑 تسجيل دخول بنقرة واحدة عبر حساب Google المرتبط بمتابعة درجاتك في المنصة.'
                   }
                 </p>
 
-                <div className="auth-social-buttons">
+                <div className="auth-social-buttons w-full">
                   <button 
                     type="button" 
-                    className="google-signin-btn"
+                    className="google-signin-btn w-full"
                     onClick={handleGoogleSubmit}
                     disabled={isLoading}
                   >
@@ -882,57 +547,31 @@ export default function AuthModal({ initialMode = 'register' }) {
                     </svg>
                     <span>
                       {isLoading 
-                        ? 'جارٍ الاتصال بـ Supabase... ⏳' 
+                        ? 'جارٍ الاتصال بـ Google... ⏳' 
                         : authMode === 'login' 
-                          ? 'المتابعة والدخول بحساب Google' 
-                          : 'المتابعة والتسجيل بحساب Google'
+                          ? 'المتابعة والدخول بحساب Google 🔑' 
+                          : 'المتابعة والتسجيل السريع بحساب Google 🚀'
                       }
                     </span>
                   </button>
+                </div>
+
+                <div className="mt-3 text-xs text-slate-400 bg-slate-800/40 border border-slate-700/50 rounded-xl p-3 text-right space-y-1">
+                  <div className="text-emerald-400 font-bold flex items-center gap-1">
+                    <span>✨ ميزات الدخول بحساب Google:</span>
+                  </div>
+                  <div>• سحب اسمك وصورتك الشخصية تلقائياً دون أخطاء.</div>
+                  <div>• لا توجد كلمات مرور قابلة للنسيان.</div>
+                  <div>• فور دخولك، ستكمل رقم هاتفك ورقم ولي الأمر لتأكيد تسجيلك مع الأستاذ محمد راشد.</div>
                 </div>
               </div>
             )}
 
             {/* =========================================================================
-                الطريقة 2: خيار Facebook
-                ========================================================================= */}
-            {authMethod === 'facebook' && (
-              <div className="auth-method-content-panel">
-                <p className="auth-panel-hint">
-                  {authMode === 'register' 
-                    ? 'تسجيل سريع وفوري عبر حساب Facebook؛ سيتم سحب اسمك وصورتك الشخصية تلقائياً.'
-                    : 'سجل دخولك بنقرة واحدة عبر حساب Facebook المعتمد في المنصة.'
-                  }
-                </p>
-
-                <div className="auth-social-buttons">
-                  <button 
-                    type="button" 
-                    className="facebook-signin-btn"
-                    onClick={handleFacebookSubmit}
-                    disabled={isLoading}
-                  >
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#ffffff">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                    <span>
-                      {isLoading 
-                        ? 'جارٍ الاتصال بـ Supabase... ⏳' 
-                        : authMode === 'login' 
-                          ? 'المتابعة والدخول بحساب Facebook' 
-                          : 'المتابعة والتسجيل بحساب Facebook'
-                      }
-                    </span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* =========================================================================
-                الطريقة 3: خيار البريد الإلكتروني (Email & Password)
+                الطريقة 2: خيار البريد الإلكتروني (Email & Password)
                 ========================================================================= */}
             {authMethod === 'email' && (
-              <form onSubmit={handleEmailSubmit} className="auth-form-stack">
+              <form onSubmit={handleEmailSubmit} className="auth-form-stack w-full">
                 {authMode === 'register' && (
                   <div className="form-field text-right">
                     <label className="field-label">اسم الطالب الثلاثي أو الرباعي *</label>
@@ -944,6 +583,7 @@ export default function AuthModal({ initialMode = 'register' }) {
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         required
+                        autoFocus
                       />
                     </div>
                   </div>
@@ -985,51 +625,13 @@ export default function AuthModal({ initialMode = 'register' }) {
                   </div>
                 </div>
 
-                {authMode === 'register' && (
-                  <>
-                    <div className="form-field text-right">
-                      <label className="field-label">
-                        رقم هاتف الطالب / واتساب ({formData.phone ? formData.phone.length : 0}/11)
-                      </label>
-                      <div className="input-with-icon">
-                        <Phone size={18} className="field-icon" />
-                        <input 
-                          type="tel" 
-                          placeholder="010XXXXXXXX (11 رقماً)"
-                          maxLength={11}
-                          value={formData.phone}
-                          onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 11) })}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-field text-right">
-                      <label className="field-label flex items-center justify-between">
-                        <span>رقم ولي الأمر * (إجباري) ({formData.guardianPhone ? formData.guardianPhone.length : 0}/11)</span>
-                        <span className="text-amber-400 text-xs font-bold">لمتابعة الأستاذ</span>
-                      </label>
-                      <div className="input-with-icon">
-                        <HeartHandshake size={18} className="field-icon text-amber-500" />
-                        <input 
-                          type="tel" 
-                          placeholder="011XXXXXXXX / 012XXXXXXXX (11 رقماً)"
-                          maxLength={11}
-                          value={formData.guardianPhone}
-                          onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value.replace(/[^0-9]/g, '').slice(0, 11) })}
-                          required
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-
                 <button 
                   type="submit" 
-                  className={`duo-btn ${authMode === 'login' ? 'duo-btn-primary' : 'duo-btn-success'} auth-submit-btn`}
+                  className={`duo-btn ${authMode === 'login' ? 'duo-btn-primary' : 'duo-btn-success'} auth-submit-btn w-full mt-2`}
                   disabled={isLoading}
                 >
                   {isLoading 
-                    ? 'جارٍ التحقق مع Supabase... ⏳' 
+                    ? 'جارٍ التحقق... ⏳' 
                     : authMode === 'login' 
                       ? 'تسجيل الدخول بالبريد الإلكتروني 🔑' 
                       : 'إنشاء حساب جديد بالبريد 🚀'
@@ -1038,159 +640,10 @@ export default function AuthModal({ initialMode = 'register' }) {
               </form>
             )}
 
-            {/* =========================================================================
-                الطريقة 4: خيار رقم الهاتف (Phone & Password / OTP)
-                ========================================================================= */}
-            {authMethod === 'phone' && (
-              <form onSubmit={handlePhoneSubmit} className="auth-form-stack">
-                {/* مفتاح التبديل الداخلي لرقم الهاتف: كلمة مرور vs رمز OTP */}
-                <div className="phone-auth-type-pill-row">
-                  <button
-                    type="button"
-                    className={`phone-sub-chip ${phoneAuthSubtype === 'password' ? 'active' : ''}`}
-                    onClick={() => {
-                      setPhoneAuthSubtype('password');
-                      setOtpSent(false);
-                      playSound.click();
-                    }}
-                  >
-                    <KeyRound size={14} />
-                    <span>كلمة المرور</span>
-                  </button>
-                  <button
-                    type="button"
-                    className={`phone-sub-chip ${phoneAuthSubtype === 'otp' ? 'active' : ''}`}
-                    onClick={() => {
-                      setPhoneAuthSubtype('otp');
-                      playSound.click();
-                    }}
-                  >
-                    <Smartphone size={14} />
-                    <span>رمز التأكيد (SMS OTP)</span>
-                  </button>
-                </div>
-
-                {authMode === 'register' && (
-                  <div className="form-field text-right">
-                    <label className="field-label">اسم الطالب الثلاثي أو الرباعي *</label>
-                    <div className="input-with-icon">
-                      <User size={18} className="field-icon" />
-                      <input 
-                        type="text" 
-                        placeholder="مثال: يوسف أحمد محمد"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div className="form-field text-right">
-                  <label className="field-label">
-                    رقم هاتف الطالب (Phone Number) * ({formData.phone ? formData.phone.length : 0}/11)
-                  </label>
-                  <div className="input-with-icon">
-                    <Phone size={18} className="field-icon text-indigo-400" />
-                    <input 
-                      type="tel" 
-                      placeholder="010XXXXXXXX (11 رقماً)"
-                      maxLength={11}
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^0-9]/g, '').slice(0, 11) })}
-                      required
-                      autoFocus
-                    />
-                  </div>
-                </div>
-
-                {/* نمط كلمة المرور */}
-                {phoneAuthSubtype === 'password' && (
-                  <div className="form-field text-right">
-                    <label className="field-label">كلمة المرور * (6 أحرف أو أرقام)</label>
-                    <div className="input-with-icon">
-                      <Lock size={18} className="field-icon" />
-                      <input 
-                        type={showPassword ? 'text' : 'password'} 
-                        placeholder="••••••••"
-                        value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        required
-                      />
-                      <button
-                        type="button"
-                        className="btn-toggle-input-eye"
-                        onClick={() => setShowPassword(!showPassword)}
-                        title={showPassword ? 'إخفاء' : 'إظهار'}
-                      >
-                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* نمط الـ OTP */}
-                {phoneAuthSubtype === 'otp' && otpSent && (
-                  <div className="form-field text-right">
-                    <label className="field-label">أدخل رمز التأكيد المرسل (6 أرقام) *</label>
-                    <div className="input-with-icon">
-                      <KeyRound size={18} className="field-icon text-emerald-400" />
-                      <input 
-                        type="text" 
-                        placeholder="123456"
-                        maxLength={6}
-                        value={otpCode}
-                        onChange={(e) => setOtpCode(e.target.value)}
-                        required
-                        autoFocus
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {authMode === 'register' && (
-                  <div className="form-field text-right">
-                    <label className="field-label flex items-center justify-between">
-                      <span>رقم ولي الأمر * (إجباري) ({formData.guardianPhone ? formData.guardianPhone.length : 0}/11)</span>
-                      <span className="text-amber-400 text-xs font-bold">لمتابعة الأستاذ</span>
-                    </label>
-                    <div className="input-with-icon">
-                      <HeartHandshake size={18} className="field-icon text-amber-500" />
-                      <input 
-                        type="tel" 
-                        placeholder="011XXXXXXXX / 012XXXXXXXX (11 رقماً)"
-                        maxLength={11}
-                        value={formData.guardianPhone}
-                        onChange={(e) => setFormData({ ...formData, guardianPhone: e.target.value.replace(/[^0-9]/g, '').slice(0, 11) })}
-                        required
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <button 
-                  type="submit" 
-                  className={`duo-btn ${authMode === 'login' ? 'duo-btn-primary' : 'duo-btn-success'} auth-submit-btn`}
-                  disabled={isLoading}
-                >
-                  {isLoading 
-                    ? 'جارٍ الاتصال... ⏳' 
-                    : phoneAuthSubtype === 'otp' && !otpSent
-                      ? 'إرسال رمز التأكيد SMS 📩'
-                      : phoneAuthSubtype === 'otp' && otpSent
-                        ? 'تأكيد الرمز والدخول ⚡'
-                        : authMode === 'login'
-                          ? 'تسجيل الدخول برقم الهاتف 🔑'
-                          : 'إنشاء حساب جديد برقم الهاتف 🚀'
-                  }
-                </button>
-              </form>
-            )}
-
             {/* إشعار أمان المنصة */}
             <div className="auth-security-notice mt-2">
               <ShieldCheck size={16} className="text-emerald-500 flex-shrink-0" />
-              <span>المصادقة سحابية مؤمنة 100% ومربوطة مباشرة بقاعدة بيانات Supabase</span>
+              <span>المصادقة سحابية مؤمنة ومربوطة مباشرة بقاعدة بيانات Supabase</span>
             </div>
           </div>
         )}

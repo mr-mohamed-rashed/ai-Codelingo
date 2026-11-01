@@ -100,11 +100,11 @@ html[data-theme='light'] .auth-subtitle {
   box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
 }
 
-/* الألسنة الأربعة لطرق المصادقة (4 Authentication Options) */
+/* الألسنة لطرق المصادقة (Google & Email) */
 .auth-methods-segmented-tabs {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
   background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
