@@ -123,18 +123,50 @@ html[data-theme='light'] .auth-methods-segmented-tabs {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
   padding: 8px 6px;
-  border-radius: 10px;
-  border: none;
+  border-radius: 12px;
+  border: 1px solid transparent;
   background: transparent;
   color: #94a3b8;
   font-family: var(--font-arabic);
-  font-size: 0.82rem;
-  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  white-space: nowrap;
+  min-height: 52px;
+}
+
+.auth-chip-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 100%;
+}
+
+.auth-chip-header {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.auth-chip-badge-yellow {
+  color: #facc15;
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.2px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.auth-chip-badge-subtle {
+  color: #94a3b8;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.1;
+  opacity: 0.75;
 }
 
 body.theme-light .auth-method-chip,
@@ -144,7 +176,7 @@ html[data-theme='light'] .auth-method-chip {
 
 .auth-method-chip:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 body.theme-light .auth-method-chip:hover,
@@ -155,8 +187,9 @@ html[data-theme='light'] .auth-method-chip:hover {
 
 .auth-method-chip.active {
   background: #4f46e5;
+  border-color: rgba(99, 102, 241, 0.4);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.45);
 }
 
 .auth-panel-hint {
@@ -298,27 +331,73 @@ html[data-theme='light'] .phone-sub-chip {
 }
 
 .google-signin-btn {
-  background: #ffffff;
-  color: #1e293b;
-  border: none;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  color: #0f172a;
+  border: 2px solid #3b82f6;
+  border-bottom: 5px solid #1d4ed8;
   font-family: var(--font-arabic);
-  font-weight: 800;
-  font-size: 0.92rem;
   padding: 12px 18px;
-  border-radius: var(--radius-md);
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 14px;
   width: 100%;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-  transition: all 0.15s ease;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.28), 0 2px 4px rgba(0, 0, 0, 0.12);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  text-decoration: none;
+  min-height: 58px;
 }
+
 .google-signin-btn:hover {
-  background: #f8fafc;
+  background: #ffffff;
+  border-color: #2563eb;
+  border-bottom-color: #1e40af;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 26px rgba(37, 99, 235, 0.38), 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.google-signin-btn:active {
+  transform: translateY(3px);
+  border-bottom-width: 2px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.google-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.google-btn-text-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: right;
+  gap: 2px;
+}
+
+.google-btn-main-text {
+  font-size: 0.98rem;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.google-btn-sub-hint {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2563eb;
+  line-height: 1.2;
 }
 
 .facebook-signin-btn {
@@ -1010,3 +1089,58 @@ html[dir='ltr'] .teacher-remember-checkbox-label {
   font-size: 0.78rem;
   color: #94a3b8;
 }
+
+/* تحسينات الموبايل للشاشات الصغيرة */
+@media (max-width: 480px) {
+  .auth-modal-card {
+    padding: 24px 16px !important;
+    max-width: 95vw !important;
+    border-radius: 18px !important;
+  }
+
+  .auth-title {
+    font-size: 1.18rem !important;
+  }
+
+  .auth-subtitle {
+    font-size: 0.78rem !important;
+  }
+
+  .auth-mode-tab {
+    padding: 8px 10px !important;
+    font-size: 0.82rem !important;
+  }
+
+  .auth-chip-header {
+    font-size: 0.82rem !important;
+    gap: 4px !important;
+  }
+
+  .auth-chip-badge-yellow {
+    font-size: 0.65rem !important;
+  }
+
+  .auth-chip-badge-subtle {
+    font-size: 0.65rem !important;
+  }
+
+  .google-signin-btn {
+    padding: 10px 14px !important;
+    gap: 12px !important;
+    min-height: 54px !important;
+  }
+
+  .google-icon-box {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .google-btn-main-text {
+    font-size: 0.88rem !important;
+  }
+
+  .google-btn-sub-hint {
+    font-size: 0.68rem !important;
+  }
+}
+
