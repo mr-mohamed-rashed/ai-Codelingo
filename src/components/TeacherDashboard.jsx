@@ -3196,20 +3196,26 @@ export default function TeacherDashboard() {
                           <button
                             className="duo-btn text-xs py-2 px-3 flex items-center gap-1.5"
                             style={{ 
-                              background: errorsCount > 0 ? '#ef4444' : '#10b981', 
+                              background: completedCount === 0 ? '#64748b' : (errorsCount > 0 ? '#ef4444' : '#10b981'), 
                               color: '#fff',
-                              borderBottomColor: errorsCount > 0 ? '#b91c1c' : '#059669'
+                              borderBottomColor: completedCount === 0 ? '#475569' : (errorsCount > 0 ? '#b91c1c' : '#059669')
                             }}
                             onClick={() => {
                               setSelectedStudentForDiagnosis(student);
                               playSound.click();
                             }}
                           >
-                            <Target size={14} />
+                            {completedCount === 0 ? (
+                              <Clock size={14} />
+                            ) : (
+                              <Target size={14} />
+                            )}
                             <span>
-                              {errorsCount > 0 
-                                ? (lang === 'en' ? `Weaknesses (${errorsCount})` : `نقاط الضعف (${errorsCount}) 🎯`) 
-                                : (lang === 'en' ? '100% Mastery' : 'إتقان 100% 🌟')}
+                              {completedCount === 0
+                                ? (lang === 'en' ? 'Not Started Yet ⏳' : 'لم يبدأ الحل ⏳')
+                                : (errorsCount > 0 
+                                    ? (lang === 'en' ? `Weaknesses (${errorsCount})` : `نقاط الضعف (${errorsCount}) 🎯`) 
+                                    : (lang === 'en' ? '100% Mastery' : 'إتقان 100% 🌟'))}
                             </span>
                           </button>
 
@@ -3412,8 +3418,24 @@ export default function TeacherDashboard() {
                     ))}
                   </div>
                 </div>
+              ) : (selectedStudentForDiagnosis?.completedChunks?.length || 0) === 0 ? (
+                /* إذا لم يبدأ الطالب بالحل بعد */
+                <div className="empty-errors-state p-8 text-center">
+                  <div className="celebration-trophy-aura w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Clock size={36} className="text-slate-500" />
+                  </div>
+                  <h4 className="font-extrabold text-slate-800 text-lg mt-2">
+                    {lang === 'en' ? 'Student Has Not Started Yet ⏳' : 'لم يبدأ الطالب الحل بعد ⏳'}
+                  </h4>
+                  <p className="text-sm text-slate-600 max-w-md mx-auto mt-1">
+                    {lang === 'en' 
+                      ? 'This student is enrolled in the group but has not completed any chunks yet (0/49). Once they start solving, diagnosis metrics will appear here.'
+                      : 'الطالب مسجل في المجموعة ولكنه لم يقم بحل أي فقرة من فقرات المنهج حتى الآن (0/49). بمجرد أن يبدأ في حل الاختبارات ستظهر إحصائياته ونقاط قوته وضعفه هنا.'
+                    }
+                  </p>
+                </div>
               ) : (
-                /* إذا لم يكن هناك أخطاء */
+                /* إذا لم يكن هناك أخطاء بعد الحل */
                 <div className="empty-errors-state p-8 text-center">
                   <div className="celebration-trophy-aura w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Award size={36} className="text-emerald-600" />
