@@ -2514,11 +2514,18 @@ html[dir="ltr"] .closed-text-col {
    GROUP REVIEW MODAL & DIAGNOSTIC MODAL
    ========================================================= */
 .group-review-modal-card {
-  max-width: 900px;
+  max-width: 920px;
   width: 95%;
   max-height: 88vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+.group-review-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 2px;
 }
 
 .group-review-summary-bar {
@@ -2551,41 +2558,74 @@ html[dir="ltr"] .closed-text-col {
 .group-students-review-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   overflow-y: auto;
-  max-height: 52vh;
-  padding-right: 4px;
+  overflow-x: hidden;
+  max-height: 54vh;
+  padding: 2px 4px 6px 4px;
 }
 
+/* بطاقة الطالب الأنيقة - مريحة وخالية من التكديس الأفقي والسكرول */
 .group-student-review-card {
-  display: grid;
-  grid-template-columns: minmax(180px, 2.2fr) minmax(130px, 1.4fr) minmax(160px, 1.6fr) minmax(110px, 1.1fr) minmax(150px, 1.5fr) auto;
-  align-items: center;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 14px;
-  padding: 12px 16px;
-  transition: all 0.2s ease;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 .group-student-review-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(99, 102, 241, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+.group-student-review-card.is-expanded {
+  background: rgba(30, 41, 59, 0.55);
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.15);
+}
+
+/* السطر الرئيسي الأنيق */
+.review-student-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+
+.review-student-header-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.review-student-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 170px;
+  flex-shrink: 0;
 }
 
 .review-avatar {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: 2px solid #6366f1;
   background: #1e293b;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
 }
 
-.student-info-flex {
+.review-name-wrap {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .review-student-name {
@@ -2593,29 +2633,151 @@ html[dir="ltr"] .closed-text-col {
   font-weight: 800;
   color: #f1f5f9;
   margin: 0;
+  line-height: 1.25;
+}
+
+.review-hint-toggle {
+  font-size: 0.7rem;
+  color: #818cf8;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.review-student-header-row:hover .review-hint-toggle {
+  color: #a5b4fc;
+}
+
+/* شارات التقدم المختصرة */
+.review-compact-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* أزرار الإجراءات في السطر الرئيسي */
+.review-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.expand-toggle-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.expand-toggle-btn:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.5);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.group-student-review-card.is-expanded .expand-toggle-btn {
+  background: rgba(99, 102, 241, 0.25);
+  border-color: #6366f1;
+  color: #a5b4fc;
+}
+
+/* درج التفاصيل المنسدل عند الضغط على اسم الطالب */
+.review-student-details-drawer {
+  padding: 14px 16px;
+  background: rgba(15, 23, 42, 0.55);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  animation: slideDrawerDown 0.22s ease-out;
+}
+
+@keyframes slideDrawerDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.details-grid-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.drawer-subcard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.drawer-subcard-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.contacts-subcard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .whatsapp-quick-link {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   color: #25d366;
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-weight: 700;
   text-decoration: none;
+  background: rgba(37, 211, 102, 0.08);
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(37, 211, 102, 0.2);
+  width: fit-content;
+  transition: all 0.2s;
+}
+
+.whatsapp-quick-link:hover {
+  background: rgba(37, 211, 102, 0.16);
+  border-color: #25d366;
+}
+
+.whatsapp-quick-link.guardian-link {
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.whatsapp-quick-link.guardian-link:hover {
+  background: rgba(16, 185, 129, 0.16);
+  border-color: #34d399;
 }
 
 .student-id-tag {
   color: #94a3b8;
   font-size: 0.72rem;
-}
-
-.cell-sublabel {
-  display: block;
-  font-size: 0.7rem;
-  color: #94a3b8;
-  margin-bottom: 4px;
-  font-weight: 600;
+  font-family: monospace;
 }
 
 .station-pill {
@@ -2625,19 +2787,49 @@ html[dir="ltr"] .closed-text-col {
   background: rgba(245, 158, 11, 0.1);
   border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: 8px;
-  padding: 4px 8px;
+  padding: 6px 10px;
 }
 
 .station-text {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #fef08a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 170px;
 }
 
+.review-group-select {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1.5px solid rgba(99, 102, 241, 0.4);
+  color: #f1f5f9;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.review-group-select:hover,
+.review-group-select:focus {
+  border-color: #818cf8;
+  background: rgba(15, 23, 42, 0.95);
+}
+
+.drawer-management-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+}
+
+/* شارات الحالة والواجب والدرجات */
 .hw-status-badge {
   display: inline-flex;
   align-items: center;
@@ -2663,14 +2855,6 @@ html[dir="ltr"] .closed-text-col {
 .hw-status-badge.hw-none {
   background: rgba(148, 163, 184, 0.1);
   color: #94a3b8;
-}
-
-/* مقاييس درجات وإتقان الطالب بالبطاقة */
-.scores-badges-wrap {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex-wrap: wrap;
 }
 
 .score-badge {
@@ -2708,31 +2892,94 @@ html[dir="ltr"] .closed-text-col {
   color: #34d399;
 }
 
-/* سلكت نقل المجموعة داخل المودال */
-.student-transfer-cell {
-  display: flex;
-  flex-direction: column;
+/* =========================================================
+   RESPONSIVE MEDIA QUERIES FOR GROUP REVIEW
+   ========================================================= */
+@media (max-width: 768px) {
+  .group-review-modal-card {
+    width: 96%;
+    max-height: 92vh;
+    padding: 12px;
+  }
+
+  .group-review-summary-bar {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .summary-val {
+    font-size: 1.1rem;
+  }
+
+  .review-student-header-row {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .review-student-identity {
+    min-width: auto;
+    flex: 1 1 200px;
+  }
+
+  .review-compact-badges {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .review-header-actions {
+    order: 2;
+  }
+
+  .details-grid-row {
+    grid-template-columns: 1fr;
+  }
+
+  .drawer-management-footer {
+    justify-content: stretch;
+  }
+
+  .drawer-management-footer button {
+    flex: 1;
+    justify-content: center;
+  }
 }
 
-.review-group-select {
-  background: rgba(15, 23, 42, 0.75);
-  border: 1.5px solid rgba(99, 102, 241, 0.4);
-  color: #f1f5f9;
-  border-radius: 8px;
-  padding: 5px 8px;
-  font-size: 0.76rem;
-  font-weight: 700;
-  outline: none;
-  cursor: pointer;
-  width: 100%;
-  max-width: 165px;
-  transition: all 0.2s ease;
-}
+@media (max-width: 480px) {
+  .group-review-summary-bar {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    text-align: center;
+  }
 
-.review-group-select:hover,
-.review-group-select:focus {
-  border-color: #818cf8;
-  background: rgba(15, 23, 42, 0.95);
+  .summary-item {
+    align-items: center;
+  }
+
+  .review-student-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .review-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .review-compact-badges {
+    width: 100%;
+    gap: 4px;
+  }
+
+  .score-badge {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+  }
 }
 
 /* =========================================================
@@ -3020,6 +3267,33 @@ body.theme-light .group-review-summary-bar {
 body.theme-light .group-student-review-card {
   background: #ffffff;
   border-color: #e2e8f0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+body.theme-light .group-student-review-card.is-expanded {
+  background: #f8fafc;
+  border-color: #818cf8;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.1);
+}
+
+body.theme-light .review-student-details-drawer {
+  background: #f8fafc;
+  border-top-color: #e2e8f0;
+}
+
+body.theme-light .drawer-subcard {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+body.theme-light .drawer-management-footer {
+  border-top-color: #e2e8f0;
+}
+
+body.theme-light .expand-toggle-btn {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
 }
 
 body.theme-light .review-student-name {

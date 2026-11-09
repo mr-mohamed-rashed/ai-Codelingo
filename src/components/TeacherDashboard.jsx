@@ -186,6 +186,19 @@ export default function TeacherDashboard() {
 
   // نافذة مراجعة طلاب وتقدم المجموعة
   const [selectedGroupForReview, setSelectedGroupForReview] = useState(null);
+  const [expandedReviewStudentIds, setExpandedReviewStudentIds] = useState(new Set());
+
+  const toggleStudentReviewExpand = (studentId) => {
+    setExpandedReviewStudentIds(prev => {
+      const next = new Set(prev);
+      if (next.has(studentId)) {
+        next.delete(studentId);
+      } else {
+        next.add(studentId);
+      }
+      return next;
+    });
+  };
 
   // نافذة تشخيص الأخطاء ونقاط الضعف للطالب
   const [selectedStudentForDiagnosis, setSelectedStudentForDiagnosis] = useState(null);
@@ -3075,57 +3088,37 @@ export default function TeacherDashboard() {
                     const homeworkTargetCount = selectedGroupForReview.homeworkChunks?.length || 0;
                     const homeworkFinished = homeworkTargetCount > 0 && selectedGroupForReview.homeworkChunks.every(hId => student.completedChunks?.includes(hId));
 
+                    const isExpanded = expandedReviewStudentIds.has(student.id);
+
                     return (
-                      <div key={student.id} className="group-student-review-card">
-                        <div className="student-info-flex">
-                          <img src={student.avatar} alt={student.name} className="review-avatar" />
-                          <div>
-                            <h4 className="review-student-name">{student.name}</h4>
-                            <div className="flex flex-wrap items-center gap-2 mt-1">
-                              {student.phone && (
-                                <a 
-                                  href={`https://wa.me/2${String(student.phone).replace(/[^0-9]/g, '')}`} 
-                                  target="_blank" 
-                                  rel="noreferrer"
-                                  className="whatsapp-quick-link"
-                                  title="مراسلة الطالب عبر واتساب"
-                                >
-                                  <Phone size={12} />
-                                  <span>{student.phone}</span>
-                                </a>
-                              )}
-                              {student.guardianPhone && (
-                                <a 
-                                  href={`https://wa.me/2${String(student.guardianPhone).replace(/[^0-9]/g, '')}`} 
-                                  target="_blank" 
-                                  rel="noreferrer"
-                                  className="whatsapp-quick-link"
-                                  style={{ color: '#059669', borderColor: '#a7f3d0' }}
-                                  title="مراسلة ولي الأمر عبر واتساب"
-                                >
-                                  👨‍👩‍👧 <span>ولي الأمر: {student.guardianPhone}</span>
-                                </a>
-                              )}
-                              <span className="student-id-tag">ID: {student.id}</span>
+                      <div key={student.id} className={`group-student-review-card ${isExpanded ? 'is-expanded' : ''}`}>
+                        {/* 1. السطر الرئيسي الأنيق والمختصر - مريح ولا يسبب أي سكرول */}
+                        <div 
+                          className="review-student-header-row"
+                          onClick={() => toggleStudentReviewExpand(student.id)}
+                          title={isExpanded 
+                            ? (lang === 'en' ? 'Click to collapse details' : 'اضغط لإخفاء التفاصيل') 
+                            : (lang === 'en' ? 'Click student to view details and transfer' : 'اضغط على اسم الطالب لعرض التفاصيل والإدارة')
+                          }
+                        >
+                          <div className="review-student-identity">
+                            <img src={student.avatar} alt={student.name} className="review-avatar" />
+                            <div className="review-name-wrap">
+                              <h4 className="review-student-name">{student.name}</h4>
+                              <span className="review-hint-toggle">
+                                {isExpanded 
+                                  ? (lang === 'en' ? 'Hide details 🔼' : 'إخفاء التفاصيل 🔼') 
+                                  : (lang === 'en' ? 'Show details & transfer 🔽' : 'اضغط للتفاصيل والإدارة 🔽')}
+                              </span>
                             </div>
                           </div>
-                        </div>
 
-                        {/* أين يقف الطالب بالضبط */}
-                        <div className="student-station-cell">
-                          <span className="cell-sublabel">{lang === 'en' ? 'Current Station:' : 'أين يقف بالضبط:'}</span>
-                          <div className="station-pill">
-                            <MapPin size={13} className="text-amber-500 flex-shrink-0" />
-                            <span className="station-text">
-                              {getStudentCurrentStation ? getStudentCurrentStation(student) : (student.currentStation || 'الدرس 1-1')}
+                          {/* مؤشرات الدرجات والإنجاز السريعة */}
+                          <div className="review-compact-badges" onClick={(e) => e.stopPropagation()}>
+                            <span className="score-badge chunk-badge" title={lang === 'en' ? 'Completed Topics' : 'الفقرات المنجزة من المنهج'}>
+                              <BookOpen size={12} className="text-emerald-500" />
+                              <span className="score-num-text">{completedCount}/49</span>
                             </span>
-                          </div>
-                        </div>
-
-                        {/* مجموع الدرجات والإتقان */}
-                        <div className="student-scores-cell">
-                          <span className="cell-sublabel">{lang === 'en' ? 'Mastery & Scores:' : 'الدرجات والإتقان:'}</span>
-                          <div className="scores-badges-wrap">
                             <span className="score-badge xp-badge" title={lang === 'en' ? 'XP Points' : 'نقاط الخبرة XP'}>
                               <Flame size={12} className="text-amber-500" />
                               <span dir="ltr" className="score-num-text">{student.xp || 0} XP</span>
@@ -3134,122 +3127,184 @@ export default function TeacherDashboard() {
                               <Star size={12} className="text-yellow-400 fill-yellow-400" />
                               <span className="score-num-text">{student.stars || 0}</span>
                             </span>
-                            <span className="score-badge chunk-badge" title={lang === 'en' ? 'Completed Topics' : 'الفقرات المكتملة من المنهج (من أصل 49)'}>
-                              <BookOpen size={12} className="text-emerald-500" />
-                              <span className="score-num-text">{completedCount}/49</span>
-                            </span>
+
+                            {/* شارة الواجب السريعة */}
+                            {homeworkTargetCount === 0 ? (
+                              <span className="hw-status-badge hw-none">لا واجب</span>
+                            ) : homeworkFinished ? (
+                              <span className="hw-status-badge hw-done" title="أتم الطالب جميع واجبات المجموعة">
+                                <Check size={11} />
+                                تم الواجب
+                              </span>
+                            ) : (
+                              <span className="hw-status-badge hw-pending" title="الواجب قيد الحل">
+                                <Clock size={11} />
+                                قيد الحل
+                              </span>
+                            )}
+                          </div>
+
+                          {/* زر التشخيص السريع وزر فتح/إغلاق التفاصيل */}
+                          <div className="review-header-actions" onClick={(e) => e.stopPropagation()}>
+                            <button
+                              className="duo-btn text-xs py-1.5 px-3 flex items-center gap-1.5"
+                              style={{ 
+                                background: completedCount === 0 ? '#64748b' : (errorsCount > 0 ? '#ef4444' : '#10b981'), 
+                                color: '#fff',
+                                borderBottomColor: completedCount === 0 ? '#475569' : (errorsCount > 0 ? '#b91c1c' : '#059669')
+                              }}
+                              onClick={() => {
+                                setSelectedStudentForDiagnosis(student);
+                                playSound.click();
+                              }}
+                              title={lang === 'en' ? 'View diagnosis and mistakes report' : 'تقرير أخطاء وتشخيص الطالب'}
+                            >
+                              {completedCount === 0 ? (
+                                <Clock size={13} />
+                              ) : (
+                                <Target size={13} />
+                              )}
+                              <span>
+                                {completedCount === 0
+                                  ? (lang === 'en' ? 'Not Started ⏳' : 'لم يبدأ ⏳')
+                                  : (errorsCount > 0 
+                                      ? (lang === 'en' ? `Weaknesses (${errorsCount}) 🎯` : `نقاط الضعف (${errorsCount}) 🎯`) 
+                                      : (lang === 'en' ? '100% Mastery 🌟' : 'إتقان 100% 🌟'))}
+                              </span>
+                            </button>
+
+                            <button
+                              className="expand-toggle-btn"
+                              onClick={() => toggleStudentReviewExpand(student.id)}
+                              aria-label="Toggle details"
+                              title={isExpanded ? (lang === 'en' ? 'Collapse' : 'إخفاء') : (lang === 'en' ? 'Expand' : 'عرض المزيد')}
+                            >
+                              {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                            </button>
                           </div>
                         </div>
 
-                        {/* حالة الواجب */}
-                        <div className="student-homework-cell">
-                          <span className="cell-sublabel">{lang === 'en' ? 'Homework Status:' : 'حالة الواجب:'}</span>
-                          {homeworkTargetCount === 0 ? (
-                            <span className="hw-status-badge hw-none">لا يوجد واجب</span>
-                          ) : homeworkFinished ? (
-                            <span className="hw-status-badge hw-done">
-                              <Check size={12} />
-                              أتم الواجب بالكامل
-                            </span>
-                          ) : (
-                            <span className="hw-status-badge hw-pending">
-                              <Clock size={12} />
-                              الواجب قيد الحل
-                            </span>
-                          )}
-                        </div>
+                        {/* 2. درج التفاصيل المنسدل عند الضغط على اسم الطالب */}
+                        {isExpanded && (
+                          <div className="review-student-details-drawer">
+                            <div className="details-grid-row">
+                              {/* بطاقة معلومات التواصل والكود */}
+                              <div className="drawer-subcard contacts-subcard">
+                                <span className="drawer-subcard-title">📞 معلومات التواصل والكود</span>
+                                <div className="contacts-subcard-content">
+                                  {student.phone ? (
+                                    <a 
+                                      href={`https://wa.me/2${String(student.phone).replace(/[^0-9]/g, '')}`} 
+                                      target="_blank" 
+                                      rel="noreferrer"
+                                      className="whatsapp-quick-link"
+                                      title="مراسلة الطالب عبر واتساب"
+                                    >
+                                      <Phone size={13} />
+                                      <span>الطالب: {student.phone}</span>
+                                    </a>
+                                  ) : (
+                                    <span className="text-xs text-slate-400">لا يوجد هاتف</span>
+                                  )}
 
-                        {/* نقل المجموعة أو إخراج الطالب للانتظار */}
-                        <div className="student-transfer-cell">
-                          <span className="cell-sublabel">{lang === 'en' ? 'Group Transfer:' : 'المجموعة / نقل الطالب:'}</span>
-                          <select
-                            className="review-group-select"
-                            value={student.groupId || ''}
-                            onChange={(e) => {
-                              const targetVal = e.target.value;
-                              if (!targetVal) {
-                                if (window.confirm(lang === 'en' 
-                                  ? `Remove "${student.name}" from this group and return to waiting list?` 
-                                  : `هل تريد إخراج الطالب "${student.name}" من هذه المجموعة وإعادته لقائمة الانتظار؟`)) {
-                                  assignStudentToGroup(student.id, null);
-                                }
-                              } else {
-                                assignStudentToGroup(student.id, targetVal);
-                              }
-                            }}
-                            title={lang === 'en' ? 'Transfer student to another group or return to waiting list' : 'نقل الطالب لمجموعة أخرى أو إخراجه لقائمة الانتظار'}
-                          >
-                            <option value={selectedGroupForReview.id}>المجموعة: {selectedGroupForReview.name}</option>
-                            <optgroup label={lang === 'en' ? 'Move to group:' : 'نقل إلى مجموعة أخرى:'}>
-                              {safeGroups.filter(g => g.id !== selectedGroupForReview.id).map(g => (
-                                <option key={g.id} value={g.id}>➡️ {g.name}</option>
-                              ))}
-                            </optgroup>
-                            <optgroup label={lang === 'en' ? 'Unassign:' : 'إلغاء التسكين:'}>
-                              <option value="">🚪 إخراج لقائمة الانتظار (بدون مجموعة)</option>
-                            </optgroup>
-                          </select>
-                        </div>
+                                  {student.guardianPhone ? (
+                                    <a 
+                                      href={`https://wa.me/2${String(student.guardianPhone).replace(/[^0-9]/g, '')}`} 
+                                      target="_blank" 
+                                      rel="noreferrer"
+                                      className="whatsapp-quick-link guardian-link"
+                                      title="مراسلة ولي الأمر عبر واتساب"
+                                    >
+                                      👨‍👩‍👧 <span>ولي الأمر: {student.guardianPhone}</span>
+                                    </a>
+                                  ) : (
+                                    <span className="text-xs text-slate-400">لا يوجد هاتف ولي أمر</span>
+                                  )}
 
-                        {/* أزرار الإجراءات للطلاب في المجموعة */}
-                        <div className="student-actions-cell flex items-center gap-1.5">
-                          <button
-                            className="duo-btn text-xs py-2 px-3 flex items-center gap-1.5"
-                            style={{ 
-                              background: completedCount === 0 ? '#64748b' : (errorsCount > 0 ? '#ef4444' : '#10b981'), 
-                              color: '#fff',
-                              borderBottomColor: completedCount === 0 ? '#475569' : (errorsCount > 0 ? '#b91c1c' : '#059669')
-                            }}
-                            onClick={() => {
-                              setSelectedStudentForDiagnosis(student);
-                              playSound.click();
-                            }}
-                          >
-                            {completedCount === 0 ? (
-                              <Clock size={14} />
-                            ) : (
-                              <Target size={14} />
-                            )}
-                            <span>
-                              {completedCount === 0
-                                ? (lang === 'en' ? 'Not Started Yet ⏳' : 'لم يبدأ الحل ⏳')
-                                : (errorsCount > 0 
-                                    ? (lang === 'en' ? `Weaknesses (${errorsCount})` : `نقاط الضعف (${errorsCount}) 🎯`) 
-                                    : (lang === 'en' ? '100% Mastery' : 'إتقان 100% 🌟'))}
-                            </span>
-                          </button>
+                                  <span className="student-id-tag">ID: {student.id}</span>
+                                </div>
+                              </div>
 
-                          <button
-                            className="duo-btn duo-btn-secondary text-xs py-2 px-2.5 flex items-center gap-1"
-                            onClick={() => {
-                              const confirmMsg = lang === 'en'
-                                ? `Remove student "${student.name}" from this group and return to waiting list?`
-                                : `هل تريد إخراج الطالب "${student.name}" من مجموعة "${selectedGroupForReview.name}" وإعادته لقائمة الانتظار؟`;
-                              if (window.confirm(confirmMsg)) {
-                                assignStudentToGroup(student.id, null);
-                              }
-                            }}
-                            title={lang === 'en' ? 'Remove from group to waiting list' : 'إخراج من المجموعة إلى قائمة الانتظار'}
-                          >
-                            <LogOut size={13} />
-                            <span>{lang === 'en' ? 'Exit Group' : 'خروج'}</span>
-                          </button>
+                              {/* بطاقة المحطة وموقع الطالب */}
+                              <div className="drawer-subcard station-subcard">
+                                <span className="drawer-subcard-title">📍 أين يقف الطالب بالضبط في المنهج</span>
+                                <div className="station-pill">
+                                  <MapPin size={14} className="text-amber-500 flex-shrink-0" />
+                                  <span className="station-text">
+                                    {getStudentCurrentStation ? getStudentCurrentStation(student) : (student.currentStation || 'الدرس 1-1')}
+                                  </span>
+                                </div>
+                              </div>
 
-                          <button
-                            className="duo-btn duo-btn-danger text-xs py-2 px-2 flex items-center gap-1"
-                            onClick={async () => {
-                              const confirmMsg = lang === 'en'
-                                ? `Are you sure you want to delete student "${student.name}"?`
-                                : `هل تريد مسح حساب الطالب "${student.name}" نهائياً من المنصة؟`;
-                              if (window.confirm(confirmMsg)) {
-                                await deleteStudent(student);
-                              }
-                            }}
-                            title={lang === 'en' ? 'Delete student' : 'مسح حساب الطالب'}
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
+                              {/* بطاقة نقل المجموعة */}
+                              <div className="drawer-subcard transfer-subcard">
+                                <span className="drawer-subcard-title">🔄 نقل الطالب لمجموعة أخرى</span>
+                                <select
+                                  className="review-group-select w-full"
+                                  value={student.groupId || ''}
+                                  onChange={(e) => {
+                                    const targetVal = e.target.value;
+                                    if (!targetVal) {
+                                      if (window.confirm(lang === 'en' 
+                                        ? `Remove "${student.name}" from this group and return to waiting list?` 
+                                        : `هل تريد إخراج الطالب "${student.name}" من هذه المجموعة وإعادته لقائمة الانتظار؟`)) {
+                                        assignStudentToGroup(student.id, null);
+                                      }
+                                    } else {
+                                      assignStudentToGroup(student.id, targetVal);
+                                    }
+                                  }}
+                                  title={lang === 'en' ? 'Transfer student to another group or return to waiting list' : 'نقل الطالب لمجموعة أخرى أو إخراجه لقائمة الانتظار'}
+                                >
+                                  <option value={selectedGroupForReview.id}>المجموعة الحالية: {selectedGroupForReview.name}</option>
+                                  <optgroup label={lang === 'en' ? 'Move to group:' : 'نقل إلى مجموعة أخرى:'}>
+                                    {safeGroups.filter(g => g.id !== selectedGroupForReview.id).map(g => (
+                                      <option key={g.id} value={g.id}>➡️ {g.name}</option>
+                                    ))}
+                                  </optgroup>
+                                  <optgroup label={lang === 'en' ? 'Unassign:' : 'إلغاء التسكين:'}>
+                                    <option value="">🚪 إخراج لقائمة الانتظار (بدون مجموعة)</option>
+                                  </optgroup>
+                                </select>
+                              </div>
+                            </div>
+
+                            {/* أزرار الإجراءات الإدارية */}
+                            <div className="drawer-management-footer">
+                              <button
+                                className="duo-btn duo-btn-secondary text-xs py-2 px-3 flex items-center gap-1.5"
+                                onClick={() => {
+                                  const confirmMsg = lang === 'en'
+                                    ? `Remove student "${student.name}" from this group and return to waiting list?`
+                                    : `هل تريد إخراج الطالب "${student.name}" من مجموعة "${selectedGroupForReview.name}" وإعادته لقائمة الانتظار؟`;
+                                  if (window.confirm(confirmMsg)) {
+                                    assignStudentToGroup(student.id, null);
+                                  }
+                                }}
+                                title={lang === 'en' ? 'Remove from group to waiting list' : 'إخراج من المجموعة إلى قائمة الانتظار'}
+                              >
+                                <LogOut size={13} />
+                                <span>{lang === 'en' ? 'Exit Group to Waiting' : 'إخراج لقائمة الانتظار'}</span>
+                              </button>
+
+                              <button
+                                className="duo-btn duo-btn-danger text-xs py-2 px-3 flex items-center gap-1.5"
+                                onClick={async () => {
+                                  const confirmMsg = lang === 'en'
+                                    ? `Are you sure you want to delete student "${student.name}"?`
+                                    : `هل تريد مسح حساب الطالب "${student.name}" نهائياً من المنصة؟`;
+                                  if (window.confirm(confirmMsg)) {
+                                    await deleteStudent(student);
+                                  }
+                                }}
+                                title={lang === 'en' ? 'Delete student account' : 'مسح حساب الطالب نهائياً'}
+                              >
+                                <Trash2 size={13} />
+                                <span>{lang === 'en' ? 'Delete Student' : 'حذف حساب الطالب'}</span>
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   });
