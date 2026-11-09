@@ -3085,22 +3085,34 @@ export default function TeacherDashboard() {
                   return groupStudents.map(student => {
                     const completedCount = student.completedChunks?.length || 0;
                     const errorsCount = student.wrongAnswers?.length || 0;
-                    const homeworkTargetCount = selectedGroupForReview.homeworkChunks?.length || 0;
-                    const homeworkFinished = homeworkTargetCount > 0 && selectedGroupForReview.homeworkChunks.every(hId => student.completedChunks?.includes(hId));
+
+                    // الفقرات المفتوحة/المطلوبة للمجموعة الحالية (مثال: إذا كان عنده 5 فقرات مفتوحة في المجموعة)
+                    const requiredGroupChunks = (selectedGroupForReview.unlockedChunks && selectedGroupForReview.unlockedChunks.length > 0)
+                      ? selectedGroupForReview.unlockedChunks
+                      : (selectedGroupForReview.homeworkChunks || []);
+
+                    const requiredCount = requiredGroupChunks.length;
+                    const solvedRequiredCount = requiredCount > 0 
+                      ? requiredGroupChunks.filter(cId => student.completedChunks?.includes(cId)).length 
+                      : 0;
+
+                    const isAllDone = requiredCount > 0 && solvedRequiredCount === requiredCount;
+                    const isPartiallyDone = solvedRequiredCount > 0 && solvedRequiredCount < requiredCount;
 
                     const isExpanded = expandedReviewStudentIds.has(student.id);
 
                     return (
                       <div key={student.id} className={`group-student-review-card ${isExpanded ? 'is-expanded' : ''}`}>
-                        {/* 1. السطر الرئيسي الأنيق والمختصر - مريح ولا يسبب أي سكرول */}
+                        {/* 1. الواجهة: اسم الطالب + حالته (الواجب) + الدرجات */}
                         <div 
                           className="review-student-header-row"
                           onClick={() => toggleStudentReviewExpand(student.id)}
                           title={isExpanded 
                             ? (lang === 'en' ? 'Click to collapse details' : 'اضغط لإخفاء التفاصيل') 
-                            : (lang === 'en' ? 'Click student to view details and transfer' : 'اضغط على اسم الطالب لعرض التفاصيل والإدارة')
+                            : (lang === 'en' ? 'Click student to view details and transfer' : 'اضغط على اسم الطالب لعرض التفاصيل ونقله وإدارته')
                           }
                         >
+                          {/* اسم الطالب وصورته */}
                           <div className="review-student-identity">
                             <img src={student.avatar} alt={student.name} className="review-avatar" />
                             <div className="review-name-wrap">
@@ -3108,14 +3120,38 @@ export default function TeacherDashboard() {
                               <span className="review-hint-toggle">
                                 {isExpanded 
                                   ? (lang === 'en' ? 'Hide details 🔼' : 'إخفاء التفاصيل 🔼') 
-                                  : (lang === 'en' ? 'Show details & transfer 🔽' : 'اضغط للتفاصيل والإدارة 🔽')}
+                                  : (lang === 'en' ? 'Details & options 🔽' : 'اضغط للتفاصيل والإدارة 🔽')}
                               </span>
                             </div>
                           </div>
 
-                          {/* مؤشرات الدرجات والإنجاز السريعة */}
+                          {/* حالة الطالب والواجب للمجموعة */}
+                          <div className="review-status-col" onClick={(e) => e.stopPropagation()}>
+                            {requiredCount === 0 ? (
+                              <span className="hw-status-badge hw-none">
+                                {lang === 'en' ? 'No Chunks Set' : 'لا توجد فقرات محددة'}
+                              </span>
+                            ) : isAllDone ? (
+                              <span className="hw-status-badge hw-done" title={lang === 'en' ? `Completed all ${requiredCount} required chunks!` : `أتمم الطالب جميع الفقرات المطلوبة (${solvedRequiredCount}/${requiredCount})`}>
+                                <Check size={13} strokeWidth={2.5} />
+                                <span>{lang === 'en' ? `Completed Homework (${solvedRequiredCount}/${requiredCount})` : `أتمم الواجب بالكامل (${solvedRequiredCount}/${requiredCount})`}</span>
+                              </span>
+                            ) : isPartiallyDone ? (
+                              <span className="hw-status-badge hw-pending" title={lang === 'en' ? `Solved ${solvedRequiredCount} of ${requiredCount} required chunks` : `حل ${solvedRequiredCount} من أصل ${requiredCount} فقرة مفتوحة`}>
+                                <Clock size={12} />
+                                <span>{lang === 'en' ? `In Progress (${solvedRequiredCount}/${requiredCount})` : `الواجب قيد الحل (${solvedRequiredCount}/${requiredCount})`}</span>
+                              </span>
+                            ) : (
+                              <span className="hw-status-badge hw-not-started" title={lang === 'en' ? `Did not start any of the ${requiredCount} required chunks` : `لم يبدأ بعد في حل الفقرات المفتوحة للمجموعة`}>
+                                <AlertCircle size={12} />
+                                <span>{lang === 'en' ? `Not Started (0/${requiredCount})` : `لم يبدأ الواجب (0/${requiredCount})`}</span>
+                              </span>
+                            )}
+                          </div>
+
+                          {/* درجات الطالب (XP، النجوم، الفقرات المنجزة) */}
                           <div className="review-compact-badges" onClick={(e) => e.stopPropagation()}>
-                            <span className="score-badge chunk-badge" title={lang === 'en' ? 'Completed Topics' : 'الفقرات المنجزة من المنهج'}>
+                            <span className="score-badge chunk-badge" title={lang === 'en' ? 'Completed Topics' : 'الفقرات المنجزة من المنهج (من أصل 49)'}>
                               <BookOpen size={12} className="text-emerald-500" />
                               <span className="score-num-text">{completedCount}/49</span>
                             </span>
@@ -3127,52 +3163,10 @@ export default function TeacherDashboard() {
                               <Star size={12} className="text-yellow-400 fill-yellow-400" />
                               <span className="score-num-text">{student.stars || 0}</span>
                             </span>
-
-                            {/* شارة الواجب السريعة */}
-                            {homeworkTargetCount === 0 ? (
-                              <span className="hw-status-badge hw-none">لا واجب</span>
-                            ) : homeworkFinished ? (
-                              <span className="hw-status-badge hw-done" title="أتم الطالب جميع واجبات المجموعة">
-                                <Check size={11} />
-                                تم الواجب
-                              </span>
-                            ) : (
-                              <span className="hw-status-badge hw-pending" title="الواجب قيد الحل">
-                                <Clock size={11} />
-                                قيد الحل
-                              </span>
-                            )}
                           </div>
 
-                          {/* زر التشخيص السريع وزر فتح/إغلاق التفاصيل */}
+                          {/* زر السهم لفتح/إغلاق التفاصيل */}
                           <div className="review-header-actions" onClick={(e) => e.stopPropagation()}>
-                            <button
-                              className="duo-btn text-xs py-1.5 px-3 flex items-center gap-1.5"
-                              style={{ 
-                                background: completedCount === 0 ? '#64748b' : (errorsCount > 0 ? '#ef4444' : '#10b981'), 
-                                color: '#fff',
-                                borderBottomColor: completedCount === 0 ? '#475569' : (errorsCount > 0 ? '#b91c1c' : '#059669')
-                              }}
-                              onClick={() => {
-                                setSelectedStudentForDiagnosis(student);
-                                playSound.click();
-                              }}
-                              title={lang === 'en' ? 'View diagnosis and mistakes report' : 'تقرير أخطاء وتشخيص الطالب'}
-                            >
-                              {completedCount === 0 ? (
-                                <Clock size={13} />
-                              ) : (
-                                <Target size={13} />
-                              )}
-                              <span>
-                                {completedCount === 0
-                                  ? (lang === 'en' ? 'Not Started ⏳' : 'لم يبدأ ⏳')
-                                  : (errorsCount > 0 
-                                      ? (lang === 'en' ? `Weaknesses (${errorsCount}) 🎯` : `نقاط الضعف (${errorsCount}) 🎯`) 
-                                      : (lang === 'en' ? '100% Mastery 🌟' : 'إتقان 100% 🌟'))}
-                              </span>
-                            </button>
-
                             <button
                               className="expand-toggle-btn"
                               onClick={() => toggleStudentReviewExpand(student.id)}
@@ -3184,14 +3178,83 @@ export default function TeacherDashboard() {
                           </div>
                         </div>
 
-                        {/* 2. درج التفاصيل المنسدل عند الضغط على اسم الطالب */}
+                        {/* 2. درج التفاصيل بالداخل (عند الضغط على الطالب): الإتقان، المجموعة ونقل الطالب، معلومات التواصل، وزر الإخراج */}
                         {isExpanded && (
                           <div className="review-student-details-drawer">
                             <div className="details-grid-row">
+                              {/* بطاقة الإتقان وتشخيص الأخطاء */}
+                              <div className="drawer-subcard mastery-subcard">
+                                <span className="drawer-subcard-title">🌟 تقرير الإتقان والأخطاء</span>
+                                <button
+                                  className="duo-btn text-xs py-2 px-3 flex items-center justify-center gap-2 w-full font-bold mt-1"
+                                  style={{ 
+                                    background: completedCount === 0 ? '#64748b' : (errorsCount > 0 ? '#ef4444' : '#10b981'), 
+                                    color: '#fff',
+                                    borderBottomColor: completedCount === 0 ? '#475569' : (errorsCount > 0 ? '#b91c1c' : '#059669')
+                                  }}
+                                  onClick={() => {
+                                    setSelectedStudentForDiagnosis(student);
+                                    playSound.click();
+                                  }}
+                                  title={lang === 'en' ? 'View diagnosis and mistakes report' : 'تقرير تشخيص الإتقان وأخطاء الطالب'}
+                                >
+                                  {completedCount === 0 ? (
+                                    <Clock size={14} />
+                                  ) : (
+                                    <Target size={14} />
+                                  )}
+                                  <span>
+                                    {completedCount === 0
+                                      ? (lang === 'en' ? 'Not Started Yet ⏳' : 'لم يبدأ الحل بعد ⏳')
+                                      : (errorsCount > 0 
+                                          ? (lang === 'en' ? `Weaknesses (${errorsCount}) 🎯` : `نقاط الضعف والأخطاء (${errorsCount}) 🎯`) 
+                                          : (lang === 'en' ? '100% Full Mastery 🌟' : 'إتقان 100% 🌟 (خالٍ من الأخطاء)'))}
+                                  </span>
+                                </button>
+                              </div>
+
+                              {/* بطاقة المجموعة الحالية ونقل الطالب */}
+                              <div className="drawer-subcard transfer-subcard">
+                                <span className="drawer-subcard-title">👥 المجموعة ونقل الطالب</span>
+                                <div className="text-xs text-indigo-400 font-bold my-1 flex items-center gap-1.5">
+                                  <span>المجموعة:</span>
+                                  <span className="bg-indigo-950/80 border border-indigo-500/40 px-2 py-0.5 rounded text-indigo-200">
+                                    {selectedGroupForReview.name}
+                                  </span>
+                                </div>
+                                <select
+                                  className="review-group-select w-full"
+                                  value={student.groupId || ''}
+                                  onChange={(e) => {
+                                    const targetVal = e.target.value;
+                                    if (!targetVal) {
+                                      if (window.confirm(lang === 'en' 
+                                        ? `Remove "${student.name}" from this group and return to waiting list?` 
+                                        : `هل تريد إخراج الطالب "${student.name}" من هذه المجموعة وإعادته لقائمة الانتظار؟`)) {
+                                        assignStudentToGroup(student.id, null);
+                                      }
+                                    } else {
+                                      assignStudentToGroup(student.id, targetVal);
+                                    }
+                                  }}
+                                  title={lang === 'en' ? 'Transfer student to another group or return to waiting list' : 'نقل الطالب لمجموعة أخرى أو إخراجه لقائمة الانتظار'}
+                                >
+                                  <option value={selectedGroupForReview.id}>المجموعة: {selectedGroupForReview.name}</option>
+                                  <optgroup label={lang === 'en' ? 'Move to group:' : 'نقل إلى مجموعة أخرى:'}>
+                                    {safeGroups.filter(g => g.id !== selectedGroupForReview.id).map(g => (
+                                      <option key={g.id} value={g.id}>➡️ {g.name}</option>
+                                    ))}
+                                  </optgroup>
+                                  <optgroup label={lang === 'en' ? 'Unassign:' : 'إلغاء التسكين:'}>
+                                    <option value="">🚪 إخراج لقائمة الانتظار (بدون مجموعة)</option>
+                                  </optgroup>
+                                </select>
+                              </div>
+
                               {/* بطاقة معلومات التواصل والكود */}
                               <div className="drawer-subcard contacts-subcard">
                                 <span className="drawer-subcard-title">📞 معلومات التواصل والكود</span>
-                                <div className="contacts-subcard-content">
+                                <div className="contacts-subcard-content mt-1">
                                   {student.phone ? (
                                     <a 
                                       href={`https://wa.me/2${String(student.phone).replace(/[^0-9]/g, '')}`} 
@@ -3224,52 +3287,9 @@ export default function TeacherDashboard() {
                                   <span className="student-id-tag">ID: {student.id}</span>
                                 </div>
                               </div>
-
-                              {/* بطاقة المحطة وموقع الطالب */}
-                              <div className="drawer-subcard station-subcard">
-                                <span className="drawer-subcard-title">📍 أين يقف الطالب بالضبط في المنهج</span>
-                                <div className="station-pill">
-                                  <MapPin size={14} className="text-amber-500 flex-shrink-0" />
-                                  <span className="station-text">
-                                    {getStudentCurrentStation ? getStudentCurrentStation(student) : (student.currentStation || 'الدرس 1-1')}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* بطاقة نقل المجموعة */}
-                              <div className="drawer-subcard transfer-subcard">
-                                <span className="drawer-subcard-title">🔄 نقل الطالب لمجموعة أخرى</span>
-                                <select
-                                  className="review-group-select w-full"
-                                  value={student.groupId || ''}
-                                  onChange={(e) => {
-                                    const targetVal = e.target.value;
-                                    if (!targetVal) {
-                                      if (window.confirm(lang === 'en' 
-                                        ? `Remove "${student.name}" from this group and return to waiting list?` 
-                                        : `هل تريد إخراج الطالب "${student.name}" من هذه المجموعة وإعادته لقائمة الانتظار؟`)) {
-                                        assignStudentToGroup(student.id, null);
-                                      }
-                                    } else {
-                                      assignStudentToGroup(student.id, targetVal);
-                                    }
-                                  }}
-                                  title={lang === 'en' ? 'Transfer student to another group or return to waiting list' : 'نقل الطالب لمجموعة أخرى أو إخراجه لقائمة الانتظار'}
-                                >
-                                  <option value={selectedGroupForReview.id}>المجموعة الحالية: {selectedGroupForReview.name}</option>
-                                  <optgroup label={lang === 'en' ? 'Move to group:' : 'نقل إلى مجموعة أخرى:'}>
-                                    {safeGroups.filter(g => g.id !== selectedGroupForReview.id).map(g => (
-                                      <option key={g.id} value={g.id}>➡️ {g.name}</option>
-                                    ))}
-                                  </optgroup>
-                                  <optgroup label={lang === 'en' ? 'Unassign:' : 'إلغاء التسكين:'}>
-                                    <option value="">🚪 إخراج لقائمة الانتظار (بدون مجموعة)</option>
-                                  </optgroup>
-                                </select>
-                              </div>
                             </div>
 
-                            {/* أزرار الإجراءات الإدارية */}
+                            {/* أزرار الإجراءات الإدارية: إخراج الطالب وحذف الحساب */}
                             <div className="drawer-management-footer">
                               <button
                                 className="duo-btn duo-btn-secondary text-xs py-2 px-3 flex items-center gap-1.5"
@@ -3284,7 +3304,7 @@ export default function TeacherDashboard() {
                                 title={lang === 'en' ? 'Remove from group to waiting list' : 'إخراج من المجموعة إلى قائمة الانتظار'}
                               >
                                 <LogOut size={13} />
-                                <span>{lang === 'en' ? 'Exit Group to Waiting' : 'إخراج لقائمة الانتظار'}</span>
+                                <span>{lang === 'en' ? 'Exit Group to Waiting' : 'إخراج من المجموعة لقائمة الانتظار 🚪'}</span>
                               </button>
 
                               <button
@@ -3300,7 +3320,7 @@ export default function TeacherDashboard() {
                                 title={lang === 'en' ? 'Delete student account' : 'مسح حساب الطالب نهائياً'}
                               >
                                 <Trash2 size={13} />
-                                <span>{lang === 'en' ? 'Delete Student' : 'حذف حساب الطالب'}</span>
+                                <span>{lang === 'en' ? 'Delete Student' : 'حذف حساب الطالب 🗑️'}</span>
                               </button>
                             </div>
                           </div>

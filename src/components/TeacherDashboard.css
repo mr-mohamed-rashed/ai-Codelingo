@@ -2852,9 +2852,22 @@ html[dir="ltr"] .closed-text-col {
   border: 1px solid rgba(245, 158, 11, 0.35);
 }
 
+.hw-status-badge.hw-not-started {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
 .hw-status-badge.hw-none {
   background: rgba(148, 163, 184, 0.1);
   color: #94a3b8;
+}
+
+.review-status-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .score-badge {
@@ -2920,15 +2933,21 @@ html[dir="ltr"] .closed-text-col {
 
   .review-student-identity {
     min-width: auto;
-    flex: 1 1 200px;
+    flex: 1 1 180px;
   }
 
-  .review-compact-badges {
+  .review-status-col {
     order: 3;
     width: 100%;
     justify-content: flex-start;
-    padding-top: 4px;
-    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .review-compact-badges {
+    order: 4;
+    width: 100%;
+    justify-content: flex-start;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .review-header-actions {
@@ -2962,18 +2981,24 @@ html[dir="ltr"] .closed-text-col {
 
   .review-student-header-row {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 8px;
   }
 
-  .review-header-actions {
+  .review-student-identity {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .review-status-col {
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .review-compact-badges {
     width: 100%;
     gap: 4px;
+    justify-content: flex-start;
   }
 
   .score-badge {
@@ -3294,6 +3319,12 @@ body.theme-light .expand-toggle-btn {
   background: #f1f5f9;
   border-color: #cbd5e1;
   color: #475569;
+}
+
+body.theme-light .hw-status-badge.hw-not-started {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
 }
 
 body.theme-light .review-student-name {
