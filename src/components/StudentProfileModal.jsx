@@ -15,7 +15,8 @@ import {
   Clock, 
   Save, 
   LogOut, 
-  Send 
+  Send,
+  Calendar 
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { playSound } from '../utils/audioEngine';
@@ -147,6 +148,53 @@ export default function StudentProfileModal() {
             <div className="profile-stat-lbl">أيام الحماس</div>
           </div>
         </div>
+
+        {/* سجل الحضور ودرجات الحصص الأكاديمية */}
+        {Array.isArray(currentStudent.allowedCurriculum?.attendanceRecords) && currentStudent.allowedCurriculum.attendanceRecords.length > 0 && (
+          <div className="profile-section-card" style={{ marginBottom: '16px' }}>
+            <div className="profile-section-title">
+              <Calendar size={17} color="#10b981" />
+              <span>سجل درجات الحضور والتسميع بالحصص</span>
+            </div>
+            <div className="profile-attendance-list" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
+              {currentStudent.allowedCurriculum.attendanceRecords.map((att, i) => (
+                <div 
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    background: 'rgba(15, 23, 42, 0.6)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    fontSize: '0.82rem'
+                  }}
+                >
+                  <div>
+                    <strong style={{ color: '#ffffff' }}>{att.sessionTitle || `حصة ${att.date}`}</strong>
+                    <div style={{ color: '#94a3b8', fontSize: '0.74rem' }}>📅 {att.date} {att.note && `• 📝 ${att.note}`}</div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span 
+                      style={{
+                        padding: '2px 8px',
+                        borderRadius: '6px',
+                        fontSize: '0.74rem',
+                        fontWeight: 700,
+                        background: att.status === 'present' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+                        color: att.status === 'present' ? '#34d399' : '#f87171'
+                      }}
+                    >
+                      {att.status === 'present' ? 'حاضر ✅' : att.status === 'absent' ? 'غائب ❌' : att.status === 'late' ? 'متأخر ⏳' : 'معتذر 📝'}
+                    </span>
+                    <span style={{ color: '#fbbf24', fontWeight: 800 }}>{att.grade} / {att.maxGrade || 10} ⭐</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Contact Info & Numbers Form */}
         <div className="profile-section-card">

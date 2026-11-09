@@ -165,30 +165,112 @@ export async function fetchAllStudentsFromSupabase() {
 /**
  * 4. تحديث تقدم الطالب سحابياً (النقاط، النجوم، الفقرات المنجزة)
  */
-export async function updateStudentProgressInSupabase(studentId, updates) {
+/**
+ * 4. تحديث تقدم الطالب سحابياً (النقاط، النجوم، الفقرات المنجزة)
+ */
+export async function updateStudentProgressInSupabase(studentId, updates, studentMeta = {}) {
   if (!isSupabaseConfigured || !studentId) return;
 
   try {
     const supabase = await getSupabaseClient();
     const payload = {};
-    if (updates.xp !== undefined) payload.xp = updates.xp;
-    if (updates.stars !== undefined) payload.stars = updates.stars;
-    if (updates.streak !== undefined) payload.streak = updates.streak;
+    if (updates.xp !== undefined) payload.xp = Number(updates.xp);
+    if (updates.stars !== undefined) payload.stars = Number(updates.stars);
+    if (updates.streak !== undefined) payload.streak = Number(updates.streak);
     if (updates.completedChunks !== undefined) payload.completed_chunks = updates.completedChunks;
     if (updates.chunkRatings !== undefined) payload.chunk_ratings = updates.chunkRatings;
     if (updates.trophies !== undefined) payload.trophies = updates.trophies;
     if (updates.wrongAnswers !== undefined) payload.wrong_answers = updates.wrongAnswers;
     if (updates.currentStation !== undefined) payload.current_station = updates.currentStation;
+    if (updates.allowedCurriculum !== undefined) payload.allowed_curriculum = updates.allowedCurriculum;
     payload.updated_at = new Date().toISOString();
 
-    const { error } = await supabase
+    let query = supabase
       .from('students')
       .update(payload)
-      .eq('id', studentId);
+      .eq('id', studentId)
+      .select('id');
 
+    let { data, error } = await query;
     if (error) console.warn('⚠️ Progress update note:', error.message);
+
+    // محاولة بديلة إذا لم يتطابق المعرف وكان هناك رقم هاتف أو بريد
+    if (!data || data.length === 0) {
+      if (studentMeta?.phone) {
+        const cleanP = sanitizePhone(studentMeta.phone);
+        if (cleanP) {
+          await supabase.from('students').update(payload).eq('phone', cleanP);
+        }
+      } else if (studentMeta?.email) {
+        const cleanE = String(studentMeta.email).trim().toLowerCase();
+        if (cleanE) {
+          await supabase.from('students').update(payload).ilike('email', cleanE);
+        }
+      } else if (studentMeta?.authUserId) {
+        await supabase.from('students').update(payload).eq('auth_user_id', studentMeta.authUserId);
+      }
+    }
   } catch (err) {
     console.warn('⚠️ Progress update error:', err);
+  }
+}
+
+/**
+ * حفظ سجلات الحضور والغياب ودرجات الحصص للطلاب في Supabase
+ */
+export async function syncGroupSessionAttendanceToSupabase(sessionRecord, studentsRecords = []) {
+  if (!isSupabaseConfigured || !Array.isArray(studentsRecords) || studentsRecords.length === 0) {
+    return;
+  }
+
+  try {
+    const supabase = await getSupabaseClient();
+    for (const record of studentsRecords) {
+      if (!record.studentId) continue;
+
+      // 1. جلب السجل الحالي للطالب لمعرفة allowed_curriculum الحالية
+      const { data: student } = await supabase
+        .from('students')
+        .select('id, phone, allowed_curriculum')
+        .eq('id', record.studentId)
+        .maybeSingle();
+
+      if (student) {
+        const currentAllowed = student.allowed_curriculum || {};
+        const existingAttendance = Array.isArray(currentAllowed.attendanceRecords) 
+          ? [...currentAllowed.attendanceRecords] 
+          : [];
+
+        // استبدال أو إضافة تقرير الحصة الحالية
+        const updatedAttendance = existingAttendance.filter(a => a.sessionId !== sessionRecord.id);
+        updatedAttendance.push({
+          sessionId: sessionRecord.id,
+          sessionTitle: sessionRecord.sessionTitle,
+          sessionNumber: sessionRecord.sessionNumber,
+          date: sessionRecord.date,
+          status: record.status || 'present', // 'present' | 'absent' | 'late' | 'excused'
+          grade: Number(record.grade ?? sessionRecord.maxGrade),
+          maxGrade: Number(sessionRecord.maxGrade || 10),
+          note: record.note || '',
+          recordedAt: new Date().toISOString()
+        });
+
+        const newAllowed = {
+          ...currentAllowed,
+          attendanceRecords: updatedAttendance
+        };
+
+        await supabase
+          .from('students')
+          .update({ 
+            allowed_curriculum: newAllowed,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', student.id);
+      }
+    }
+  } catch (err) {
+    console.warn('⚠️ Error syncing session attendance to Supabase:', err);
   }
 }
 

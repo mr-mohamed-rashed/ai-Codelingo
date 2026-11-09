@@ -89,6 +89,8 @@ export default function TeacherDashboard() {
     logoutAdmin,
     refreshStudentsFromCloud,
     isSyncingStudents,
+    attendanceSessions = [],
+    saveGroupAttendanceSession,
     lang,
     t
   } = useApp();
@@ -204,6 +206,187 @@ export default function TeacherDashboard() {
     studentIds: [],
     homeworkNote: ''
   });
+
+  // =========================================================
+  // حالات وإجراءات سجل الحضور والغياب ودرجات الحصص
+  // =========================================================
+  const [selectedAttendanceGroupId, setSelectedAttendanceGroupId] = useState('');
+  const [attendanceSessionDate, setAttendanceSessionDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [attendanceSessionTitle, setAttendanceSessionTitle] = useState('الحصة 1: تطور تكنولوجيا المعلومات وقانون مور');
+  const [attendanceMaxGrade, setAttendanceMaxGrade] = useState(10);
+  const [attendanceRecordsState, setAttendanceRecordsState] = useState({});
+  const [attendanceStudentSearch, setAttendanceStudentSearch] = useState('');
+  const [attendanceSavedNotice, setAttendanceSavedNotice] = useState('');
+  const [isSavingAttendance, setIsSavingAttendance] = useState(false);
+  const [selectedPastSession, setSelectedPastSession] = useState(null);
+
+  const effectiveAttendanceGroupId = selectedAttendanceGroupId || safeGroups[0]?.id || '';
+  const currentAttendanceGroup = safeGroups.find(g => g.id === effectiveAttendanceGroupId) || safeGroups[0];
+  
+  const studentsInCurrentAttendanceGroup = useMemo(() => {
+    if (!currentAttendanceGroup) return [];
+    return safeStudents.filter(s => s && s.groupId === currentAttendanceGroup.id);
+  }, [safeStudents, currentAttendanceGroup]);
+
+  const filteredAttendanceStudents = useMemo(() => {
+    if (!attendanceStudentSearch.trim()) return studentsInCurrentAttendanceGroup;
+    const q = attendanceStudentSearch.toLowerCase().trim();
+    return studentsInCurrentAttendanceGroup.filter(s => 
+      (s.name || '').toLowerCase().includes(q) ||
+      (s.phone || '').includes(q) ||
+      (s.guardianPhone || '').includes(q)
+    );
+  }, [studentsInCurrentAttendanceGroup, attendanceStudentSearch]);
+
+  const attendanceStats = useMemo(() => {
+    const total = studentsInCurrentAttendanceGroup.length;
+    let presentCount = 0;
+    let absentCount = 0;
+    let lateCount = 0;
+    let excusedCount = 0;
+    let totalGrade = 0;
+
+    studentsInCurrentAttendanceGroup.forEach(s => {
+      const rec = attendanceRecordsState[s.id] || { status: 'present', grade: attendanceMaxGrade };
+      if (rec.status === 'present') presentCount++;
+      else if (rec.status === 'absent') absentCount++;
+      else if (rec.status === 'late') lateCount++;
+      else if (rec.status === 'excused') excusedCount++;
+      totalGrade += Number(rec.grade ?? attendanceMaxGrade);
+    });
+
+    const presentRate = total > 0 ? Math.round((presentCount / total) * 100) : 100;
+    const averageGrade = total > 0 ? (totalGrade / total).toFixed(1) : attendanceMaxGrade;
+
+    return { total, presentCount, absentCount, lateCount, excusedCount, presentRate, averageGrade };
+  }, [studentsInCurrentAttendanceGroup, attendanceRecordsState, attendanceMaxGrade]);
+
+  const handleSetStudentAttendanceStatus = (studentId, status) => {
+    setAttendanceRecordsState(prev => {
+      const current = prev[studentId] || { status: 'present', grade: attendanceMaxGrade, note: '' };
+      let newGrade = current.grade ?? attendanceMaxGrade;
+      if (status === 'absent' || status === 'excused') {
+        newGrade = 0;
+      } else if (status === 'present' && (current.status === 'absent' || current.status === 'excused' || current.grade === 0)) {
+        newGrade = attendanceMaxGrade;
+      }
+      return {
+        ...prev,
+        [studentId]: {
+          ...current,
+          status,
+          grade: newGrade
+        }
+      };
+    });
+    playSound.click();
+  };
+
+  const handleSetStudentAttendanceGrade = (studentId, grade) => {
+    const num = Math.max(0, Math.min(attendanceMaxGrade, Number(grade) || 0));
+    setAttendanceRecordsState(prev => ({
+      ...prev,
+      [studentId]: {
+        ...(prev[studentId] || { status: 'present', note: '' }),
+        grade: num
+      }
+    }));
+  };
+
+  const handleSetStudentAttendanceNote = (studentId, note) => {
+    setAttendanceRecordsState(prev => ({
+      ...prev,
+      [studentId]: {
+        ...(prev[studentId] || { status: 'present', grade: attendanceMaxGrade }),
+        note
+      }
+    }));
+  };
+
+  const handleMarkAllPresent = () => {
+    const updated = {};
+    studentsInCurrentAttendanceGroup.forEach(s => {
+      updated[s.id] = {
+        ...(attendanceRecordsState[s.id] || {}),
+        status: 'present',
+        grade: attendanceMaxGrade
+      };
+    });
+    setAttendanceRecordsState(prev => ({ ...prev, ...updated }));
+    playSound.levelUp();
+  };
+
+  const handleResetAllGrades = () => {
+    setAttendanceRecordsState({});
+    playSound.click();
+  };
+
+  const handleSaveSessionAttendance = async () => {
+    if (!currentAttendanceGroup) return;
+    setIsSavingAttendance(true);
+    try {
+      const sessionId = selectedPastSession?.id || `sess-${currentAttendanceGroup.id}-${attendanceSessionDate}-${Date.now().toString().slice(-4)}`;
+      const sessionPayload = {
+        id: sessionId,
+        groupId: currentAttendanceGroup.id,
+        groupName: currentAttendanceGroup.name,
+        sessionTitle: attendanceSessionTitle.trim() || `حصة ${attendanceSessionDate}`,
+        sessionNumber: attendanceSessionTitle.match(/\d+/)?.[0] || '1',
+        date: attendanceSessionDate,
+        maxGrade: Number(attendanceMaxGrade || 10)
+      };
+
+      const studentsList = studentsInCurrentAttendanceGroup.map(s => {
+        const rec = attendanceRecordsState[s.id] || { status: 'present', grade: Number(attendanceMaxGrade || 10), note: '' };
+        return {
+          studentId: s.id,
+          studentName: s.name,
+          studentPhone: s.phone,
+          status: rec.status,
+          grade: Number(rec.grade),
+          note: rec.note || ''
+        };
+      });
+
+      if (typeof saveGroupAttendanceSession === 'function') {
+        await saveGroupAttendanceSession(sessionPayload, studentsList);
+      }
+
+      playSound.levelUp();
+      setAttendanceSavedNotice('تم حفظ سجل الحصة ودرجات الحضور والغياب بنجاح ومزامنتها سحابياً! ✅');
+      setTimeout(() => setAttendanceSavedNotice(''), 4500);
+    } catch (err) {
+      console.warn('Error saving attendance:', err);
+    } finally {
+      setIsSavingAttendance(false);
+    }
+  };
+
+  const pastSessionsForCurrentGroup = useMemo(() => {
+    if (!currentAttendanceGroup || !Array.isArray(attendanceSessions)) return [];
+    return attendanceSessions.filter(s => s.groupId === currentAttendanceGroup.id);
+  }, [attendanceSessions, currentAttendanceGroup]);
+
+  const handleLoadPastSession = (session) => {
+    setSelectedPastSession(session);
+    setAttendanceSessionDate(session.date || new Date().toISOString().split('T')[0]);
+    setAttendanceSessionTitle(session.sessionTitle || '');
+    setAttendanceMaxGrade(session.maxGrade || 10);
+
+    const loadedRecords = {};
+    studentsInCurrentAttendanceGroup.forEach(s => {
+      const rec = (s.allowedCurriculum?.attendanceRecords || []).find(a => a.sessionId === session.id);
+      if (rec) {
+        loadedRecords[s.id] = {
+          status: rec.status,
+          grade: rec.grade,
+          note: rec.note || ''
+        };
+      }
+    });
+    setAttendanceRecordsState(loadedRecords);
+    playSound.click();
+  };
 
   // نافذة تخصيص المنهج الفردي للطالب (Direct Permissions)
   const [selectedStudentIdForCurriculum, setSelectedStudentIdForCurriculum] = useState(null);
@@ -550,6 +733,20 @@ export default function TeacherDashboard() {
             {pendingStudents.length > 0 && (
               <span className="tab-pending-badge">{pendingStudents.length}</span>
             )}
+          </button>
+
+          <button 
+            role="tab"
+            aria-selected={activeTab === 'attendance'}
+            className={`teacher-tab-btn ${activeTab === 'attendance' ? 'active' : ''}`}
+            onClick={() => {
+              setActiveTab('attendance');
+              playSound.click();
+            }}
+          >
+            <Calendar size={18} className="text-emerald-400" />
+            <span className="tab-label-desktop">{lang === 'en' ? 'Attendance & Grades' : 'سجل الحضور والغياب ودرجات الحصص'}</span>
+            <span className="tab-label-mobile">{lang === 'en' ? 'Attendance' : 'سجل الحصص'}</span>
           </button>
 
           {isSuperAdmin && (
@@ -1015,7 +1212,396 @@ export default function TeacherDashboard() {
         )}
 
         {/* ========================================================= */}
-        {/* التبويب 3: إدارة المشرفين والأدمن (خاص بالسوبر أدمن الماستر) */}
+        {/* التبويب 3: سجل الحضور والغياب ودرجات الحصص (Attendance & Grades) */}
+        {/* ========================================================= */}
+        {activeTab === 'attendance' && (
+          <div className="attendance-management-section">
+            {/* لافتة ترويسة سجل الحضور والغياب */}
+            <div className="attendance-header-banner">
+              <div className="attendance-banner-title">
+                <div className="attendance-badge-icon">
+                  <Calendar size={26} className="text-emerald-400" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2 flex-wrap">
+                    <span>{lang === 'en' ? 'Daily Attendance & Session Grades Register' : 'سجل درجات الحضور والغياب والتسميع لكل حصة'}</span>
+                    <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+                      {lang === 'en' ? 'Cloud Synced ⚡' : 'سحابي ولحظي ⚡'}
+                    </span>
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {lang === 'en' 
+                      ? 'Record student attendance, session marks, and notes per group with automatic cloud synchronization.'
+                      : 'سجّل حضور الطلاب وغيابهم، درجات المشاركة والتسميع، وملاحظاتك الأكاديمية لكل حصة ومجموعة مع الحفظ السحابي التلقائي.'
+                    }
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                {pastSessionsForCurrentGroup.length > 0 && (
+                  <button
+                    type="button"
+                    className="duo-btn duo-btn-secondary flex items-center gap-2"
+                    onClick={() => {
+                      setPastSessionsViewOpen(prev => !prev);
+                      playSound.click();
+                    }}
+                  >
+                    <Clock size={16} />
+                    <span>{pastSessionsViewOpen ? (lang === 'en' ? 'Close History' : 'إخفاء الحصص السابقة') : (lang === 'en' ? `Past Sessions (${pastSessionsForCurrentGroup.length})` : `الحصص السابقة (${pastSessionsForCurrentGroup.length}) 🕒`)}</span>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  className="duo-btn duo-btn-success flex items-center gap-2"
+                  onClick={handleSaveSessionAttendance}
+                  disabled={isSavingAttendance}
+                >
+                  <Save size={16} />
+                  <span>{isSavingAttendance ? (lang === 'en' ? 'Saving...' : 'جارٍ الحفظ السحابي...') : (lang === 'en' ? 'Save Session 💾' : 'حفظ سجل الحصة 💾')}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* إشعار نجاح الحفظ */}
+            {attendanceSavedNotice && (
+              <div className="attendance-success-toast">
+                <CheckCircle size={18} className="text-emerald-400 flex-shrink-0" />
+                <span>{attendanceSavedNotice}</span>
+              </div>
+            )}
+
+            {/* نافذة أو لوحة الحصص السابقة المحفوظة */}
+            {pastSessionsViewOpen && pastSessionsForCurrentGroup.length > 0 && (
+              <div className="past-sessions-drawer">
+                <div className="past-sessions-header">
+                  <h4 className="font-bold text-white flex items-center gap-2 text-sm">
+                    <Clock size={16} className="text-indigo-400" />
+                    <span>{lang === 'en' ? 'Saved Past Sessions for:' : 'سجل الحصص السابقة المسجلة لـ:'} {currentAttendanceGroup?.name}</span>
+                  </h4>
+                  <span className="text-xs text-slate-400">{lang === 'en' ? 'Click on any session to view or update' : 'اضغط على أي حصة لتحميل درجاتها وتعديلها'}</span>
+                </div>
+                <div className="past-sessions-grid">
+                  {pastSessionsForCurrentGroup.map(sess => (
+                    <div 
+                      key={sess.id} 
+                      className={`past-session-chip ${selectedPastSession?.id === sess.id ? 'active-selected' : ''}`}
+                      onClick={() => handleLoadPastSession(sess)}
+                    >
+                      <div className="past-chip-title">{sess.sessionTitle || 'حصة بدون عنوان'}</div>
+                      <div className="past-chip-meta">
+                        <span>📅 {sess.date}</span>
+                        <span>⭐ الدرجة من {sess.maxGrade || 10}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* بطاقة التحكم وإعدادات الحصة */}
+            <div className="attendance-controls-card">
+              <div className="attendance-controls-grid">
+                {/* 1. اختيار المجموعة */}
+                <div className="att-control-item">
+                  <label className="att-control-label">
+                    <School size={15} className="text-indigo-400" />
+                    <span>{lang === 'en' ? 'Class Group' : 'المجموعة الدراسية'}</span>
+                  </label>
+                  <select
+                    value={effectiveAttendanceGroupId}
+                    onChange={(e) => {
+                      setSelectedAttendanceGroupId(e.target.value);
+                      setSelectedPastSession(null);
+                      setAttendanceRecordsState({});
+                      playSound.click();
+                    }}
+                    className="att-control-select"
+                  >
+                    {safeGroups.map(g => (
+                      <option key={g.id} value={g.id}>
+                        {g.name} ({safeStudents.filter(s => s.groupId === g.id).length} طالب)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* 2. تاريخ الحصة */}
+                <div className="att-control-item">
+                  <label className="att-control-label">
+                    <Calendar size={15} className="text-sky-400" />
+                    <span>{lang === 'en' ? 'Session Date' : 'تاريخ الحصة'}</span>
+                  </label>
+                  <input
+                    type="date"
+                    value={attendanceSessionDate}
+                    onChange={(e) => setAttendanceSessionDate(e.target.value)}
+                    className="att-control-input font-mono"
+                  />
+                </div>
+
+                {/* 3. موضوع أو عنوان الحصة */}
+                <div className="att-control-item flex-2">
+                  <label className="att-control-label">
+                    <BookOpen size={15} className="text-purple-400" />
+                    <span>{lang === 'en' ? 'Topic / Session Title' : 'موضوع وعنوان الحصة'}</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={attendanceSessionTitle}
+                    onChange={(e) => setAttendanceSessionTitle(e.target.value)}
+                    placeholder={lang === 'en' ? 'e.g. Session 1: Computing History & Moore\'s Law' : 'مثال: الحصة 1: قانون مور وتطور الحوسبة'}
+                    className="att-control-input"
+                    dir="rtl"
+                  />
+                </div>
+
+                {/* 4. الدرجة العظمى */}
+                <div className="att-control-item">
+                  <label className="att-control-label">
+                    <Award size={15} className="text-amber-400" />
+                    <span>{lang === 'en' ? 'Max Mark' : 'الدرجة من'}</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={attendanceMaxGrade}
+                    onChange={(e) => setAttendanceMaxGrade(Number(e.target.value) || 10)}
+                    className="att-control-input text-center font-bold"
+                  />
+                </div>
+              </div>
+
+              {/* شريط الإجراءات والبحث */}
+              <div className="attendance-actions-bar">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    className="att-quick-btn mark-all-present"
+                    onClick={handleMarkAllPresent}
+                    title="تحضير جميع طلاب المجموعة ومنحهم الدرجة الكاملة"
+                  >
+                    <CheckCircle size={15} />
+                    <span>{lang === 'en' ? 'Mark All Present (100%)' : 'تحضير الكل حاضر (100%) 🟢'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="att-quick-btn reset-all"
+                    onClick={handleResetAllGrades}
+                    title="تفريغ الحقول والبدء من جديد"
+                  >
+                    <RefreshCw size={14} />
+                    <span>{lang === 'en' ? 'Reset Marks' : 'إعادة ضبط 🔄'}</span>
+                  </button>
+                </div>
+
+                <div className="att-search-box">
+                  <Search size={15} className="text-slate-400" />
+                  <input
+                    type="text"
+                    value={attendanceStudentSearch}
+                    onChange={(e) => setAttendanceStudentSearch(e.target.value)}
+                    placeholder={lang === 'en' ? 'Search by name or phone...' : 'بحث عن طالب في المجموعة بالاسم أو الهاتف...'}
+                    className="att-search-input"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* شريط ملخص إحصائيات الحصة اللحظي */}
+            <div className="att-stats-summary-row">
+              <div className="att-stat-mini-pill total">
+                <Users size={16} />
+                <span>{lang === 'en' ? 'Total Enrolled:' : 'إجمالي المقيدين:'} <strong>{studentsInCurrentAttendanceGroup.length}</strong></span>
+              </div>
+              <div className="att-stat-mini-pill present">
+                <CheckCircle size={16} />
+                <span>{lang === 'en' ? 'Present:' : 'حاضر:'} <strong>{attendanceStats.presentCount}</strong> ({attendanceStats.presentRate}%)</span>
+              </div>
+              <div className="att-stat-mini-pill absent">
+                <X size={16} />
+                <span>{lang === 'en' ? 'Absent:' : 'غائب:'} <strong>{attendanceStats.absentCount}</strong></span>
+              </div>
+              <div className="att-stat-mini-pill late">
+                <Clock size={16} />
+                <span>{lang === 'en' ? 'Late / Excused:' : 'متأخر أو معتذر:'} <strong>{attendanceStats.lateCount + attendanceStats.excusedCount}</strong></span>
+              </div>
+              <div className="att-stat-mini-pill avg">
+                <Star size={16} />
+                <span>{lang === 'en' ? 'Average Grade:' : 'متوسط درجات الحصة:'} <strong>{attendanceStats.averageGrade} / {attendanceMaxGrade}</strong></span>
+              </div>
+            </div>
+
+            {/* جدول وقائمة الطلاب لتسجيل الحضور والدرجات */}
+            <div className="attendance-students-container">
+              {filteredAttendanceStudents.length === 0 ? (
+                <div className="attendance-empty-box">
+                  <School size={40} className="text-slate-500 mb-2" />
+                  <p className="text-slate-400 text-sm">
+                    {studentsInCurrentAttendanceGroup.length === 0 
+                      ? (lang === 'en' ? 'No students assigned to this group yet. Go to Students tab to assign students.' : 'لا يوجد طلاب مسكنين في هذه المجموعة حتى الآن. يمكنك تسكين الطلاب من تبويب "الطلاب والاشتراكات".')
+                      : (lang === 'en' ? 'No student matches your search query.' : 'لا يوجد طالب يطابق معايير البحث.')
+                    }
+                  </p>
+                </div>
+              ) : (
+                <div className="attendance-cards-list">
+                  {filteredAttendanceStudents.map((student, idx) => {
+                    const studentRecord = attendanceRecordsState[student.id] || {
+                      status: 'present',
+                      grade: attendanceMaxGrade,
+                      note: ''
+                    };
+                    const completedChunksCount = student.completedChunks?.length || 0;
+                    const starsCount = student.stars || 0;
+                    const cleanGuardian = (student.guardianPhone || '').replace(/[^0-9]/g, '');
+
+                    return (
+                      <div 
+                        key={student.id} 
+                        className={`attendance-student-card ${studentRecord.status}`}
+                      >
+                        {/* عمود رقم الطالب وتعريفه */}
+                        <div className="att-card-identity">
+                          <span className="att-card-idx">#{idx + 1}</span>
+                          <div className="att-student-avatar">
+                            <img 
+                              src={student.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(student.name)}`} 
+                              alt={student.name} 
+                            />
+                          </div>
+                          <div className="att-student-info">
+                            <h4 className="att-student-name">{student.name}</h4>
+                            <div className="att-student-phones">
+                              {student.phone ? (
+                                <span className="att-phone-badge" title="هاتف الطالب">📱 {student.phone}</span>
+                              ) : (
+                                <span className="text-slate-500 text-xs">بدون هاتف</span>
+                              )}
+                              {student.guardianPhone && (
+                                <a 
+                                  href={`https://wa.me/20${cleanGuardian}?text=${encodeURIComponent(`السلام عليكم، ولي أمر الطالب ${student.name}، تقرير حصة اليوم (${attendanceSessionTitle}) في منصة كودلينجو:\nالحالة: ${studentRecord.status === 'present' ? 'حاضر ✅' : studentRecord.status === 'absent' ? 'غائب ❌' : studentRecord.status === 'late' ? 'متأخر ⏳' : 'معتذر 📝'}\nالدرجة: ${studentRecord.grade} من ${attendanceMaxGrade}\nالملاحظات: ${studentRecord.note || 'متابع ومتميز'}`)}`}
+                                  target="_blank" 
+                                  rel="noreferrer"
+                                  className="att-whatsapp-link"
+                                  title="إرسال تقرير الحصة لولي الأمر عبر واتساب"
+                                >
+                                  💬 ولي الأمر ({student.guardianPhone})
+                                </a>
+                              )}
+                            </div>
+                            <div className="att-student-platform-status">
+                              <span className="att-completed-tag">
+                                📚 أنجز بالمنصة: <strong>{completedChunksCount} فقرات</strong>
+                              </span>
+                              <span className="att-stars-tag">
+                                ⭐ <strong>{starsCount} نجمة</strong> ({student.xp || 0} XP)
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* عمود أزرار حالة الحضور الأربعة */}
+                        <div className="att-card-status-selector">
+                          <label className="att-mini-label">حالة الحضور</label>
+                          <div className="att-status-buttons-row">
+                            <button
+                              type="button"
+                              className={`att-status-btn btn-present ${studentRecord.status === 'present' ? 'selected' : ''}`}
+                              onClick={() => handleSetStudentAttendanceStatus(student.id, 'present')}
+                            >
+                              <CheckCircle size={14} />
+                              <span>حاضر</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              className={`att-status-btn btn-absent ${studentRecord.status === 'absent' ? 'selected' : ''}`}
+                              onClick={() => handleSetStudentAttendanceStatus(student.id, 'absent')}
+                            >
+                              <X size={14} />
+                              <span>غائب</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              className={`att-status-btn btn-late ${studentRecord.status === 'late' ? 'selected' : ''}`}
+                              onClick={() => handleSetStudentAttendanceStatus(student.id, 'late')}
+                            >
+                              <Clock size={14} />
+                              <span>متأخر</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              className={`att-status-btn btn-excused ${studentRecord.status === 'excused' ? 'selected' : ''}`}
+                              onClick={() => handleSetStudentAttendanceStatus(student.id, 'excused')}
+                            >
+                              <span>معتذر</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* عمود إدخال درجة الحصة */}
+                        <div className="att-card-grade-input-box">
+                          <label className="att-mini-label">درجة الحصة</label>
+                          <div className="att-grade-wrapper">
+                            <input
+                              type="number"
+                              min="0"
+                              max={attendanceMaxGrade}
+                              value={studentRecord.grade ?? attendanceMaxGrade}
+                              onChange={(e) => handleSetStudentAttendanceGrade(student.id, e.target.value)}
+                              className="att-grade-input font-bold"
+                              disabled={studentRecord.status === 'absent' || studentRecord.status === 'excused'}
+                            />
+                            <span className="att-grade-max">/ {attendanceMaxGrade}</span>
+                          </div>
+                        </div>
+
+                        {/* عمود ملاحظات المعلم على الطالب في الحصة */}
+                        <div className="att-card-note-box">
+                          <label className="att-mini-label">ملاحظات المعلم</label>
+                          <input
+                            type="text"
+                            placeholder="اكتب ملاحظة (مثال: متفاعل وممتاز، لم يحل الواجب...)"
+                            value={studentRecord.note || ''}
+                            onChange={(e) => handleSetStudentAttendanceNote(student.id, e.target.value)}
+                            className="att-note-input"
+                            dir="rtl"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* شريط الحفظ السفلي */}
+            <div className="attendance-footer-bar">
+              <div className="text-xs text-slate-400">
+                <span>سيتم حفظ الحصة لـ <strong>{studentsInCurrentAttendanceGroup.length}</strong> طلاب في <strong>{currentAttendanceGroup?.name}</strong> ومزامنتها سحابياً فوراً.</span>
+              </div>
+              <button
+                type="button"
+                className="duo-btn duo-btn-success flex items-center gap-2"
+                onClick={handleSaveSessionAttendance}
+                disabled={isSavingAttendance}
+              >
+                <Save size={17} />
+                <span>{isSavingAttendance ? 'جارٍ الحفظ السحابي...' : 'حفظ سجل الحصة 💾'}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* التبويب 4: إدارة المشرفين والأدمن (خاص بالسوبر أدمن الماستر) */}
         {/* ========================================================= */}
         {isSuperAdmin && activeTab === 'admins' && (
           <div className="admins-management-section">

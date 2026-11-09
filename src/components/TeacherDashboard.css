@@ -3145,3 +3145,680 @@ body.theme-light .student-station-tracker-banner {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+
+/* =========================================================
+   نظام درجات الحضور والغياب والتسميع الأكاديمي (Attendance & Session Grades)
+   ========================================================= */
+
+.attendance-management-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.attendance-header-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(15, 23, 42, 0.95));
+  border: 1.5px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--radius-lg, 16px);
+  padding: 18px 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  flex-wrap: wrap;
+}
+
+.attendance-banner-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.attendance-badge-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(16, 185, 129, 0.18);
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.attendance-success-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(16, 185, 129, 0.16);
+  border: 1.5px solid #10b981;
+  border-radius: 12px;
+  padding: 12px 18px;
+  color: #a7f3d0;
+  font-weight: 700;
+  font-size: 0.92rem;
+  animation: fadeInDown 0.3s ease;
+}
+
+/* بطاقة التحكم والإعدادات للحصة */
+.attendance-controls-card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  backdrop-filter: blur(8px);
+}
+
+.attendance-controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.att-control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.att-control-item.flex-2 {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  .att-control-item.flex-2 {
+    grid-column: span 1;
+  }
+}
+
+.att-control-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+.att-control-select,
+.att-control-input {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #ffffff;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.att-control-select:focus,
+.att-control-input:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.attendance-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  flex-wrap: wrap;
+}
+
+.att-quick-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.att-quick-btn.mark-all-present {
+  background: rgba(16, 185, 129, 0.18);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+}
+
+.att-quick-btn.mark-all-present:hover {
+  background: rgba(16, 185, 129, 0.3);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.att-quick-btn.reset-all {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.25);
+  color: #cbd5e1;
+}
+
+.att-quick-btn.reset-all:hover {
+  background: rgba(148, 163, 184, 0.2);
+  color: #ffffff;
+}
+
+.att-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 6px 12px;
+  min-width: 250px;
+}
+
+.att-search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 0.84rem;
+  width: 100%;
+}
+
+/* شريط الإحصائيات السريعة للحصة */
+.att-stats-summary-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.att-stat-mini-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+.att-stat-mini-pill.present {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #34d399;
+}
+
+.att-stat-mini-pill.absent {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+
+.att-stat-mini-pill.late {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: #fbbf24;
+}
+
+.att-stat-mini-pill.avg {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.35);
+  color: #a5b4fc;
+}
+
+/* بطاقات الطلاب لتسجيل الحضور */
+.attendance-students-container {
+  width: 100%;
+}
+
+.attendance-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.attendance-student-card {
+  display: grid;
+  grid-template-columns: 2.2fr 2.2fr 1.2fr 2fr;
+  align-items: center;
+  gap: 16px;
+  background: rgba(30, 41, 59, 0.75);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px 18px;
+  transition: all 0.2s ease;
+}
+
+.attendance-student-card:hover {
+  border-color: rgba(99, 102, 241, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.attendance-student-card.present {
+  border-right: 4px solid #10b981;
+}
+
+.attendance-student-card.absent {
+  border-right: 4px solid #ef4444;
+  opacity: 0.85;
+}
+
+.attendance-student-card.late {
+  border-right: 4px solid #f59e0b;
+}
+
+.attendance-student-card.excused {
+  border-right: 4px solid #38bdf8;
+}
+
+.att-card-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.att-card-idx {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748b;
+  width: 24px;
+}
+
+.att-student-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+
+.att-student-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.att-student-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.att-student-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+}
+
+.att-student-phones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.att-phone-badge {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-family: monospace;
+}
+
+.att-whatsapp-link {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #25d366;
+  background: rgba(37, 211, 102, 0.12);
+  padding: 2px 7px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.att-whatsapp-link:hover {
+  background: rgba(37, 211, 102, 0.25);
+  color: #ffffff;
+}
+
+.att-student-platform-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.74rem;
+  color: #cbd5e1;
+  margin-top: 2px;
+}
+
+.att-completed-tag {
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.att-stars-tag {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* أزرار الحالة */
+.att-card-status-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.att-mini-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.att-status-buttons-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.att-status-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.7);
+  color: #94a3b8;
+  transition: all 0.15s ease;
+}
+
+.att-status-btn.btn-present.selected {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+.att-status-btn.btn-absent.selected {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+
+.att-status-btn.btn-late.selected {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+
+.att-status-btn.btn-excused.selected {
+  background: #0284c7;
+  border-color: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.4);
+}
+
+/* عمود الدرجة */
+.att-card-grade-input-box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.att-grade-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.att-grade-input {
+  width: 60px;
+  text-align: center;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1.5px solid rgba(251, 191, 36, 0.4);
+  border-radius: 8px;
+  padding: 6px 4px;
+  color: #fbbf24;
+  font-size: 1rem;
+}
+
+.att-grade-input:focus {
+  outline: none;
+  border-color: #fbbf24;
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+}
+
+.att-grade-input:disabled {
+  opacity: 0.4;
+  background: rgba(15, 23, 42, 0.4);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #64748b;
+}
+
+.att-grade-max {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+/* عمود الملاحظات */
+.att-card-note-box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.att-note-input {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 7px 12px;
+  color: #ffffff;
+  font-size: 0.82rem;
+  width: 100%;
+}
+
+.att-note-input:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+/* شريط الحفظ السفلي */
+.attendance-footer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+/* درج الحصص السابقة */
+.past-sessions-drawer {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1.5px solid rgba(99, 102, 241, 0.35);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: fadeInDown 0.25s ease;
+}
+
+.past-sessions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.past-sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.past-session-chip {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.past-session-chip:hover,
+.past-session-chip.active-selected {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: #6366f1;
+  transform: translateY(-2px);
+}
+
+.past-chip-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.past-chip-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.74rem;
+  color: #94a3b8;
+}
+
+.attendance-empty-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1.5px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  text-align: center;
+}
+
+/* التجاوب مع شاشات الموبايل */
+@media (max-width: 900px) {
+  .attendance-student-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .att-status-buttons-row {
+    flex-wrap: wrap;
+  }
+}
+
+/* الثيم الفاتح (Light Mode) */
+body.theme-light .attendance-header-banner {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(241, 245, 249, 0.98));
+  border-color: #a7f3d0;
+}
+
+body.theme-light .attendance-header-banner h2 {
+  color: #0f172a !important;
+}
+
+body.theme-light .attendance-header-banner p {
+  color: #475569 !important;
+}
+
+body.theme-light .attendance-controls-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+body.theme-light .att-control-select,
+body.theme-light .att-control-input,
+body.theme-light .att-search-box {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+body.theme-light .att-search-input {
+  color: #0f172a;
+}
+
+body.theme-light .att-control-label {
+  color: #334155;
+}
+
+body.theme-light .attendance-student-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+body.theme-light .att-student-name {
+  color: #0f172a;
+}
+
+body.theme-light .att-status-btn {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+body.theme-light .att-grade-input {
+  background: #fffbeb;
+  border-color: #f59e0b;
+  color: #b45309;
+}
+
+body.theme-light .att-note-input {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+body.theme-light .attendance-footer-bar {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+body.theme-light .attendance-footer-bar span {
+  color: #475569 !important;
+}
+
+body.theme-light .past-sessions-drawer {
+  background: #ffffff;
+  border-color: #c7d2fe;
+}
+
+body.theme-light .past-session-chip {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+body.theme-light .past-chip-title {
+  color: #0f172a;
+}

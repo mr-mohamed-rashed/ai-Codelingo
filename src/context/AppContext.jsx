@@ -884,8 +884,84 @@ export const AppProvider = ({ children }) => {
               !s.name?.includes('محمد راشد')
             );
 
-            // اعتماد القائمة السحابية كمرجع وحيد
-            setStudents(validRemoteStudents);
+            // اعتماد القائمة السحابية مع دمج ذكي يحافظ على أعلى درجات للطلاب دائماً
+            setStudents(prev => {
+              const currentList = Array.isArray(prev) ? prev : [];
+              const merged = validRemoteStudents.map(remoteS => {
+                const localS = currentList.find(ls => 
+                  (ls.id && remoteS.id && ls.id === remoteS.id) || 
+                  (ls.phone && remoteS.phone && ls.phone === remoteS.phone) ||
+                  (ls.email && remoteS.email && ls.email.toLowerCase() === remoteS.email.toLowerCase())
+                );
+
+                if (!localS) return remoteS;
+
+                const mergedCompleted = Array.from(new Set([
+                  ...(remoteS.completedChunks || []),
+                  ...(localS.completedChunks || [])
+                ]));
+                const mergedXp = Math.max(Number(remoteS.xp || 0), Number(localS.xp || 0));
+                const mergedStars = Math.max(Number(remoteS.stars || 0), Number(localS.stars || 0));
+                const mergedStreak = Math.max(Number(remoteS.streak || 1), Number(localS.streak || 1));
+                const mergedRatings = {
+                  ...(remoteS.chunkRatings || {}),
+                  ...(localS.chunkRatings || {})
+                };
+                const mergedTrophies = Array.from(new Set([
+                  ...(remoteS.trophies || []),
+                  ...(localS.trophies || [])
+                ]));
+
+                const remoteAtt = remoteS.allowedCurriculum?.attendanceRecords || [];
+                const localAtt = localS.allowedCurriculum?.attendanceRecords || [];
+                const attMap = new Map();
+                [...remoteAtt, ...localAtt].forEach(att => {
+                  if (att.sessionId) attMap.set(att.sessionId, att);
+                });
+
+                const mergedAllowed = {
+                  ...(remoteS.allowedCurriculum || {}),
+                  ...(localS.allowedCurriculum || {}),
+                  attendanceRecords: Array.from(attMap.values())
+                };
+
+                // إذا كان المحلي به تقدم إضافي لم يُسجل بعد في السحابة، نرفعه فوراً
+                if ((localS.xp || 0) > (remoteS.xp || 0) || (localS.completedChunks?.length || 0) > (remoteS.completedChunks?.length || 0)) {
+                  import('../services/studentService').then(({ updateStudentProgressInSupabase }) => {
+                    updateStudentProgressInSupabase(remoteS.id, {
+                      xp: mergedXp,
+                      stars: mergedStars,
+                      streak: mergedStreak,
+                      completedChunks: mergedCompleted,
+                      chunkRatings: mergedRatings,
+                      trophies: mergedTrophies,
+                      allowedCurriculum: mergedAllowed
+                    }, {
+                      phone: remoteS.phone,
+                      email: remoteS.email,
+                      authUserId: remoteS.authUserId
+                    });
+                  }).catch(() => {});
+                }
+
+                return {
+                  ...remoteS,
+                  xp: mergedXp,
+                  stars: mergedStars,
+                  streak: mergedStreak,
+                  completedChunks: mergedCompleted,
+                  chunkRatings: mergedRatings,
+                  trophies: mergedTrophies,
+                  allowedCurriculum: mergedAllowed
+                };
+              });
+
+              try {
+                localStorage.setItem('codelingo_students_list', JSON.stringify(merged));
+              } catch (e) {}
+
+              return merged;
+            });
 
             // فحص حالة الطالب الحالي المسجل دخوله
             if (currentStudentId) {
@@ -966,8 +1042,63 @@ export const AppProvider = ({ children }) => {
           s.id !== 'std-master-teacher' &&
           !s.name?.includes('محمد راشد')
         );
-        setStudents(validRemoteStudents);
-        return validRemoteStudents;
+
+        setStudents(prev => {
+          const currentList = Array.isArray(prev) ? prev : [];
+          const merged = validRemoteStudents.map(remoteS => {
+            const localS = currentList.find(ls => 
+              (ls.id && remoteS.id && ls.id === remoteS.id) || 
+              (ls.phone && remoteS.phone && ls.phone === remoteS.phone) ||
+              (ls.email && remoteS.email && ls.email.toLowerCase() === remoteS.email.toLowerCase())
+            );
+
+            if (!localS) return remoteS;
+
+            const mergedCompleted = Array.from(new Set([
+              ...(remoteS.completedChunks || []),
+              ...(localS.completedChunks || [])
+            ]));
+            const mergedXp = Math.max(Number(remoteS.xp || 0), Number(localS.xp || 0));
+            const mergedStars = Math.max(Number(remoteS.stars || 0), Number(localS.stars || 0));
+            const mergedStreak = Math.max(Number(remoteS.streak || 1), Number(localS.streak || 1));
+            const mergedRatings = {
+              ...(remoteS.chunkRatings || {}),
+              ...(localS.chunkRatings || {})
+            };
+            const mergedTrophies = Array.from(new Set([
+              ...(remoteS.trophies || []),
+              ...(localS.trophies || [])
+            ]));
+
+            const remoteAtt = remoteS.allowedCurriculum?.attendanceRecords || [];
+            const localAtt = localS.allowedCurriculum?.attendanceRecords || [];
+            const attMap = new Map();
+            [...remoteAtt, ...localAtt].forEach(att => {
+              if (att.sessionId) attMap.set(att.sessionId, att);
+            });
+
+            return {
+              ...remoteS,
+              xp: mergedXp,
+              stars: mergedStars,
+              streak: mergedStreak,
+              completedChunks: mergedCompleted,
+              chunkRatings: mergedRatings,
+              trophies: mergedTrophies,
+              allowedCurriculum: {
+                ...(remoteS.allowedCurriculum || {}),
+                ...(localS.allowedCurriculum || {}),
+                attendanceRecords: Array.from(attMap.values())
+              }
+            };
+          });
+
+          try {
+            localStorage.setItem('codelingo_students_list', JSON.stringify(merged));
+          } catch (e) {}
+
+          return merged;
+        });
       }
     } catch (err) {
       console.warn('refreshStudentsFromCloud error:', err);
@@ -1677,43 +1808,153 @@ export const AppProvider = ({ children }) => {
     });
   };
 
+  // سجل جلسات الحضور والغياب للمجموعات
+  const [attendanceSessions, setAttendanceSessions] = useState(() => {
+    try {
+      const saved = localStorage.getItem('codelingo_attendance_sessions');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const saveGroupAttendanceSession = async (sessionData, studentsList) => {
+    const sessionId = sessionData.id || `sess-${Date.now()}`;
+    const fullSession = {
+      ...sessionData,
+      id: sessionId,
+      recordedAt: new Date().toISOString()
+    };
+
+    // 1. تحديث قائمة الجلسات محلياً
+    setAttendanceSessions(prev => {
+      const filtered = prev.filter(s => s.id !== sessionId);
+      const next = [fullSession, ...filtered];
+      try {
+        localStorage.setItem('codelingo_attendance_sessions', JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+
+    // 2. تحديث الطلاب في الـ State
+    setStudents(prev => {
+      const nextList = prev.map(s => {
+        const studentRecord = studentsList.find(rec => rec.studentId === s.id);
+        if (!studentRecord) return s;
+
+        const currentAllowed = s.allowedCurriculum || {};
+        const existingAtt = Array.isArray(currentAllowed.attendanceRecords) 
+          ? [...currentAllowed.attendanceRecords] 
+          : [];
+        const updatedAtt = existingAtt.filter(a => a.sessionId !== sessionId);
+        updatedAtt.push({
+          sessionId: sessionId,
+          sessionTitle: fullSession.sessionTitle,
+          sessionNumber: fullSession.sessionNumber,
+          date: fullSession.date,
+          status: studentRecord.status || 'present',
+          grade: Number(studentRecord.grade ?? fullSession.maxGrade),
+          maxGrade: Number(fullSession.maxGrade || 10),
+          note: studentRecord.note || '',
+          recordedAt: new Date().toISOString()
+        });
+
+        return {
+          ...s,
+          allowedCurriculum: {
+            ...currentAllowed,
+            attendanceRecords: updatedAtt
+          }
+        };
+      });
+
+      try {
+        localStorage.setItem('codelingo_students_list', JSON.stringify(nextList));
+      } catch (e) {}
+
+      return nextList;
+    });
+
+    // 3. مزامنة سحابية مع Supabase
+    try {
+      const { syncGroupSessionAttendanceToSupabase } = await import('../services/studentService');
+      await syncGroupSessionAttendanceToSupabase(fullSession, studentsList);
+    } catch (err) {
+      console.warn('⚠️ Supabase attendance sync warning:', err);
+    }
+  };
+
   /**
    * إكمال الفقرة أو الاختبار بنجاح ومنح النجوم (حتى 3 نجوم) والكؤوس
+   * مع مزامنة سحابية مؤكدة مع Supabase وحفظ محلي فوري
    */
   const markChunkCompleted = (chunkId, xp = 35, earnedStars = 1, isFullScoreWithDistinction = false, isBossExam = false) => {
-    setStudents(prev => prev.map(s => {
-      if (s.id !== currentStudentId) return s;
+    let syncedStudent = null;
 
-      const alreadyCompleted = s.completedChunks?.includes(chunkId) || false;
-      const updatedCompleted = alreadyCompleted ? s.completedChunks : [...s.completedChunks, chunkId];
+    setStudents(prev => {
+      const nextList = prev.map(s => {
+        if (s.id !== currentStudentId) return s;
 
-      const currentRating = s.chunkRatings?.[chunkId]?.stars || 0;
-      const bestStars = Math.max(currentRating, earnedStars);
-      const updatedRatings = {
-        ...(s.chunkRatings || {}),
-        [chunkId]: {
-          stars: bestStars,
-          fullScore: isFullScoreWithDistinction || (s.chunkRatings?.[chunkId]?.fullScore ?? false)
+        const alreadyCompleted = s.completedChunks?.includes(chunkId) || false;
+        const updatedCompleted = alreadyCompleted ? s.completedChunks : [...s.completedChunks, chunkId];
+
+        const currentRating = s.chunkRatings?.[chunkId]?.stars || 0;
+        const bestStars = Math.max(currentRating, earnedStars);
+        const updatedRatings = {
+          ...(s.chunkRatings || {}),
+          [chunkId]: {
+            stars: bestStars,
+            fullScore: isFullScoreWithDistinction || (s.chunkRatings?.[chunkId]?.fullScore ?? false)
+          }
+        };
+
+        // إضافة كأس الدرس إذا كان اختبار شامل
+        let updatedTrophies = s.trophies ? [...s.trophies] : [];
+        if (isBossExam && !updatedTrophies.includes(chunkId)) {
+          updatedTrophies.push(chunkId);
         }
-      };
 
-      // إضافة كأس الدرس إذا كان اختبار شامل
-      let updatedTrophies = s.trophies ? [...s.trophies] : [];
-      if (isBossExam && !updatedTrophies.includes(chunkId)) {
-        updatedTrophies.push(chunkId);
-      }
+        const starsGain = alreadyCompleted ? Math.max(0, earnedStars - currentRating) : earnedStars;
+        const newXp = (s.xp || 0) + (alreadyCompleted ? Math.floor(xp / 2) : xp);
+        const newStars = (s.stars || 0) + starsGain;
 
-      const starsGain = alreadyCompleted ? Math.max(0, earnedStars - currentRating) : earnedStars;
+        const updatedStudent = {
+          ...s,
+          completedChunks: updatedCompleted,
+          chunkRatings: updatedRatings,
+          trophies: updatedTrophies,
+          xp: newXp,
+          stars: newStars
+        };
 
-      return {
-        ...s,
-        completedChunks: updatedCompleted,
-        chunkRatings: updatedRatings,
-        trophies: updatedTrophies,
-        xp: s.xp + (alreadyCompleted ? Math.floor(xp / 2) : xp),
-        stars: s.stars + starsGain
-      };
-    }));
+        syncedStudent = updatedStudent;
+        return updatedStudent;
+      });
+
+      try {
+        localStorage.setItem('codelingo_students_list', JSON.stringify(nextList));
+      } catch (e) {}
+
+      return nextList;
+    });
+
+    // مزامنة سحابية فورية ومؤكدة مع Supabase!
+    if (syncedStudent) {
+      import('../services/studentService').then(({ updateStudentProgressInSupabase }) => {
+        updateStudentProgressInSupabase(syncedStudent.id, {
+          xp: syncedStudent.xp,
+          stars: syncedStudent.stars,
+          streak: syncedStudent.streak,
+          completedChunks: syncedStudent.completedChunks,
+          chunkRatings: syncedStudent.chunkRatings,
+          trophies: syncedStudent.trophies
+        }, {
+          phone: syncedStudent.phone,
+          email: syncedStudent.email,
+          authUserId: syncedStudent.authUserId
+        });
+      }).catch(err => console.warn('Failed to sync completed chunk to Supabase:', err));
+    }
 
     playSound.levelUp();
   };
@@ -1777,6 +2018,8 @@ export const AppProvider = ({ children }) => {
         unlockUpToChunk,
         isChunkUnlocked,
         markChunkCompleted,
+        attendanceSessions,
+        saveGroupAttendanceSession,
         robotMovingState,
         triggerRobotMove,
         clearRobotMove,

@@ -359,20 +359,20 @@ export const DuolingoPath = () => {
                               )}
                             </button>
 
-                            {/* شارة التقييم بالنجوم الثلاثة للفقرات المكتملة */}
-                            {isCompleted && !isExam && (
+                            {/* شارة التقييم بالنجوم الثلاثة للفقرات المكتملة - تنور 3 نجوم ذهبية عند الإتقان الكامل */}
+                            {isCompleted && (
                               <div 
-                                className="node-stars-pill" 
-                                title={chunkStars === 3 
-                                  ? (lang === 'en' ? '3 Stars: Perfect Score & Distinction Question' : '3 نجوم: علامة كاملة وسؤال الامتياز') 
+                                className={`node-stars-pill ${chunkStars >= 3 ? 'three-stars-perfect' : ''}`} 
+                                title={chunkStars >= 3 
+                                  ? (lang === 'en' ? '⭐ 3 Stars: 100% Mastery!' : '⭐⭐⭐ 3 نجوم: تم الإتقان بنسبة 100%!') 
                                   : `${chunkStars}/3 ${t('stars')}`
                                 }
                               >
                                 {[1, 2, 3].map((s) => (
                                   <Star
                                     key={s}
-                                    size={12}
-                                    className={`node-star-icon ${s <= chunkStars ? 'star-filled' : 'star-empty'}`}
+                                    size={13}
+                                    className={`node-star-icon ${s <= chunkStars ? 'star-filled glowing-star' : 'star-empty'}`}
                                     fill={s <= chunkStars ? '#fbbf24' : 'rgba(148, 163, 184, 0.35)'}
                                     color={s <= chunkStars ? '#f59e0b' : 'transparent'}
                                   />

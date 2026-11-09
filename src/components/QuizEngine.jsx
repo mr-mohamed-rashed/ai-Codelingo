@@ -379,8 +379,9 @@ export default function QuizEngine() {
 
       if (score >= 90) {
         // اجتياز بنجاح! نسبة الإتقان >= 90%
-        const finalStars = (score === 100 && bestChoiceAnsweredCorrectly) ? 3 : 2;
-        const isFullDistinction = (score === 100 && bestChoiceAnsweredCorrectly);
+        // عند تحقيق 100% يحصد الطالب فوراً الـ 3 نجوم كاملة لتنور تحت الفقرة
+        const finalStars = score === 100 ? 3 : 2;
+        const isFullDistinction = score === 100;
         setEarnedStarsAwarded(finalStars);
         setIsSuccessFinished(true);
         setIsMandatoryReview(false);
